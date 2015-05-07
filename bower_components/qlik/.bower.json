@@ -1,0 +1,14 @@
+{
+  "name": "qlik",
+  "_cacheHeaders": {
+    "ETag": "635592660160000000",
+    "Last-Modified": "Wed, 11 Feb 2015 15:40:16 GMT",
+    "Content-Type": "application/javascript;charset=utf-8"
+  },
+  "_release": "e-tag:6355926601",
+  "main": "qlik.js",
+  "_source": "http://10.211.55.3:8080/nodejs/resources/js/qlik.js",
+  "_target": "*",
+  "_originalSource": "http://10.211.55.3:8080/nodejs/resources/js/qlik.js",
+  "_direct": true
+}
