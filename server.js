@@ -1,12 +1,15 @@
-var express = require('express'),
+var mongoose = require('mongoose'),
+    express = require('express'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
     bodyParser = require('body-parser');
 
-var mongoose = require('mongoose');
-//mongoose.connect('mongodb://localhost:27017/resource-center');
 mongoose.connect('mongodb://localhost:27017/branch');
+//load the models
+require('./server/models/project.js');
+require('./server/models/projectcategories.js');
+require('./server/models/user.js');
 
 //configure passport strategies
 require('./server/js/passport/config.js')(passport);

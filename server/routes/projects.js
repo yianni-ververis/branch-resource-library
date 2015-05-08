@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Projects = require('../controllers/project');
+var Comments = require('../controllers/comment');
 var GitHub = require('github');
 var atob = require('atob');
 var markdown = require('markdown').markdown;
@@ -28,13 +29,17 @@ router.get('/', function(req, res){
 
 router.get('/detail/:id', function(req, res){
   Projects.get(req.params.id, function(project){
+    //get the readme.md content for the specified project
     github.authenticate({type: "basic", username: "switchnick", password: "c0mp0und"});
     github.repos.getReadme({user: "brianwmunz", repo: "svgReader-qv11"}, function(err, result){
       if(err){
         console.log(err);
       }
-
-      res.render('../server/views/projects/detail.jade', {project: project, html:markdown.toHTML(atob(result.content))});
+      //get the comments for the specified project
+      Comments.getProjectComments(project._id, function(comments){
+        console.log(comments);
+        res.render('../server/views/projects/detail.jade', {project: project, html:markdown.toHTML(atob(result.content)), comments: comments});
+      });
     });
   })
 });

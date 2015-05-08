@@ -12,5 +12,9 @@ module.exports = mongoose.model('project', {
   userid: {
     type: Schema.ObjectId,
     ref: 'users'
+  },
+  forumid: {
+    type: Schema.ObjectId,
+    ref: 'projectcategories'
   }
 });
