@@ -1,20 +1,59 @@
-include ./header.jade
-div.container
-  div.jumbotron(style="text-align: center; background-color: transparent;")
-    h1 Welcome
-    p.lead
-      Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet.
-
-    p
-      a.btn.btn-lg.btn-success(href="../views/register.html", role="button") Register Now
-
-  div.latest-content
-    h1(style="color: #59B538") Latest Content
-    div.row
-      each resource, i in resources
-        div.col-lg-4
-          h2 #{resource.name}
-          p #{resource.short_description}
-          p
-            a.btn.btn-primary(href="resource/#{resource._id}", role="button") View details &raquo;
-include ./foot.jade          
+doctype html
+html(ng-app="branch")
+  head
+    title("Qlik Partner Portal")
+    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
+    link(rel="stylesheet" href="bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.css")
+    link(rel="stylesheet", href="/css/main.css")    
+    script(src="/bower_components/jquery/dist/jquery.min.js")
+    script(src="/bower_components/angular/angular.min.js")
+    script(src="/bower_components/angular-resource/angular-resource.min.js")
+    script(src="/bower_components/angular-ui-router/release/angular-ui-router.min.js")    
+    script(src="/bower_components/angular-sanitize/angular-sanitize.js")
+    script(src="/bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.js")
+    script(src="/js/app.js")
+  body    
+    notifications-bar.notifications-container
+    div.header
+      div.container        
+        div.logo
+          a(href="#/") Home
+        ul.nav.navbar-nav.navbar-right.navbar-links
+          li.grey
+            a(href="http://www.qlik.com" target="_window") Qlik.com
+          li.grey
+            a(href="http://community.qlik.com" target="_window") Qlik Community
+          li.grey
+            a(href="http://market.qlik.com" target="_window") Qlik Market
+            if isAuthenticated
+              li.dropdown
+                a.dropdown-toggle(
+                    href="#" 
+                    data-toggle="dropdown" 
+                    role="button" 
+                    aria-expanded="false" 
+                    data-count=notificationCount||""
+                  ) #{user.name}
+                  span.caret
+                ul.dropdown-menu(role="menu")
+                  if user.role.name != "user"
+                    li
+                      a(ui-sref="dashboard") Dashboard
+                    li
+                      a(ui-sref="validations") Manage Validations                   
+                    li
+                      a(ui-sref="users") Manage Users    
+                  if user.role.name == "admin"
+                    li
+                      a(ui-sref="adminsettings") Settings    
+                  li
+                    a(href="/auth/logout") Logout
+            else     
+              li.green
+                a(ui-sref="loginsignup") Login/Signup     
+    div(ui-view)        
+    div.footer
+      div.container        
+        div.foot-title
+          span Qlik Branch
+      script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")

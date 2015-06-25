@@ -8,27 +8,32 @@ var mongoose = require('mongoose'),
 mongoose.connect('mongodb://localhost:27017/branch');
 //load the models
 require('./server/models/project.js');
-require('./server/models/projectcategories.js');
+require('./server/models/projectcategory.js');
 require('./server/models/user.js');
 
 //configure passport strategies
-require('./server/js/passport/config.js')(passport);
+require('./server/controllers/passport/passport.js')(passport);
 
-//app.set('view engine', 'ejs');
+//route controllers
+var apiRoutes = require(__dirname+'/server/routes/api/api');
 
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
-app.use('/js', express.static(__dirname + '/public/js'));
+app.use('/js', express.static(__dirname + '/public/scripts/build'));
 app.use('/views', express.static(__dirname + '/public/views'));
-app.use('/css', express.static(__dirname + '/public/css'));
+app.use('/css', express.static(__dirname + '/public/styles/css'));
 app.use('/resources', express.static(__dirname + '/public/resources'));
 
 app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/api', apiRoutes);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-require('./server/routes/main.js')(app, express, passport);
+app.get('/', function(req, res){
+  res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});
+});
 
 app.listen(3001);
