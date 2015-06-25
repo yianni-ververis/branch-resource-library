@@ -16,6 +16,7 @@ require('./server/controllers/passport/passport.js')(passport);
 
 //route controllers
 var apiRoutes = require(__dirname+'/server/routes/api/api');
+var authRoutes = require(__dirname+'/server/routes/auth');
 
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/js', express.static(__dirname + '/public/scripts/build'));
@@ -28,6 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api', apiRoutes);
+app.use('/auth', authRoutes);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
