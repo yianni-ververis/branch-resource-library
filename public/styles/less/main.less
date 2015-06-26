@@ -2,6 +2,9 @@
 @import "./fonts.less";
 @import "./buttons.less";
 @import "./notifications.less";
+@import "./tabs.less";
+@import "./lists.less";
+@import "./controls.less";
 @import "./header/header-main.less";
 @import "./home/home-main.less";
 @import "./login/login-main.less";
@@ -9,4 +12,59 @@
 body{
   color: @default-text;
   font-family: Arial, sans-serif;
+}
+
+ul{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li{
+  a{
+    text-decoration: none;
+    cursor: pointer;
+    color: inherit;
+  }
+  a:hover{
+    text-decoration: none;
+    color: @linkhover;
+  }
+}
+
+label{
+  display: inline-block;
+  margin-right: 4px;
+}
+
+h1{
+  color: @dark-grey;
+  font-size: 25px;
+  margin: 5px 0;
+}
+
+h2{
+  color: @dark-grey;
+  font-size: 20px;
+  margin: 5px 0;
+}
+
+.underline{
+  border-bottom: 1px solid;
+}
+
+.right-border{
+  border-right: 1px solid;
+}
+
+.left-border{
+  border-left: 1px solid;
+}
+
+.right{
+  float: right;
+}
+
+.page{
+  min-height: 600px;
 }

@@ -1,0 +1,27 @@
+<div class="container page">
+  <h1>Admin Console</h1>
+      <div class="col-md-12">
+        <ul class="tabs horizontal">
+          <li ng-class="{active:activeTab===0}">
+            <a ng-click="setTab(0)">Users</a>
+          </li>
+          <li ng-class="{active:activeTab===1}">
+            <a ng-click="setTab(1)">Permissions</a>
+          </li>
+          <li ng-class="{active:activeTab===2}" ng-show="permissions.canUpdate('features')">
+            <a ng-click="setTab(2)">Featured Content</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-12">
+        <div ng-show="activeTab==0">
+          <ng-include src="'/views/admin/users.html'"></ng-include>
+        </div>
+        <div ng-show="activeTab==1">
+          <ng-include src="'/views/admin/permissions.html'"></ng-include>
+        </div>
+        <div ng-show="activeTab==2">
+          <ng-include src="'/views/admin/features.html'"></ng-include>
+        </div>
+      </div>
+</div>

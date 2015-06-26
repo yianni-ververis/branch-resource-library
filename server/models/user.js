@@ -1,6 +1,7 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 
-module.exports = mongoose.model('users', {
+var userSchema = new Schema({
   email: String,
   password: String,
   name: String,
@@ -8,6 +9,10 @@ module.exports = mongoose.model('users', {
     type: String,
     required: true,
     unique: true
+  },
+  role: {
+    type: Schema.ObjectId,
+    ref: 'userrole'
   },
   salt: String,
   company: String, //Company name
@@ -23,3 +28,5 @@ module.exports = mongoose.model('users', {
   twitter: String,
   website: String
 });
+
+module.exports = mongoose.model('users', userSchema);

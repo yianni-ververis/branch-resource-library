@@ -1,14 +1,30 @@
 var Error = require('./error');
 
 module.exports = {
-  get: function(query, entity, callbackFn){
-    entity.model.find(query).populate(entity.populates).exec(function(err, results){
+  get: function(query, parsedQuery, entity, callbackFn){
+    entity.model.find(parsedQuery).populate(entity.populates).sort(entity.sort).skip(entity.skip).limit(entity.limit).exec(function(err, results){
       if(err){
         console.log(err);
         callbackFn.call(null, Error.errorGetting(err.message));
       }
       else{
-        callbackFn.call(null, results);
+        //establish how many rows are in the collection for the given query
+        entity.model.count(parsedQuery, function(err, count){
+          if(err){
+            console.log(err);
+            callbackFn.call(null, Error.errorGetting(err.message));
+          }
+          else{
+            var responseObj = {};
+            responseObj.total = count;
+            responseObj.pages = Math.round(count / query.limit);
+            responseObj.query = query;
+            responseObj.skip = entity.skip + entity.limit;
+            responseObj.limit = entity.limit;
+            responseObj.data = results
+            callbackFn.call(null, responseObj);
+          }
+        })
       }
     });
   },

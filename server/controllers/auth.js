@@ -1,7 +1,15 @@
+var entities = require("../routes/entityConfig");
+
 module.exports = {
   isLoggedIn: function(req, res, next){
     console.log('checking auth');
-    if(req.isAuthenticated() || hasHeaderAuthentication(req)){
+    //some entities do NOT require authentication for GET requests
+    //this does NOT apply to calls made outside of the Website UI (i.e. from a REST client)
+    console.log(req.method=="GET");
+    if(req.method=="GET" && !hasHeaderAuthentication(req)){
+      next();
+    }
+    else if(req.isAuthenticated() || hasHeaderAuthentication(req)){
       if(req.user.role.name=="user"){
         res.json({errorCode:401, errorText:'Insufficient Permissions'});
       }
@@ -10,7 +18,7 @@ module.exports = {
       }
     }
     else{
-      res.json([{errorCode: 401, errorText: 'User not logged in', redirect: '#login'}])
+      res.json({errorCode: 401, errorText: 'User not logged in', redirect: '#login'})
     }
   }
 }

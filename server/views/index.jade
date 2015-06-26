@@ -13,39 +13,36 @@ html(ng-app="branch")
     script(src="/bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.js")
     script(src="/js/app.js")
   body    
-    notifications-bar.notifications-container
+    notifications-bar.notifications.notifications-container
     div.header
       div.container        
         div.logo
           a(href="#/") Home
         ul.nav.navbar-nav.navbar-right.navbar-links
-          li.grey
+          li
             a(href="http://www.qlik.com" target="_window") Qlik.com
-          li.grey
+          li
             a(href="http://community.qlik.com" target="_window") Qlik Community
-          li.grey
+          li
             a(href="http://market.qlik.com" target="_window") Qlik Market
             if isAuthenticated
               li.dropdown
-                a.dropdown-toggle(
+                a.dropdown-toggle.green(
                     href="#" 
                     data-toggle="dropdown" 
                     role="button" 
                     aria-expanded="false" 
                     data-count=notificationCount||""
-                  ) #{user.name}
+                  ) #{user.username}
                   span.caret
                 ul.dropdown-menu(role="menu")
                   if user.role.name != "user"
                     li
-                      a(ui-sref="dashboard") Dashboard
+                      a(ui-sref="admin") Admin Console
                     li
-                      a(ui-sref="validations") Manage Validations                   
+                      a(ui-sref="profile") Profile
                     li
-                      a(ui-sref="users") Manage Users    
-                  if user.role.name == "admin"
-                    li
-                      a(ui-sref="adminsettings") Settings    
+                      a(ui-sref="project.new") Create Project
                   li
                     a(href="/auth/logout") Logout
             else     

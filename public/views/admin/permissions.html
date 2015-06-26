@@ -1,0 +1,42 @@
+<div class="col-md-3" style="padding-left:0px;">
+  <ul class="tabs roles-list">
+    <h2 class="underline">Role</h2>
+    <li ng-class="{active:activeRole===$index}" ng-repeat="role in roles" ng-click="setRole($index)">
+      <a>{{role.name}}</a>
+    </li>
+    <li ng-show="permissions.canCreate('userroles')" >
+      <input class="form-control new-input" ng-model="newrolename" placeholder="New Role"/>
+      <div class="new inline" ng-click="newRole(newrolename)">Add</div>
+    </li>
+  </ul>
+</div>
+<div class="col-md-9">
+  <h2 class="underline">Permissions</h2>
+  <div class="permission-summary">
+    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!permissions.canCreate('userroles')" ng-model="copyRoleName"/>
+    <div class="copy inline" ng-show="permissions.canCreate('userroles')" ng-click="copyRole(copyRoleName)">Copy</div>
+    <button ng-click="delete(activeRole)" ng-show="permissions.canDelete('userroles') && copyRoleName!='admin'" class="btn btn-default btn-delete">Delete</button>
+  </div>
+  <ul class="permission-list list">
+    <li class="table-header">
+      <label></label>
+      <label>All Owners</label>
+      <label>Create</label>
+      <label>Read</label>
+      <label>Update</label>
+      <label>Approve</label>
+      <label>Hide</label>
+      <label>Delete</label>
+    </li>
+    <li ng-repeat="entity in collections">
+      <input class="form-control list-label" ng-disabled="true" ng-model="entity"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].allOwners"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].create"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].read"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].update"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].approve"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].softDelete"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].hardDelete"/>
+    </li>
+  </ul>
+</div>

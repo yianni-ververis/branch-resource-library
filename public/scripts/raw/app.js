@@ -12,7 +12,8 @@
     //home page
     .state("home", {
       url: "/",
-      templateUrl: "/views/home.html"
+      templateUrl: "/views/home/index.html",
+      controller: "homeController"
     })
     //login and signup page
     .state("loginsignup", {
@@ -25,6 +26,18 @@
       url: "/login",
       templateUrl : "/views/login.html"
     })
+    //used to navigate to the admin console
+    .state("admin", {
+      url: "/admin",
+      templateUrl: "/views/admin/index.html",
+      controller: "adminController"
+    })
   }]);
 
+  //services
+  include "./services/permissions.js"
+  include "./services/result-handler.js"
+  //controllers
+  include "./controllers/admin.js"
+  include "./controllers/home.js"
 })();
