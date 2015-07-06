@@ -179,7 +179,8 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
 
 //this function parses any sorting or paging parameters and contstructs the mongodb query accordingly.
 //Currently only used for GET requests
-function parseQuery(query, body, method, entity){
+function parseQuery(query, body, method, originalEntity){
+  var entity = cloneObject(originalEntity);
   var mongoQuery = {};
   query = query || {};
   body = body || {};
@@ -203,6 +204,14 @@ function parseQuery(query, body, method, entity){
   mongoQuery.query = query;
 
   return mongoQuery;
+}
+
+function cloneObject(object){
+  var clone = {};
+  for (var key in object){
+    clone[key] = object[key];
+  }
+  return clone;
 }
 
 function concatObjects(objects){

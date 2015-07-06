@@ -39,6 +39,18 @@ app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});
 });
 
+var Project = require('./server/models/project.js');
+
+app.get('/thumbnail/:projectid', function(req, res){
+  Project.findOne({_id: req.params.projectid}, function(err, result){
+    if(err){
+      console.log(err);
+    }
+    console.log(result);
+    res.send(result.thumbnail);
+  });
+});
+
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);

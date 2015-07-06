@@ -67,3 +67,54 @@
     }
   }
 }
+
+.project-list{
+  @media screen and (min-width: @tablet-width) {
+     > li{
+       height: 100px;
+     }
+  }
+  @media screen and (max-width: @tablet-width) {
+    height: 150px;
+  }
+  > li{
+    position: relative;
+    padding: 5px 0;
+    vertical-align: top;
+    border-bottom: 1px solid @light-grey;
+    margin: 5px 0;
+    &:last-of-type{
+      border-bottom: none;
+    }
+    img{
+      width: auto;
+      max-height: 75px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .project-summary{
+      position: absolute;
+      left: 170px;
+      top: 0;
+      display: inline-block;
+      padding: 0 5px;
+      box-sizing: border-box;
+      width: ~"calc(100% - 160px)";
+      a{
+        &:first-of-type{
+          font-size: 16px;
+        }
+        display: block;
+        color: @blue;
+      }
+    }
+  }
+  .stats{
+    color: @dark-grey;
+    font-size: 12px;
+    i{
+      color: @green;
+      font-style: normal;
+    }
+  }
+}

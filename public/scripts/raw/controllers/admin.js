@@ -62,15 +62,15 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
         })
       }
       //ARTICLES
-      // if(!$scope.articles || $scope.articles.length==0){
-      //   Article.get({}, function(result){
-      //     if(resultHandler.process(result)){
-      //       $scope.articles = result.data;
-      //       $scope.articleInfo = result;
-      //       delete $scope.articleInfo["data"];
-      //     }
-      //   })
-      // }
+      if(!$scope.articles || $scope.articles.length==0){
+        Article.get({}, function(result){
+          if(resultHandler.process(result)){
+            $scope.articles = result.data;
+            $scope.articleInfo = result;
+            delete $scope.articleInfo["data"];
+          }
+        })
+      }
     }
   };
 
@@ -79,7 +79,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     $scope.copyRoleName = $scope.roles[$scope.activeRole].name;
   };
 
-  $scope.setFeature = function(index){
+  $scope.setActiveFeature = function(index){
     $scope.activeFeature = index;
   };
 
@@ -122,6 +122,12 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
         resultHandler.process(result);
       });
     }
+  };
+
+  $scope.saveFeature = function(){
+    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.features[$scope.activeFeature], function(result){
+      resultHandler.process(result);
+    });
   };
 
   $scope.highlightRow = function(id){

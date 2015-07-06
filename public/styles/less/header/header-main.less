@@ -1,14 +1,25 @@
 .header{
-  height: 80px;
+  @media screen and (min-width: @tablet-width) {
+    min-height: 80px;
+    .navbar-links, .navbar-main{
+      width: 100%;
+      float: right;
+      > li{
+        display: inline-block;
+        float: right;
+      }
+    }
+  }
   position: sticky;
   .container{
     height: 100%;
+    position: relative;
   }
   .logo{
     background: url('/resources/qlik-logo-header.png') left center no-repeat;
     width: 230px;
     height: 100%;
-    float: left;
+    position: absolute;
     margin-right: 50px;
     background-size: contain;
     a{
@@ -19,19 +30,27 @@
     }
   }
   .navbar-links{
-    float: right;
-    > li{
-      display: inline-block;
-    }
     li{
       height: 30px;
       line-height: 30px;
       margin: 0 10px;
       font-size: 12px;
+      color: @header-grey;
       a{
         cursor: pointer;
         padding: 5px;
-        color: inherit;
+      }
+    }
+  }
+  .navbar-main{
+    color: @header-grey;
+    li{
+      font-size: 16px;
+      &:hover{
+        a{
+          color: @green;
+          background-color: transparent;
+        }
       }
     }
   }
