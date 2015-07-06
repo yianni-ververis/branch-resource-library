@@ -1,0 +1,22 @@
+<div class="col-md-3" style="padding-left:0px;">
+  <ul class="tabs">
+    <h2 class="underline">Feature</h2>
+    <li ng-class="{active:activeFeature===$index}" ng-repeat="feature in features" ng-click="setFeature($index)">
+      <a>{{feature.name}}</a>
+    </li>
+  </ul>
+</div>
+<div class="col-md-9">
+  <h2 class="underline">{{features[activeFeature].name}}</h2>
+  <div>
+    Placeholder for search
+  </div>
+  <div ng-show="features[activeFeature].name=='project'">
+    <ul class="list">
+      <li ng-repeat="project in projects" ng-class="{highlight: highlightRow(project._id)}">
+        <a ui-sref="project.detail({id:project._id})">{{project.title}}</a>
+        <div class="use inline right" ng-click="setFeature(project._id)">Use<div>
+      </li>
+    </ul>
+  </div>
+</div>

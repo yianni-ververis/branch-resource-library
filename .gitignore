@@ -1,2 +1,4 @@
 /node_modules
-bower.json
+/bower_components
+attachments/
+userroles.js
