@@ -11,6 +11,7 @@ var FeatureSchema = new Schema({
     type: String,
     required: true
   },
+  comment: String,
   entityId: Schema.ObjectId,
   createuser: {
     type: Schema.ObjectId,

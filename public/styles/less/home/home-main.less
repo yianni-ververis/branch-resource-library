@@ -3,7 +3,7 @@
   background: url('/resources/home_aspot.jpg') center center no-repeat;
   width: 100%;
   height: 300px;
-  background-size: contain;
+  background-size: cover;
 }
 
 .spot-text-background{
@@ -18,4 +18,38 @@
 .spot-text{
   font-size: 28px;
   color: white;
+}
+
+.featured{
+  padding: 20px 0;
+  p{
+    padding: 10px 0;
+  }
+  &.project{
+    background-color: @green2;
+
+    h2{
+      color: @default-text;
+    }
+  }
+  &.article{
+    background-color: @light-grey;
+
+    h2{
+      color: @default-text;
+    }
+  }
+}
+
+.latest{
+  padding: 20px 0;
+  a{
+    color: @blue;
+  }
+  li{
+    margin-bottom: 20px;
+  }
+  .footnote{
+    font-size: 11px;
+  }
 }

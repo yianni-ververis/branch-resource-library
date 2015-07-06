@@ -32,6 +32,12 @@
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })
+    //used to navigate to the project list page
+    .state("projects", {
+      url: "/projects",
+      templateUrl: "/views/projects/index.html",
+      controller: "projectController"
+    })
   }]);
 
   //services
@@ -158,15 +164,15 @@
           })
         }
         //ARTICLES
-        // if(!$scope.articles || $scope.articles.length==0){
-        //   Article.get({}, function(result){
-        //     if(resultHandler.process(result)){
-        //       $scope.articles = result.data;
-        //       $scope.articleInfo = result;
-        //       delete $scope.articleInfo["data"];
-        //     }
-        //   })
-        // }
+        if(!$scope.articles || $scope.articles.length==0){
+          Article.get({}, function(result){
+            if(resultHandler.process(result)){
+              $scope.articles = result.data;
+              $scope.articleInfo = result;
+              delete $scope.articleInfo["data"];
+            }
+          })
+        }
       }
     };
 
@@ -175,7 +181,7 @@
       $scope.copyRoleName = $scope.roles[$scope.activeRole].name;
     };
 
-    $scope.setFeature = function(index){
+    $scope.setActiveFeature = function(index){
       $scope.activeFeature = index;
     };
 
@@ -220,6 +226,12 @@
       }
     };
 
+    $scope.saveFeature = function(){
+      Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.features[$scope.activeFeature], function(result){
+        resultHandler.process(result);
+      });
+    };
+
     $scope.highlightRow = function(id){
       if($scope.features[$scope.activeFeature].entityId==id){
         return true;
@@ -233,6 +245,9 @@
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
 
+    $scope.featuredProject = {};
+    $scope.featuredArticle = {};
+
     Feature.get({}, function(result){
       if(resultHandler.process(result)){
         $scope.features = result.data;
@@ -244,9 +259,18 @@
           var entityId = $scope.features[f].entityId;
           switch ($scope.features[f].name){
             case "project":
+            $scope.featuredProject.comment = $scope.features[f].comment;
               Project.get({projectId: entityId}, function(result){
                 if(resultHandler.process(result)){
-                  $scope.featuredProject = result.data[0];
+                  $scope.featuredProject.project = result.data[0];
+                }
+              });
+              break;
+            case "article":
+            $scope.featuredArticle.comment = $scope.features[f].comment;
+              Article.get({articleId: entityId}, function(result){
+                if(resultHandler.process(result)){
+                  $scope.featuredArticle.article = result.data[0];
                 }
               });
               break;
@@ -255,6 +279,42 @@
       }
     });
 
+    //Get the latest 5 projects
+    Project.get({sort: 'dateline', sortOrder:'-1', limit:'3'}, function(result){
+      if(resultHandler.process(result)){
+        $scope.latestProjects = result.data;
+      }
+    });
+
+    Article.get({sort: 'dateline', sortOrder:'-1', limit:'3'}, function(result){
+      if(resultHandler.process(result)){
+        $scope.latestArticles = result.data;
+      }
+    });
+
+  }]);
+
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+    var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+    var ProjectCategory = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
+
+    $scope.permissions = userPermissions;
+
+    Project.get({}, function(result){
+      if(resultHandler.process(result)){
+        $scope.projects = result.data;
+        $scope.projectInfo = result;
+        delete $scope.projectInfo["data"];
+      }
+    });
+
+    ProjectCategory.get({}, function(result){
+      if(resultHandler.process(result)){
+        $scope.projectCategories = result.data;
+        $scope.projectCategoryInfo = result;
+        delete $scope.projectCategoryInfo["data"];
+      }
+    });
   }]);
 
 })();

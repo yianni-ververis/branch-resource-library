@@ -10,18 +10,31 @@
   <ng-include src="'/views/home/featured-project.html'"></ng-include>
 </div>
 <div class="featured article">
-  Placeholder for featured article
+  <ng-include src="'/views/home/featured-article.html'"></ng-include>
 </div>
 <div class="latest">
   <div class="container">
-    <div class="col-md-4 project">
-        Placeholder for latest projects
+    <div class="col-md-6 project">
+        <h2>Latest Projects</h2>
+        <ul>
+          <li ng-repeat="project in latestProjects">
+            <a>{{project.title}}</a>
+            <div class="footnote">
+              by <a>{{project.userid.username}}</a>
+            </div>
+          </li>
+        </ul>
     </div>
-    <div class="col-md-4 article">
-        Placeholder for latest article
-    </div>
-    <div class="col-md-4 conversation">
-        Placeholder for latest conversation
+    <div class="col-md-6 article">
+      <h2>Latest Articles</h2>
+      <ul>
+        <li ng-repeat="article in latestArticles">
+          <a>{{article.title}}</a>
+          <div class="footnote">
+            by <a>{{article.userid.username}}</a>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

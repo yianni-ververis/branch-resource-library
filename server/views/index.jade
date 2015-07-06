@@ -12,19 +12,20 @@ html(ng-app="branch")
     script(src="/bower_components/angular-sanitize/angular-sanitize.js")
     script(src="/bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.js")
     script(src="/js/app.js")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
   body    
     notifications-bar.notifications.notifications-container
     div.header
       div.container        
+        button.navbar-toggle.collapsed(data-toggle="collapse" data-target="#navbar")
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
         div.logo
-          a(href="#/") Home
-        ul.nav.navbar-nav.navbar-right.navbar-links
-          li
-            a(href="http://www.qlik.com" target="_window") Qlik.com
-          li
-            a(href="http://community.qlik.com" target="_window") Qlik Community
-          li
-            a(href="http://market.qlik.com" target="_window") Qlik Market
+          a(href="#/") Home          
+        div#navbar.navbar-collapse.collapse          
+          ul.nav.navbar-nav.navbar-right.navbar-links            
             if isAuthenticated
               li.dropdown
                 a.dropdown-toggle.green(
@@ -47,10 +48,17 @@ html(ng-app="branch")
                     a(href="/auth/logout") Logout
             else     
               li.green
-                a(ui-sref="loginsignup") Login/Signup     
+                a(ui-sref="loginsignup") Login/Signup    
+            li
+              a(href="http://market.qlik.com" target="_window") Qlik Market
+            li
+              a(href="http://community.qlik.com" target="_window") Qlik Community            
+            li
+              a(href="http://www.qlik.com" target="_window") Qlik.com            
+          ul.nav.navbar-nav.navbar-main            
+            li
+              a(href="#articles") Articles             
+            li
+              a(href="#projects") Projects
     div(ui-view)        
-    div.footer
-      div.container        
-        div.foot-title
-          span Qlik Branch
-      script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
+    script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")

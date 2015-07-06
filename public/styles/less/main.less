@@ -6,8 +6,12 @@
 @import "./lists.less";
 @import "./controls.less";
 @import "./header/header-main.less";
+@import "./header/header-mobile.less";
 @import "./home/home-main.less";
+@import "./home/home-mobile.less";
 @import "./login/login-main.less";
+
+@tablet-width: 720px;
 
 body{
   color: @default-text;
@@ -49,6 +53,20 @@ h2{
   margin: 5px 0;
 }
 
+h3{
+  color: @orange;
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+textarea{
+  resize: none;
+}
+
+p{
+  font-size: 12px;
+}
+
 .underline{
   border-bottom: 1px solid;
 }
@@ -67,4 +85,9 @@ h2{
 
 .page{
   min-height: 600px;
+}
+
+.thumb-container{
+  width: 150px;
+  text-align: center;
 }

@@ -32,6 +32,12 @@
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })
+    //used to navigate to the project list page
+    .state("projects", {
+      url: "/projects",
+      templateUrl: "/views/projects/index.html",
+      controller: "projectController"
+    })
   }]);
 
   //services
@@ -40,4 +46,5 @@
   //controllers
   include "./controllers/admin.js"
   include "./controllers/home.js"
+  include "./controllers/project.js"
 })();

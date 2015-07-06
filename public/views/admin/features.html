@@ -1,15 +1,26 @@
 <div class="col-md-3" style="padding-left:0px;">
   <ul class="tabs">
     <h2 class="underline">Feature</h2>
-    <li ng-class="{active:activeFeature===$index}" ng-repeat="feature in features" ng-click="setFeature($index)">
+    <li ng-class="{active:activeFeature===$index}" ng-repeat="feature in features" ng-click="setActiveFeature($index)">
       <a>{{feature.name}}</a>
     </li>
   </ul>
 </div>
 <div class="col-md-9">
   <h2 class="underline">{{features[activeFeature].name}}</h2>
+  <div class="detail">
+    <textarea rows="8" class="form-control" ng-blur="saveFeature()" ng-model="features[activeFeature].comment"></textarea>
+  </div>
   <div>
     Placeholder for search
+  </div>
+  <div ng-show="features[activeFeature].name=='article'">
+    <ul class="list">
+      <li ng-repeat="article in articles" ng-class="{highlight: highlightRow(article._id)}">
+        <a ui-sref="article.detail({id:article._id})">{{article.title}}</a>
+        <div class="use inline right" ng-click="setFeature(article._id)">Use<div>
+      </li>
+    </ul>
   </div>
   <div ng-show="features[activeFeature].name=='project'">
     <ul class="list">

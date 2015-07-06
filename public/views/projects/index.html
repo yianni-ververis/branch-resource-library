@@ -1,0 +1,41 @@
+<div class="container page">
+  <div class="row">
+    <div class="col-md-2 sidebar">
+      <h3>Product</h3>
+      <h3>Category</h3>
+      <ul class="picklist">
+        <li ng-repeat="category in projectCategories">{{category.title}}</li>
+      </ul>
+    </div>
+    <div class="col-md-10 main">
+      <div class="">
+        Placeholder for search
+      </div>
+      <div class="">
+        Placeholder for sorting
+      </div>
+      <ul class="project-list">
+        <li ng-repeat="project in projects">
+          <div class="col-md-9">
+            <div class="thumb-container">
+              <img src="/thumbnail/{{project._id}}"/>
+            </div>
+            <div class="project-summary">
+              <a href="#projects/project._id">{{project.title}}</a>
+              <a href="#users/project.userid._id">{{project.userid.username}}</a>
+              <p>{{project.short_description}}</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <ul class="stats">
+              <li class="rating">Rating Placeholder</li>
+              <li><i>{{project.views}}</i> Views</li>
+              <li><i>{{project.replycount}}</i> Comments</li>
+              <li>Last Update: <i>{{project.dateline}}</i></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
