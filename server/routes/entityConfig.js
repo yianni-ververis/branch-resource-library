@@ -7,7 +7,7 @@ module.exports = {
       sort: {
         username: 1
       },
-      limit: 100,
+      limit: 10,
       requiresAuthentication: true    //only applies to GET requests. All other requests MUST be authenticated
     },
     projects:{
@@ -18,7 +18,7 @@ module.exports = {
       sort: {
         dateline: -1
       },
-      limit: 100,
+      limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     articles:{
@@ -29,7 +29,7 @@ module.exports = {
       sort: {
         dateline: -1
       },
-      limit: 100,
+      limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     userroles:{
