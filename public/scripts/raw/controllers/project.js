@@ -66,9 +66,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       minPage = 1;
       maxPage = 5
     }
-    else if ($scope.projectInfo.currentPage >= $scope.projectInfo.pages.length - 3) {
-      minPage = $scope.projectInfo.pages.length - 6;
-      maxPage = $scope.projectInfo.pages.length - 1;
+    else if ($scope.projectInfo.currentPage >= $scope.projectInfo.pages.length - 2) {
+      minPage = $scope.projectInfo.pages.length - 5;
+      maxPage = $scope.projectInfo.pages.length;
     }
     else{
       minPage = $scope.projectInfo.currentPage - 2;

@@ -16,13 +16,21 @@
         <div class="paging">
           <label>Page {{projectInfo.currentPage}} of {{projectInfo.pages.length}}</label>
           <ul class="page-list">
-            <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[0].pageStart)">First</li>
-            <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage-2].pageStart)">Prev</li>
+            <li ng-hide="projectInfo.currentPage==1">
+              <a href="#projects?page=1&sort={{sort.field}}" class="icon first"></a>
+            </li>
+            <li ng-hide="projectInfo.currentPage==1">
+              <a href="#projects?page={{projectInfo.currentPage-1}}&sort={{sort.field}}" class="icon prev"></a>
+            </li>
             <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
               <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>
             </li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">Next</li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">Last</li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">
+              <a href="#projects?page={{projectInfo.currentPage+1}}&sort={{sort.field}}" class="icon next"></a>
+            </li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">
+              <a href="#projects?page={{projectInfo.pages.length}}&sort={{sort.field}}" class="icon last"></a>
+            </li>
           </ul>
         </div>
         <div class="sorting">
