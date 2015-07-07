@@ -16,10 +16,24 @@ module.exports = {
           }
           else{
             var responseObj = {};
+            var pageStart = 0;
+            var pageNum = 1;
             responseObj.total = count;
-            responseObj.pages = Math.round(count / query.limit);
+            if(entity.limit){
+              responseObj.pages = [];
+              while(pageStart < count){
+                responseObj.pages.push({
+                  pageNum: pageNum,
+                  pageStart: pageStart,
+                  pageEnd: Math.min(parseInt(pageStart)+parseInt(entity.limit), count)
+                })
+                pageNum++;
+                pageStart+=entity.limit;
+              }
+              responseObj.currentPage = (parseInt(entity.skip) / parseInt(entity.limit)) + 1 || 1;
+            }
             responseObj.query = query;
-            responseObj.skip = entity.skip + entity.limit;
+            responseObj.skip = parseInt(entity.skip) + parseInt(entity.limit);
             responseObj.limit = entity.limit;
             responseObj.data = results
             callbackFn.call(null, responseObj);

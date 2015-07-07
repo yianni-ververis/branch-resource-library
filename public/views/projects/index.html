@@ -11,8 +11,23 @@
       <div class="">
         Placeholder for search
       </div>
-      <div class="">
-        Placeholder for sorting
+      <div class="project-result-header">
+        Showing {{projectInfo.pages[projectInfo.currentPage-1].pageStart + 1 || 1}} - {{projectInfo.pages[projectInfo.currentPage-1].pageEnd}} of {{projectInfo.total}} results
+        <div class="paging">
+          <label>Page {{projectInfo.currentPage}} of {{projectInfo.pages.length}}</label>
+          <ul class="page-list">
+            <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[0].pageStart)">First</li>
+            <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage-2].pageStart)">Prev</li>
+            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-click="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
+              {{page.pageNum}}
+            </li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">Next</li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">Last</li>
+          </ul>
+        </div>
+        <div class="sorting">
+          <label>Sort by: </label><select class="form-control" />
+        </div>
       </div>
       <ul class="project-list">
         <li ng-repeat="project in projects">
@@ -36,6 +51,21 @@
           </div>
         </li>
       </ul>
+      <div class="project-result-header">
+        Showing {{projectInfo.skip + 1 || 1}} - {{projectInfo.limit}} of {{projectInfo.total}} results
+        <div class="paging">
+          <label>Page {{projectInfo.currentPage}} of {{projectInfo.pages.length}}</label>
+          <ul class="page-list">
+            <li ng-hide="projectInfo.currentPage==1">First</li>
+            <li ng-hide="projectInfo.currentPage==1">Prev</li>
+            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-click="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
+              {{page.pageNum}}
+            </li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1">Next</li>
+            <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1">Last</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -18,7 +18,7 @@ module.exports = {
       sort: {
         dateline: -1
       },
-      limit: 10,
+      limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     articles:{

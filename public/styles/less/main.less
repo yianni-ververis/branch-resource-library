@@ -10,6 +10,7 @@
 @import "./home/home-main.less";
 @import "./home/home-mobile.less";
 @import "./login/login-main.less";
+@import "./project/project-main.less";
 
 @tablet-width: 720px;
 
@@ -85,6 +86,26 @@ p{
 
 .page{
   min-height: 600px;
+}
+
+.paging, .sorting{
+  height: 100%;
+  font-size: 12px;
+  float: right;
+  margin-left: 20px;
+  label, ul, select{
+    display: inline-block;
+  }
+  label{
+    font-weight: normal;
+  }
+  select{
+    width: 120px;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    border-color: white;
+    height: 50px;
+  }
 }
 
 .thumb-container{
