@@ -18,15 +18,15 @@
           <ul class="page-list">
             <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[0].pageStart)">First</li>
             <li ng-hide="projectInfo.currentPage==1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage-2].pageStart)">Prev</li>
-            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-click="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
-              {{page.pageNum}}
+            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
+              <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>
             </li>
             <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">Next</li>
             <li ng-show="projectInfo.currentPage < projectInfo.pages.length - 1" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">Last</li>
           </ul>
         </div>
         <div class="sorting">
-          <label>Sort by: </label><select class="form-control" />
+          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-init="sort = sortOptions.dateline" ng-options="item.name for item in sortOptions track by item.field"/>
         </div>
       </div>
       <ul class="project-list">

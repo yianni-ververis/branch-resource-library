@@ -28,7 +28,7 @@ module.exports = {
                   pageEnd: Math.min(parseInt(pageStart)+parseInt(entity.limit), count)
                 })
                 pageNum++;
-                pageStart+=entity.limit;
+                pageStart+=parseInt(entity.limit);
               }
               responseObj.currentPage = (parseInt(entity.skip) / parseInt(entity.limit)) + 1 || 1;
             }

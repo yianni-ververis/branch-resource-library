@@ -3,6 +3,40 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var ProjectCategory = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
 
   $scope.permissions = userPermissions;
+  $scope.pageSize = 20;
+
+  console.log('params - ',$stateParams);
+
+  $scope.sort = {};
+
+  $scope.sortOptions = {
+    dateline: {
+      name: "Last Updated",
+      order: -1,
+      field: "dateline"
+    },
+    title: {
+      name: "A-Z",
+      order: 1,
+      field: "title"
+    },
+    lastpost: {
+      name: "Most recent comments",
+      order: -1,
+      field: "lastpost"
+    }
+  };
+
+  $scope.query = {
+    limit: $scope.pageSize //overrides the server side setting
+  };
+  if($stateParams.page){
+    $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
+  }
+  if($stateParams.sort){
+    $scope.query.sort = $scope.sortOptions[$stateParams.sort].field;
+    $scope.query.sortOrder = $scope.sortOptions[$stateParams.sort].order;
+  }
 
   ProjectCategory.get({}, function(result){
     if(resultHandler.process(result)){
@@ -12,12 +46,12 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   });
 
-  $scope.getPageNumberAsArray = function(){
-
+  $scope.applySort = function(){
+    window.location = "#projects?page="+$scope.projectInfo.currentPage+"&sort="+ $scope.sort.field;
   };
 
-  $scope.getProjectData = function(recStartIndex){
-    Project.get({skip: recStartIndex}, function(result){
+  $scope.getProjectData = function(query){
+    Project.get(query, function(result){
       if(resultHandler.process(result)){
         $scope.projects = result.data;
         $scope.projectInfo = result;
@@ -43,5 +77,5 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     return (pageIndex >= minPage && pageIndex <= maxPage);
   }
 
-  $scope.getProjectData(0); //get initial data set
+  $scope.getProjectData($scope.query); //get initial data set
 }]);
