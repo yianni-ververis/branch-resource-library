@@ -4,6 +4,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.permissions = userPermissions;
   $scope.pageSize = 20;
+  $scope.projects = [];
 
   console.log('params - ',$stateParams);
 
@@ -36,6 +37,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   if($stateParams.sort){
     $scope.query.sort = $scope.sortOptions[$stateParams.sort].field;
     $scope.query.sortOrder = $scope.sortOptions[$stateParams.sort].order;
+  }
+  if($stateParams.projectId){
+    $scope.query.projectId = $stateParams.projectId;
   }
 
   ProjectCategory.get({}, function(result){
@@ -75,7 +79,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       maxPage = $scope.projectInfo.currentPage + 2;
     }
     return (pageIndex >= minPage && pageIndex <= maxPage);
-  }
+  };
+
+  $scope.getPageText = function(){
+    if($scope.projects[0] && $scope.projects[0].pagetext){
+      return marked($scope.projects[0].pagetext);
+    }
+  };
 
   $scope.getProjectData($scope.query); //get initial data set
 }]);

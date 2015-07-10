@@ -32,6 +32,17 @@ module.exports = {
       limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
+    comments:{
+      collection: "comments",
+      model: require("../models/comment"),
+      populates: "userid",
+      exemptFromOwnership: false,
+      sort: {
+        dateline: -1
+      },
+      limit: 10,
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
     userroles:{
       collection: "userroles",
       model: require("../models/userrole"),

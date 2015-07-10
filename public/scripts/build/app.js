@@ -38,11 +38,15 @@
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })
-    //used to navigate to a given project list page
-    .state("projects.list.page", {
-      url: "/projects/list?page",
-      templateUrl: "/views/projects/index.html",
-      controller: "projectController"
+    //used to navigate to a given project detail page
+    .state("projects.detail", {
+      url: "/:projectId",
+      views: {
+          "@":{
+            templateUrl: "/views/projects/detail.html",
+            controller: "projectController"
+          }
+        }
     })
   }]);
 
@@ -306,6 +310,7 @@
 
     $scope.permissions = userPermissions;
     $scope.pageSize = 20;
+    $scope.projects = [];
 
     console.log('params - ',$stateParams);
 
@@ -338,6 +343,9 @@
     if($stateParams.sort){
       $scope.query.sort = $scope.sortOptions[$stateParams.sort].field;
       $scope.query.sortOrder = $scope.sortOptions[$stateParams.sort].order;
+    }
+    if($stateParams.projectId){
+      $scope.query.projectId = $stateParams.projectId;
     }
 
     ProjectCategory.get({}, function(result){
@@ -377,9 +385,36 @@
         maxPage = $scope.projectInfo.currentPage + 2;
       }
       return (pageIndex >= minPage && pageIndex <= maxPage);
-    }
+    };
+
+    $scope.getPageText = function(){
+      if($scope.projects[0] && $scope.projects[0].pagetext){
+        return marked($scope.projects[0].pagetext);
+      }
+    };
 
     $scope.getProjectData($scope.query); //get initial data set
+  }]);
+
+  app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+    var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
+
+    $scope.comments = [];
+
+    $scope.getCommentData = function(query){
+      Comment.get(query, function(result){
+        if(resultHandler.process(result)){
+          $scope.comments = result.data;
+          $scope.commentInfo = result;
+          delete $scope.commentInfo["data"];
+        }
+      });
+    };
+
+    if($stateParams.projectId){
+      $scope.getCommentData({threadid: $stateParams.projectId});
+    }
+
   }]);
 
 })();

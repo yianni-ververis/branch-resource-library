@@ -38,11 +38,15 @@
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })
-    //used to navigate to a given project list page
-    .state("projects.list.page", {
-      url: "/projects/list?page",
-      templateUrl: "/views/projects/index.html",
-      controller: "projectController"
+    //used to navigate to a given project detail page
+    .state("projects.detail", {
+      url: "/:projectId",
+      views: {
+          "@":{
+            templateUrl: "/views/projects/detail.html",
+            controller: "projectController"
+          }
+        }
     })
   }]);
 
@@ -53,4 +57,5 @@
   include "./controllers/admin.js"
   include "./controllers/home.js"
   include "./controllers/project.js"
+  include "./controllers/comment.js"
 })();

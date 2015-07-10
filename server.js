@@ -23,6 +23,7 @@ var authRoutes = require(__dirname+'/server/routes/auth');
 var systemRoutes = require(__dirname+'/server/routes/system/system');
 
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
+app.use('/node_modules', express.static(__dirname + '/node_modules'));
 app.use('/js', express.static(__dirname + '/public/scripts/build'));
 app.use('/views', express.static(__dirname + '/public/views'));
 app.use('/css', express.static(__dirname + '/public/styles/css'));

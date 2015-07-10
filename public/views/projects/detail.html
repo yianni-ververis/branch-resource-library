@@ -1,0 +1,63 @@
+<div class="container page">
+  <div class="row project-summary">
+    <div class="col-md-4">
+      <h1>{{projects[0].title}}</h1>
+      by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
+      <img src="/thumbnail/{{projects[0]._id}}" />
+      <button class="form-control">Download</button>
+    </div>
+    <div class="col-md-5">
+      <ul class="plainlist">
+        <li>
+          <label>Project Website:</label>
+          <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
+        </li>
+        <li>
+          <label>Updated at:</label>
+          {{projects[0].last_updated*1000 | date:'dd MMM yy HH:mm'}}
+        </li>
+        <li>
+          <label>Git Clone Url:</label>
+          {{projects[0].git_clone_url}}
+        </li>
+        <li>
+          <label>Project State:</label>
+          {{projects[0].open}}
+        </li>
+        <li>
+          <label>Release version:</label>
+          TBD
+        </li>
+        <li>
+          <label>Branch Contributors:</label>
+          TBD
+        </li>
+        <li>
+          <label>Tags:</label>
+          {{projects[0].taglist}}
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-3">
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Details</h2>
+    </div>
+    <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
+    </div>
+  </div>
+  <div class="row" ng-controller="commentController">
+    <div class="col-md-12">
+      <h2>{{comments.length}} Comments</h2>
+    </div>
+    <div class="col-md-12 project-comments">
+      <ul class="plainlist">
+        <li ng-repeat="comment in comments" ng-bind-html="comment.commenttext">
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,8 @@ var projectSchema = new Schema({
   thumbnail: Buffer,
   overview: String,
   dateline: Number,
+  last_updated: Number,
+  last_git_check: Number, 
   project_site: String,
   git_clone_url: String,
   threadid: String,

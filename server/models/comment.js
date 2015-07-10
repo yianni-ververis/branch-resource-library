@@ -1,14 +1,9 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var articleSchema = new Schema({
-  title: String,
-  pagetext: String,
-  short_description: String,
-  thumbnail: Buffer,
-  overview: String,
-  dateline: Number,
-  threadid: String,
+var commentSchema = new Schema({
+  commenttext: String,
+  threadid: Schema.ObjectId,
   userid: {
     type: Schema.ObjectId,
     ref: 'users'
@@ -23,4 +18,4 @@ var articleSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('article', articleSchema)
+module.exports = mongoose.model('comment', commentSchema)

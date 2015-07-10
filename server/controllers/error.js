@@ -1,4 +1,10 @@
 module.exports = {
+  custom: function(customText){
+    return{
+      errCode: -1,
+      errText: customText || ""
+    }
+  },
   noRecord: function(customText){
     return{
       errCode: 0,
