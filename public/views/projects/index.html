@@ -11,32 +11,7 @@
       <div class="">
         Placeholder for search
       </div>
-      <div class="project-result-header">
-        Showing {{projectInfo.pages[projectInfo.currentPage-1].pageStart + 1 || 1}} - {{projectInfo.pages[projectInfo.currentPage-1].pageEnd}} of {{projectInfo.total}} results
-        <div class="paging">
-          <label>Page {{projectInfo.currentPage}} of {{projectInfo.pages.length}}</label>
-          <ul class="page-list plainlist">
-            <li ng-hide="projectInfo.currentPage==1">
-              <a href="#projects?page=1&sort={{sort.field}}" class="icon first"></a>
-            </li>
-            <li ng-hide="projectInfo.currentPage==1">
-              <a href="#projects?page={{projectInfo.currentPage-1}}&sort={{sort.field}}" class="icon prev"></a>
-            </li>
-            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
-              <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>
-            </li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">
-              <a href="#projects?page={{projectInfo.currentPage+1}}&sort={{sort.field}}" class="icon next"></a>
-            </li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">
-              <a href="#projects?page={{projectInfo.pages.length}}&sort={{sort.field}}" class="icon last"></a>
-            </li>
-          </ul>
-        </div>
-        <div class="sorting">
-          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-init="sort = sortOptions.dateline" ng-options="item.name for item in sortOptions track by item.field"/>
-        </div>
-      </div>
+      <paging-control info="projectInfo" enablesorting="true" sortoptions="sortOptions" sort="sort"></paging-control>
       <ul class="project-list plainlist">
         <li ng-repeat="project in projects">
           <div class="col-md-9">
@@ -59,29 +34,7 @@
           </div>
         </li>
       </ul>
-      <div class="project-result-header">
-        Showing {{projectInfo.pages[projectInfo.currentPage-1].pageStart + 1 || 1}} - {{projectInfo.pages[projectInfo.currentPage-1].pageEnd}} of {{projectInfo.total}} results
-        <div class="paging">
-          <label>Page {{projectInfo.currentPage}} of {{projectInfo.pages.length}}</label>
-          <ul class="page-list">
-            <li ng-hide="projectInfo.currentPage==1">
-              <a href="#projects?page=1&sort={{sort.field}}" class="icon first"></a>
-            </li>
-            <li ng-hide="projectInfo.currentPage==1">
-              <a href="#projects?page={{projectInfo.currentPage-1}}&sort={{sort.field}}" class="icon prev"></a>
-            </li>
-            <li ng-repeat="page in projectInfo.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==projectInfo.currentPage}">
-              <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>
-            </li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.currentPage].pageStart)">
-              <a href="#projects?page={{projectInfo.currentPage+1}}&sort={{sort.field}}" class="icon next"></a>
-            </li>
-            <li ng-show="projectInfo.currentPage < projectInfo.pages.length" ng-click="getProjectData(projectInfo.pages[projectInfo.pages.length-1].pageStart)">
-              <a href="#projects?page={{projectInfo.pages.length}}&sort={{sort.field}}" class="icon last"></a>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <paging-control info="projectInfo" sort="sort"></paging-control>   
     </div>
   </div>
 </div>

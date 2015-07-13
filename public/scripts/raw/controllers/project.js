@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", "paging", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler, paging){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var ProjectCategory = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
 
@@ -7,8 +7,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.projects = [];
 
   console.log('params - ',$stateParams);
-
-  $scope.sort = {};
 
   $scope.sortOptions = {
     dateline: {
@@ -28,6 +26,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   };
 
+    $scope.sort = $scope.sortOptions.dateline;
+
   $scope.query = {
     limit: $scope.pageSize //overrides the server side setting
   };
@@ -35,8 +35,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
   }
   if($stateParams.sort){
-    $scope.query.sort = $scope.sortOptions[$stateParams.sort].field;
-    $scope.query.sortOrder = $scope.sortOptions[$stateParams.sort].order;
+    $scope.sort = $scope.sortOptions[$stateParams.sort];
+    $scope.query.sort = $scope.sort.field;
+    $scope.query.sortOrder = $scope.sort.order;
   }
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
@@ -50,10 +51,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   });
 
-  $scope.applySort = function(){
-    window.location = "#projects?page="+$scope.projectInfo.currentPage+"&sort="+ $scope.sort.field;
-  };
-
   $scope.getProjectData = function(query){
     Project.get(query, function(result){
       if(resultHandler.process(result)){
@@ -62,23 +59,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         delete $scope.projectInfo["data"];
       }
     });
-  };
-
-  $scope.pageInRange = function(pageIndex){
-    var minPage, maxPage;
-    if($scope.projectInfo.currentPage <= 2){
-      minPage = 1;
-      maxPage = 5
-    }
-    else if ($scope.projectInfo.currentPage >= $scope.projectInfo.pages.length - 2) {
-      minPage = $scope.projectInfo.pages.length - 5;
-      maxPage = $scope.projectInfo.pages.length;
-    }
-    else{
-      minPage = $scope.projectInfo.currentPage - 2;
-      maxPage = $scope.projectInfo.currentPage + 2;
-    }
-    return (pageIndex >= minPage && pageIndex <= maxPage);
   };
 
   $scope.getPageText = function(){
