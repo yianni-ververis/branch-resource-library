@@ -39,25 +39,25 @@
 	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
 	          <ul class="page-list plainlist">\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#projects?page=1&sort={{sort.field}}" class="icon first"></a>\
+	              <a href="#projects?page=1&sort={{sort.id}}" class="icon first"></a>\
 	            </li>\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.field}}" class="icon prev"></a>\
+	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
 	            </li>\
-	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==info.currentPage}">\
-	              <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>\
+	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
+	              <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
 	            </li>\
-	            <li ng-show="info.currentPage < info.pages.length" ng-click="getProjectData(info.pages[info.currentPage].pageStart)">\
-	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.field}}" class="icon next"></a>\
+	            <li ng-show="info.currentPage < info.pages.length">\
+	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
 	            </li>\
-	            <li ng-show="info.currentPage < info.pages.length" ng-click="getProjectData(info.pages[info.pages.length-1].pageStart)">\
-	              <a href="#projects?page={{info.pages.length}}&sort={{sort.field}}" class="icon last"></a>\
+	            <li ng-show="info.currentPage < info.pages.length">\
+	              <a href="#projects?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
 	            </li>\
 	          </ul>\
 	        </div>';
 					if(attr.enablesorting){
 							html += '<div class="sorting">\
-			          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortoptions track by item.field"/>\
+			          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortoptions track by item.id"/>\
 			        </div>'
 					}
 	        html += '</div>';
@@ -81,7 +81,7 @@
 					return (pageIndex >= minPage && pageIndex <= maxPage);
 				};
 				scope.applySort = function(){
-			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.field;
+			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
 			  };
       }
     }

@@ -9,7 +9,7 @@ var projectSchema = new Schema({
   overview: String,
   dateline: Number,
   last_updated: Number,
-  last_git_check: Number, 
+  last_git_check: Number,
   project_site: String,
   git_clone_url: String,
   threadid: String,
@@ -28,6 +28,10 @@ var projectSchema = new Schema({
   forumid: {
     type: Schema.ObjectId,
     ref: 'projectcategories'
+  },
+  product: {
+    type: Schema.ObjectId,
+    ref: 'products'
   }
 });
 

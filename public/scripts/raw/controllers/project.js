@@ -1,32 +1,46 @@
 app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", "paging", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler, paging){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var ProjectCategory = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
+  var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
+  var Product = $resource("api/products/:productId", {productId: "@productId"});
 
   $scope.permissions = userPermissions;
   $scope.pageSize = 20;
   $scope.projects = [];
 
+  $scope.stars = new Array(5);
+
   console.log('params - ',$stateParams);
 
   $scope.sortOptions = {
     dateline: {
+      id: "dateline",
       name: "Last Updated",
       order: -1,
       field: "dateline"
     },
-    title: {
-      name: "A-Z",
-      order: 1,
-      field: "title"
+    rating:{
+      id: "rating",
+      name: "Highest Rated",
+      order: [-1,-1],
+      field:["votenum", "votetotal"]
     },
     lastpost: {
+      id: "lastpost",
       name: "Most recent comments",
       order: -1,
       field: "lastpost"
+    },
+    title: {
+      id: "title",
+      name: "A-Z",
+      order: 1,
+      field: "title"
     }
   };
 
-    $scope.sort = $scope.sortOptions.dateline;
+  $scope.sort = $scope.sortOptions.dateline;
+  $scope.categoryId = "";
+  $scope.productId = "";
 
   $scope.query = {
     limit: $scope.pageSize //overrides the server side setting
@@ -42,8 +56,16 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
   }
+  if($stateParams.product){
+    $scope.productId = $stateParams.product;
+    $scope.query.product = $stateParams.product;
+  }
+  if($stateParams.category){
+    $scope.categoryId = $stateParams.category;
+    $scope.query.forumid = $stateParams.category;
+  }
 
-  ProjectCategory.get({}, function(result){
+  Category.get({}, function(result){
     if(resultHandler.process(result)){
       $scope.projectCategories = result.data;
       $scope.projectCategoryInfo = result;
@@ -51,7 +73,16 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   });
 
+  Product.get({}, function(result){
+    if(resultHandler.process(result)){
+      $scope.projectProducts = result.data;
+      $scope.projectProductInfo = result;
+      delete $scope.projectProductInfo["data"];
+    }
+  });
+
   $scope.getProjectData = function(query){
+    console.log(query);
     Project.get(query, function(result){
       if(resultHandler.process(result)){
         $scope.projects = result.data;

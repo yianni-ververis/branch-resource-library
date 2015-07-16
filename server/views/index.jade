@@ -4,6 +4,8 @@ html(ng-app="branch")
     title("Qlik Branch")
     link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
     link(rel="stylesheet" href="bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.css")
+    link(rel="stylesheet", href="/bower_components/font-awesome/css/font-awesome.min.css")    
+    link(rel="stylesheet", href="/bower_components/summernote/dist/summernote.css")    
     link(rel="stylesheet", href="/css/main.css")    
     script(src="/bower_components/jquery/dist/jquery.min.js")
     script(src="/bower_components/angular/angular.js")
@@ -11,12 +13,13 @@ html(ng-app="branch")
     script(src="/bower_components/angular-ui-router/release/angular-ui-router.min.js")    
     script(src="/bower_components/angular-sanitize/angular-sanitize.js")
     script(src="/bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.js")    
+    script(src="/bower_components/summernote/dist/summernote.min.js")    
     script(src="/node_modules/marked/marked.min.js")
     script(src="/js/app.js")
     meta(name="viewport" content="width=device-width, initial-scale=1")
   body    
     notifications-bar.notifications.notifications-container
-    div.header
+    div.header.navbar-fixed-top
       div.container        
         button.navbar-toggle.collapsed(data-toggle="collapse" data-target="#navbar")
           span.sr-only Toggle navigation
@@ -26,7 +29,7 @@ html(ng-app="branch")
         div.logo
           a(href="#/") Home          
         div#navbar.navbar-collapse.collapse          
-          ul.nav.navbar-nav.navbar-right.navbar-links            
+          ul.nav.navbar-nav.navbar-main                      
             if isAuthenticated
               li.dropdown
                 a.dropdown-toggle.green(
@@ -50,16 +53,25 @@ html(ng-app="branch")
             else     
               li.green
                 a(ui-sref="loginsignup") Login/Signup    
-            li
-              a(href="http://market.qlik.com" target="_window") Qlik Market
-            li
-              a(href="http://community.qlik.com" target="_window") Qlik Community            
-            li
-              a(href="http://www.qlik.com" target="_window") Qlik.com            
-          ul.nav.navbar-nav.navbar-main            
+            li.dropdown
+              a.dropdown-toggle(
+                  href="#" 
+                  data-toggle="dropdown" 
+                  role="button" 
+                  aria-expanded="false" 
+                  data-count=notificationCount||""
+                ) Qlik
+                span.caret
+              ul.dropdown-menu(role="menu")
+                li
+                  a(href="http://www.qlik.com" target="_window") Qlik.com   
+                li
+                  a(href="http://market.qlik.com" target="_window") Qlik Market
+                li
+                  a(href="http://community.qlik.com" target="_window") Qlik Community                                               
             li
               a(href="#articles") Articles             
             li
               a(href="#projects") Projects
-    div(ui-view)        
+    div.main(ui-view)        
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")

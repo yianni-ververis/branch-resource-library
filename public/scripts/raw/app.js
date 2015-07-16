@@ -34,7 +34,7 @@
     })
     //used to navigate to the project list page
     .state("projects", {
-      url: "/projects?page&sort",
+      url: "/projects?page&sort&category&product",
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })

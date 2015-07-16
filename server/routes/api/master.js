@@ -138,7 +138,8 @@ router.post("/:entity/", Auth.isLoggedIn, function(req, res){
   var userPermissions = req.user.role.permissions[entity];
   var data = req.body;
   if(!userPermissions || userPermissions.create!=true){
-    res.json(Error.insufficientPermissions);
+    console.log('should get here');
+    res.json(Error.insufficientPermissions());
   }
   else{
     data.createuser = user._id;
@@ -232,9 +233,14 @@ function parseQuery(query, body, method, originalEntity){
   query = query || {};
   body = body || {};
   if(query.sort){
+    var sortFields = query.sort.toString().split(",");
+    var sortOrders = query.sortOrder.toString().split(",");
     var sort = {};
-    sort[query.sort] = query.sortOrder || 1;
+    for(var i=0; i < sortFields.length; i++){
+      sort[sortFields[i]] = sortOrders[i] || 1;
+    }
     entity.sort = sort;
+    console.log(sort);
     delete query["sort"];
     delete query["sortOrder"];
   }

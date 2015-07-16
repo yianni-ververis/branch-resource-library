@@ -23,6 +23,7 @@
     "angular": "~1.4.1",
     "angular-resource": "~1.4.1",
     "angular-ui-router": "~0.2.15",
-    "ng-notifications-bar": "~0.0.15"
+    "ng-notifications-bar": "~0.0.15",
+    "summernote": "~0.6.10"
   }
 }

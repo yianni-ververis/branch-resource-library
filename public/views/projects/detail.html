@@ -1,4 +1,4 @@
-<div class="container page">
+<div class="container page content">
   <div class="row project-detail-summary">
     <div class="col-md-4">
       <h1>{{projects[0].title}}</h1>
@@ -34,7 +34,7 @@
         </li>
         <li>
           <label>Tags:</label>
-          {{projects[0].taglist}}
+          {{projects[0].keywords}}
         </li>
       </ul>
     </div>
@@ -55,9 +55,16 @@
     </div>
     <div class="col-md-12 project-comments">
       <ul class="plainlist">
-        <li ng-repeat="comment in comments" ng-bind-html="comment.commenttext">
+        <!--<li ng-repeat="comment in comments" ng-bind-html="comment.commenttext">
+        </li>-->
+        <li ng-repeat="comment in comments" ng-bind-html="getCommentText(comment.commenttext)">
         </li>
       </ul>
+      <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
+      <div id="summernote" class="">
+
+      </div>
+
     </div>
   </div>
 </div>

@@ -40,7 +40,7 @@ module.exports = {
       sort: {
         dateline: -1
       },
-      limit: 10,
+      limit: 30,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     userroles:{
@@ -66,6 +66,16 @@ module.exports = {
     projectcategories:{
       collection: "projectcategories",
       model: require("../models/projectcategory"),
+      populates: "",
+      exemptFromOwnership: true,
+      sort: {
+        name: 1
+      },
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
+    products:{
+      collection: "products",
+      model: require("../models/product"),
       populates: "",
       exemptFromOwnership: true,
       sort: {

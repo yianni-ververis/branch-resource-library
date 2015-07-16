@@ -1,0 +1,44 @@
+.picklist{
+  position: relative;
+  h1{
+    font-size: 16px;
+    color: @green;
+    font-weight: lighter;
+  }
+  .clear{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: @green;
+  }
+  li{
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 20px;
+    line-height: 20px;
+    cursor: pointer;
+    /*text-indent: 15px;
+    &:before{
+      content: "";
+      border: 1px solid @content-border;
+      position: absolute;
+      top: 5px;
+      left: 0px;
+      height: 8px;
+      width: 8px;
+    }
+    */
+
+    &.active{
+      a{
+        color: @green;
+        font-weight: bold;
+      }
+    }
+    a:visited{
+      text-decoration:none;
+    }
+  }
+}

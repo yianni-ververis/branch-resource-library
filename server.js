@@ -13,6 +13,9 @@ require('./server/models/projectcategory.js');
 require('./server/models/user.js');
 require('./server/models/userrole.js');
 require('./server/models/feature.js');
+require('./server/models/product.js');
+
+var Error = require('./server/controllers/error');
 
 //configure passport strategies
 require('./server/controllers/passport/passport.js')(passport);
@@ -33,8 +36,8 @@ app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.json({limit: '2mb'}));
+app.use(bodyParser.urlencoded({limit: '2mb'}));
 
 app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});
@@ -47,8 +50,12 @@ app.get('/thumbnail/:projectid', function(req, res){
     if(err){
       console.log(err);
     }
-    console.log(result);
-    res.send(result.thumbnail);
+    if(result){
+      res.send(result.thumbnail);
+    }
+    else {
+      res.send(Error.noRecord());
+    }
   });
 });
 

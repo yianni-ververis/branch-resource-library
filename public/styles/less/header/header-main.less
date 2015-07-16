@@ -1,10 +1,15 @@
 .header{
   @media screen and (min-width: @tablet-width) {
-    min-height: 80px;
-    .navbar-links, .navbar-main{
+    min-height: 50px;
+    padding: 15px 0;
+    background-color: white;
+    border-bottom: 2px solid @header-grey;
+    .navbar-main{
       width: 100%;
       float: right;
       > li{
+        font-size: 16px;
+        font-weight: lighter;
         display: inline-block;
         float: right;
       }
@@ -45,12 +50,9 @@
   .navbar-main{
     color: @header-grey;
     li{
-      font-size: 16px;
-      &:hover{
-        a{
-          color: @green;
-          background-color: transparent;
-        }
+      a:hover{
+        color: @green;
+        background-color: transparent;
       }
     }
   }

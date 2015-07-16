@@ -2,8 +2,9 @@
 
 body{
   color: @default-text;
-  font-family: Arial, sans-serif;
+  font-family: sans-serif, arial;
   font-size: 12px;
+  background-color: @background;
 }
 
 ul.plainlist{
@@ -74,6 +75,10 @@ img{
   float: right;
 }
 
+.main{
+  padding-top: 80px;
+}
+
 .page{
   min-height: 600px;
 }
@@ -103,6 +108,24 @@ img{
   text-align: center;
 }
 
+.content{
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border: 1px solid @content-border;
+}
+
+.frosted-cover{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 20px;  
+}
+
 @import "./colors.less";
 @import "./fonts.less";
 @import "./icons.less";
@@ -110,7 +133,10 @@ img{
 @import "./notifications.less";
 @import "./tabs.less";
 @import "./lists.less";
+@import "./picklist.less";
 @import "./controls.less";
+@import "./search.less";
+@import "./breadcrumbs.less";
 @import "./header/header-main.less";
 @import "./header/header-mobile.less";
 @import "./home/home-main.less";

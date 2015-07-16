@@ -1,8 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+console.log(Schema);
+
 var commentSchema = new Schema({
-  commenttext: String,
+  commenttext: Buffer,
+  pagetext: Buffer,
   threadid: Schema.ObjectId,
   userid: {
     type: Schema.ObjectId,

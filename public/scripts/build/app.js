@@ -34,7 +34,7 @@
     })
     //used to navigate to the project list page
     .state("projects", {
-      url: "/projects?page&sort",
+      url: "/projects?page&sort&category&product",
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })
@@ -92,25 +92,25 @@
   	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
   	          <ul class="page-list plainlist">\
   	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#projects?page=1&sort={{sort.field}}" class="icon first"></a>\
+  	              <a href="#projects?page=1&sort={{sort.id}}" class="icon first"></a>\
   	            </li>\
   	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.field}}" class="icon prev"></a>\
+  	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
   	            </li>\
-  	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-clsick="getProjectData(page.pageStart)" ng-class="{active: page.pageNum==info.currentPage}">\
-  	              <a href="#projects?page={{page.pageNum}}&sort={{sort.field}}">{{page.pageNum}}</a>\
+  	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
+  	              <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
   	            </li>\
-  	            <li ng-show="info.currentPage < info.pages.length" ng-click="getProjectData(info.pages[info.currentPage].pageStart)">\
-  	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.field}}" class="icon next"></a>\
+  	            <li ng-show="info.currentPage < info.pages.length">\
+  	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
   	            </li>\
-  	            <li ng-show="info.currentPage < info.pages.length" ng-click="getProjectData(info.pages[info.pages.length-1].pageStart)">\
-  	              <a href="#projects?page={{info.pages.length}}&sort={{sort.field}}" class="icon last"></a>\
+  	            <li ng-show="info.currentPage < info.pages.length">\
+  	              <a href="#projects?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
   	            </li>\
   	          </ul>\
   	        </div>';
   					if(attr.enablesorting){
   							html += '<div class="sorting">\
-  			          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortoptions track by item.field"/>\
+  			          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortoptions track by item.id"/>\
   			        </div>'
   					}
   	        html += '</div>';
@@ -134,7 +134,7 @@
   					return (pageIndex >= minPage && pageIndex <= maxPage);
   				};
   				scope.applySort = function(){
-  			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.field;
+  			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
   			  };
         }
       }
@@ -179,8 +179,8 @@
   }]);
 
   app.service('resultHandler', ["notifications", function(notifications){
-    this.process = function(result, action){   //deals with the result in a generic way. Return true if the result is a success otherwise returns false
-      if(result.redirect){
+    this.process = function(result, action, preventRedirect){   //deals with the result in a generic way. Return true if the result is a success otherwise returns false
+      if(result.redirect && !preventRedirect){
         window.location = result.redirect;
         return false;
       }
@@ -216,7 +216,8 @@
       "users",
       "userroles",
       "features",
-      "projects"
+      "projects",
+      "comments"
     ];
 
     User.get({}, function(result){
@@ -399,33 +400,47 @@
 
   app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", "paging", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler, paging){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-    var ProjectCategory = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
+    var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
+    var Product = $resource("api/products/:productId", {productId: "@productId"});
 
     $scope.permissions = userPermissions;
     $scope.pageSize = 20;
     $scope.projects = [];
 
+    $scope.stars = new Array(5);
+
     console.log('params - ',$stateParams);
 
     $scope.sortOptions = {
       dateline: {
+        id: "dateline",
         name: "Last Updated",
         order: -1,
         field: "dateline"
       },
-      title: {
-        name: "A-Z",
-        order: 1,
-        field: "title"
+      rating:{
+        id: "rating",
+        name: "Highest Rated",
+        order: [-1,-1],
+        field:["votenum", "votetotal"]
       },
       lastpost: {
+        id: "lastpost",
         name: "Most recent comments",
         order: -1,
         field: "lastpost"
+      },
+      title: {
+        id: "title",
+        name: "A-Z",
+        order: 1,
+        field: "title"
       }
     };
 
-      $scope.sort = $scope.sortOptions.dateline;
+    $scope.sort = $scope.sortOptions.dateline;
+    $scope.categoryId = "";
+    $scope.productId = "";
 
     $scope.query = {
       limit: $scope.pageSize //overrides the server side setting
@@ -441,8 +456,16 @@
     if($stateParams.projectId){
       $scope.query.projectId = $stateParams.projectId;
     }
+    if($stateParams.product){
+      $scope.productId = $stateParams.product;
+      $scope.query.product = $stateParams.product;
+    }
+    if($stateParams.category){
+      $scope.categoryId = $stateParams.category;
+      $scope.query.forumid = $stateParams.category;
+    }
 
-    ProjectCategory.get({}, function(result){
+    Category.get({}, function(result){
       if(resultHandler.process(result)){
         $scope.projectCategories = result.data;
         $scope.projectCategoryInfo = result;
@@ -450,7 +473,16 @@
       }
     });
 
+    Product.get({}, function(result){
+      if(resultHandler.process(result)){
+        $scope.projectProducts = result.data;
+        $scope.projectProductInfo = result;
+        delete $scope.projectProductInfo["data"];
+      }
+    });
+
     $scope.getProjectData = function(query){
+      console.log(query);
       Project.get(query, function(result){
         if(resultHandler.process(result)){
           $scope.projects = result.data;
@@ -472,11 +504,13 @@
   app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
     var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
 
+    $("#summernote").summernote();
+
     $scope.comments = [];
 
     $scope.getCommentData = function(query){
       Comment.get(query, function(result){
-        if(resultHandler.process(result)){
+        if(resultHandler.process(result, null, true)){
           $scope.comments = result.data;
           $scope.commentInfo = result;
           delete $scope.commentInfo["data"];
@@ -487,6 +521,37 @@
     if($stateParams.projectId){
       $scope.getCommentData({threadid: $stateParams.projectId});
     }
+
+    $scope.getCommentText = function(text){
+      var buffer = _arrayBufferToBase64(text.data);
+      return marked(buffer);
+    }
+
+    $scope.saveComment = function(){
+      var commentText = $("#summernote").code();
+      Comment.save({}, {
+        threadid: $stateParams.projectId,
+        pagetext: commentText,
+        commenttext: commentText
+      }, function(result){
+        resultHandler.process(result, "Create");
+      })
+    }
+
+    function bin2String(array) {
+      return String.fromCharCode.apply(String, array);
+    }
+
+    function _arrayBufferToBase64( buffer ) {
+      var binary = '';
+      var bytes = new Uint8Array( buffer );
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+          binary += String.fromCharCode( bytes[ i ] );
+      }
+      return binary ;
+    }
+
 
   }]);
 

@@ -11,7 +11,8 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "users",
     "userroles",
     "features",
-    "projects"
+    "projects",
+    "comments"
   ];
 
   User.get({}, function(result){

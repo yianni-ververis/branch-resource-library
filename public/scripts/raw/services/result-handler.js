@@ -1,6 +1,6 @@
 app.service('resultHandler', ["notifications", function(notifications){
-  this.process = function(result, action){   //deals with the result in a generic way. Return true if the result is a success otherwise returns false
-    if(result.redirect){
+  this.process = function(result, action, preventRedirect){   //deals with the result in a generic way. Return true if the result is a success otherwise returns false
+    if(result.redirect && !preventRedirect){
       window.location = result.redirect;
       return false;
     }
