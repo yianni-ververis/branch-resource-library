@@ -40,7 +40,7 @@ module.exports = {
       sort: {
         dateline: -1
       },
-      limit: 30,
+      limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     userroles:{

@@ -13,6 +13,7 @@ var projectSchema = new Schema({
   project_site: String,
   git_clone_url: String,
   threadid: String,
+  taglist: Buffer,
   userid: {
     type: Schema.ObjectId,
     ref: 'users'

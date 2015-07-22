@@ -26,7 +26,7 @@
         Placeholder for search
       </div>
       <div class="results-container content">
-        <paging-control info="projectInfo" enablesorting="true" sortoptions="sortOptions" sort="sort"></paging-control>
+        <paging-control info="projectInfo" enablesorting="true" sortoptions="sortOptions" sort="sort" url="url"></paging-control>
         <ul class="project-list plainlist">
           <li ng-repeat="project in projects">
             <div class="col-md-9">
@@ -43,7 +43,8 @@
               <ul class="stats plainlist">
                 <li class="rating">
                   <span ng-show="!project.votenum || project.votenum==0">Not yet rated</span>
-                  <span class="star" ng-repeat="star in stars track by $index" ng-if="project.votenum && ($index <= project.votenum)">★</span>
+                  {{(Math.round(project.votetotal / project.votenum))}}
+                  <span class="star" ng-repeat="star in stars track by $index" ng-if="getRating(project.votetotal, project.votenum)">★</span>
                 </li>
                 <li><i>{{project.views}}</i> Views</li>
                 <li><i>{{project.replycount}}</i> Comments</li>
@@ -52,7 +53,7 @@
             </div>
           </li>
         </ul>
-        <paging-control info="projectInfo" sort="sort"></paging-control>
+        <paging-control info="projectInfo" sort="sort" url="url"></paging-control>
       </div>
     </div>
   </div>

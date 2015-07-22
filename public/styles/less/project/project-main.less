@@ -6,20 +6,42 @@
 }
 
 .project-summary, .project-detail-summary{
-  margin-bottom: 10px;
   label{
     font-weight: normal;
     color: @header-grey;
   }
 }
 
-.project-detail-summary{
-  border-bottom: 1px solid @light-grey;
-}
-
 .project-detail{
   h1{
     font-size: 16px;
     color: black;
+  }
+
+  h3{
+    font-size: 16px;
+    color: @dark-grey;
+  }
+
+  img{
+    max-width: 100%;
+  }
+}
+
+.project-comments{
+  h3{
+    color: @header-grey;
+    font-size: 12px;
+    display: inline-block;
+  }
+  span{
+    color: @green;
+  }
+  li{
+    padding: 5px;
+    border-bottom: 1px solid @content-border;
+    &:last-of-type{
+      border-bottom: none;
+    }
   }
 }

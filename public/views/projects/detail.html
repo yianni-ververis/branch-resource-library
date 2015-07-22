@@ -1,10 +1,9 @@
-<div class="container page content">
-  <div class="row project-detail-summary">
+<div class="container page">
+  <div class="row project-detail-summary content">
     <div class="col-md-4">
       <h1>{{projects[0].title}}</h1>
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
       <img src="/thumbnail/{{projects[0]._id}}" />
-      <button class="form-control">Download</button>
     </div>
     <div class="col-md-5">
       <ul class="plainlist">
@@ -34,32 +33,37 @@
         </li>
         <li>
           <label>Tags:</label>
-          {{projects[0].keywords}}
+          {{getBuffer(projects[0].taglist.data)}}
         </li>
       </ul>
     </div>
-    <div class="col-md-3">
-
+    <div class="col-md-3 align-center">
+      <button class="ghost-button grey">Download</button>
     </div>
   </div>
-  <div class="row">
+  <div class="row content">
     <div class="col-md-12">
       <h2>Details</h2>
     </div>
     <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
     </div>
   </div>
-  <div class="row" ng-controller="commentController">
+  <div class="row content" ng-controller="commentController">
     <div class="col-md-12">
-      <h2>{{comments.length}} Comments</h2>
+      <h2>Comments</h2>
     </div>
     <div class="col-md-12 project-comments">
+      <paging-control info="commentInfo" enablesorting="true" sortoptions="sortOptions" sort="sort" url="url"></paging-control>
       <ul class="plainlist">
-        <!--<li ng-repeat="comment in comments" ng-bind-html="comment.commenttext">
-        </li>-->
-        <li ng-repeat="comment in comments" ng-bind-html="getCommentText(comment.commenttext)">
+        <li ng-repeat="comment in comments">
+          <img src="" />
+          <h3>{{comment.userid.username}}</h3><span> - {{comment.dateline*1000 | date:'dd MMM yy HH:mm'}}</span>
+          <div class="" ng-bind-html="getCommentText(comment.commenttext)">
+
+          </div>
         </li>
       </ul>
+      <paging-control info="commentInfo" sort="sort" url="url"></paging-control>
       <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
       <div id="summernote" class="">
 

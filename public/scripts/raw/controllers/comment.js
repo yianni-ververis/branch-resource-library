@@ -4,6 +4,37 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $("#summernote").summernote();
 
   $scope.comments = [];
+  $scope.pageSize = 10;
+
+  $scope.sortOptions = {
+    newest: {
+      id: "newest",
+      name: "Newest",
+      order: -1,
+      field: "dateline"
+    },
+    oldest: {
+      id: "oldest",
+      name: "Oldest",
+      order: 1,
+      field: "dateline"
+    }
+  };
+
+  $scope.commentQuery = {
+    limit: $scope.pageSize //overrides the server side setting
+  };
+
+  $scope.sort = $scope.sortOptions.newest;
+
+  if($stateParams.page){
+    $scope.commentQuery.skip = ($stateParams.page-1) * $scope.pageSize;
+  }
+  if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
+    $scope.sort = $scope.sortOptions[$stateParams.sort];
+    $scope.commentQuery.sort = $scope.sort.field;
+    $scope.commentQuery.sortOrder = $scope.sort.order;
+  }
 
   $scope.getCommentData = function(query){
     Comment.get(query, function(result){
@@ -16,7 +47,9 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   };
 
   if($stateParams.projectId){
-    $scope.getCommentData({threadid: $stateParams.projectId});
+    $scope.commentQuery.threadid = $stateParams.projectId;
+    $scope.url = "projects/" + $stateParams.projectId;
+    $scope.getCommentData($scope.commentQuery);
   }
 
   $scope.getCommentText = function(text){

@@ -6,6 +6,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.permissions = userPermissions;
   $scope.pageSize = 20;
   $scope.projects = [];
+  $scope.url = "projects";
 
   $scope.stars = new Array(5);
 
@@ -45,10 +46,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.query = {
     limit: $scope.pageSize //overrides the server side setting
   };
-  if($stateParams.page){
+  if($stateParams.page && !$stateParams.projectId){
     $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
   }
-  if($stateParams.sort){
+  if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
     $scope.query.sort = $scope.sort.field;
     $scope.query.sortOrder = $scope.sort.order;
@@ -91,6 +92,29 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     });
   };
+
+  $scope.getRating = function(total, count){
+    if(count && count > 0){
+      return Math.round(parseInt(total) / parseInt(count));
+    }
+    else{
+      return 0;
+    }
+  }
+
+  $scope.getBuffer = function(binary){
+    return _arrayBufferToBase64(binary);
+  };
+
+  function _arrayBufferToBase64( buffer ) {
+    var binary = '';
+    var bytes = new Uint8Array( buffer );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return binary ;
+  }
 
   $scope.getPageText = function(){
     if($scope.projects[0] && $scope.projects[0].pagetext){

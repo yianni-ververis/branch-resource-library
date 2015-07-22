@@ -1,6 +1,5 @@
 var LocalStrategy    = require('passport-local').Strategy;
 var md5 						 = require('MD5');
-var bcrypt					 = require('bcrypt');
 
 module.exports = function(passport, User){
 
@@ -9,7 +8,7 @@ module.exports = function(passport, User){
             passwordField : 'password',
             passReqToCallback : true
         },
-        function(req, username, password, done) {            
+        function(req, username, password, done) {
             // check in mongo if a user with username exists or not
             User.findOne({ 'username' :  username },
                 function(err, user) {

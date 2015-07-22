@@ -30,7 +30,8 @@
 			scope:{
 				info: "=",
 				sortoptions: "=",
-				sort: "="
+				sort: "=",
+				url: "="
 			},
       template: function(elem, attr){
         html = '<div class="project-result-header">\
@@ -39,19 +40,19 @@
 	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
 	          <ul class="page-list plainlist">\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#projects?page=1&sort={{sort.id}}" class="icon first"></a>\
+	              <a href="#{{url}}?page=1&sort={{sort.id}}" class="icon first"></a>\
 	            </li>\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
+	              <a href="#{{url}}?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
 	            </li>\
 	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
-	              <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
+	              <a href="#{{url}}?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
 	            </li>\
 	            <li ng-show="info.currentPage < info.pages.length">\
-	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
+	              <a href="#{{url}}?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
 	            </li>\
 	            <li ng-show="info.currentPage < info.pages.length">\
-	              <a href="#projects?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
+	              <a href="#{{url}}?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
 	            </li>\
 	          </ul>\
 	        </div>';
@@ -66,7 +67,10 @@
       link: function(scope){
 				scope.pageInRange = function(pageIndex){
 					var minPage, maxPage;
-					if(scope.info.currentPage <= 2){
+					if(scope.info.pages.length==1){
+						return false;
+					}
+					else if(scope.info.currentPage <= 2){
 						minPage = 1;
 						maxPage = 5
 					}
@@ -81,7 +85,7 @@
 					return (pageIndex >= minPage && pageIndex <= maxPage);
 				};
 				scope.applySort = function(){
-			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
+			    window.location = "#"+scope.url+"?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
 			  };
       }
     }

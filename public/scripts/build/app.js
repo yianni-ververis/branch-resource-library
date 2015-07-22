@@ -83,7 +83,8 @@
   			scope:{
   				info: "=",
   				sortoptions: "=",
-  				sort: "="
+  				sort: "=",
+  				url: "="
   			},
         template: function(elem, attr){
           html = '<div class="project-result-header">\
@@ -92,19 +93,19 @@
   	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
   	          <ul class="page-list plainlist">\
   	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#projects?page=1&sort={{sort.id}}" class="icon first"></a>\
+  	              <a href="#{{url}}?page=1&sort={{sort.id}}" class="icon first"></a>\
   	            </li>\
   	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#projects?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
+  	              <a href="#{{url}}?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
   	            </li>\
   	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
-  	              <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
+  	              <a href="#{{url}}?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
   	            </li>\
   	            <li ng-show="info.currentPage < info.pages.length">\
-  	              <a href="#projects?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
+  	              <a href="#{{url}}?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
   	            </li>\
   	            <li ng-show="info.currentPage < info.pages.length">\
-  	              <a href="#projects?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
+  	              <a href="#{{url}}?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
   	            </li>\
   	          </ul>\
   	        </div>';
@@ -119,7 +120,10 @@
         link: function(scope){
   				scope.pageInRange = function(pageIndex){
   					var minPage, maxPage;
-  					if(scope.info.currentPage <= 2){
+  					if(scope.info.pages.length==1){
+  						return false;
+  					}
+  					else if(scope.info.currentPage <= 2){
   						minPage = 1;
   						maxPage = 5
   					}
@@ -134,7 +138,7 @@
   					return (pageIndex >= minPage && pageIndex <= maxPage);
   				};
   				scope.applySort = function(){
-  			    window.location = "#projects?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
+  			    window.location = "#"+scope.url+"?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
   			  };
         }
       }
@@ -406,6 +410,7 @@
     $scope.permissions = userPermissions;
     $scope.pageSize = 20;
     $scope.projects = [];
+    $scope.url = "projects";
 
     $scope.stars = new Array(5);
 
@@ -445,10 +450,10 @@
     $scope.query = {
       limit: $scope.pageSize //overrides the server side setting
     };
-    if($stateParams.page){
+    if($stateParams.page && !$stateParams.projectId){
       $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
     }
-    if($stateParams.sort){
+    if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
       $scope.query.sort = $scope.sort.field;
       $scope.query.sortOrder = $scope.sort.order;
@@ -492,6 +497,29 @@
       });
     };
 
+    $scope.getRating = function(total, count){
+      if(count && count > 0){
+        return Math.round(parseInt(total) / parseInt(count));
+      }
+      else{
+        return 0;
+      }
+    }
+
+    $scope.getBuffer = function(binary){
+      return _arrayBufferToBase64(binary);
+    };
+
+    function _arrayBufferToBase64( buffer ) {
+      var binary = '';
+      var bytes = new Uint8Array( buffer );
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+          binary += String.fromCharCode( bytes[ i ] );
+      }
+      return binary ;
+    }
+
     $scope.getPageText = function(){
       if($scope.projects[0] && $scope.projects[0].pagetext){
         return marked($scope.projects[0].pagetext);
@@ -507,6 +535,37 @@
     $("#summernote").summernote();
 
     $scope.comments = [];
+    $scope.pageSize = 10;
+
+    $scope.sortOptions = {
+      newest: {
+        id: "newest",
+        name: "Newest",
+        order: -1,
+        field: "dateline"
+      },
+      oldest: {
+        id: "oldest",
+        name: "Oldest",
+        order: 1,
+        field: "dateline"
+      }
+    };
+
+    $scope.commentQuery = {
+      limit: $scope.pageSize //overrides the server side setting
+    };
+
+    $scope.sort = $scope.sortOptions.newest;
+
+    if($stateParams.page){
+      $scope.commentQuery.skip = ($stateParams.page-1) * $scope.pageSize;
+    }
+    if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
+      $scope.sort = $scope.sortOptions[$stateParams.sort];
+      $scope.commentQuery.sort = $scope.sort.field;
+      $scope.commentQuery.sortOrder = $scope.sort.order;
+    }
 
     $scope.getCommentData = function(query){
       Comment.get(query, function(result){
@@ -519,7 +578,9 @@
     };
 
     if($stateParams.projectId){
-      $scope.getCommentData({threadid: $stateParams.projectId});
+      $scope.commentQuery.threadid = $stateParams.projectId;
+      $scope.url = "projects/" + $stateParams.projectId;
+      $scope.getCommentData($scope.commentQuery);
     }
 
     $scope.getCommentText = function(text){

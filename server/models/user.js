@@ -2,7 +2,11 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-  email: String,
+  email: {
+    type: String,
+    required: true,
+    uniqur: true
+  },
   password: String,
   name: String,
   username: {
@@ -12,7 +16,8 @@ var userSchema = new Schema({
   },
   role: {
     type: Schema.ObjectId,
-    ref: 'userrole'
+    ref: 'userrole',
+    default: "558c1e12f947a1a8d63b1396"
   },
   salt: String,
   company: String, //Company name

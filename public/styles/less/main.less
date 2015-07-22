@@ -1,5 +1,8 @@
 @tablet-width: 720px;
 
+@import "./colors.less";
+@import "./fonts.less";
+
 body{
   color: @default-text;
   font-family: sans-serif, arial;
@@ -38,7 +41,7 @@ h1{
 
 h2{
   color: @dark-grey;
-  font-size: 20px;
+  font-size: 16px;
   margin: 5px 0;
 }
 
@@ -110,10 +113,10 @@ img{
 
 .content{
   background-color: white;
-  padding: 5px 10px;
-  border-radius: 3px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  padding: 10px 10px;
+
+  margin-top: 10px;
+  margin-bottom: 10px;
   border: 1px solid @content-border;
 }
 
@@ -123,11 +126,27 @@ img{
   position: absolute;
   top: 0;
   left: 0;
-  padding: 20px;  
+  padding: 20px;
 }
 
-@import "./colors.less";
-@import "./fonts.less";
+.no-mobile{
+  @media screen and (max-width: @tablet-width) {
+    display: none;
+  }
+}
+
+.align-center{
+  text-align: center;
+}
+
+.align-left{
+  text-align: left;
+}
+
+.align-right{
+  text-align: right;
+}
+
 @import "./icons.less";
 @import "./buttons.less";
 @import "./notifications.less";
