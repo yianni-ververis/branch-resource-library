@@ -34,7 +34,7 @@
     })
     //used to navigate to the project list page
     .state("projects", {
-      url: "/projects?page&sort&category&product",
+      url: "/projects?sort&category&product",
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })
@@ -45,6 +45,22 @@
           "@":{
             templateUrl: "/views/projects/detail.html",
             controller: "projectController"
+          }
+        }
+    })
+    //used to navigate to a user list page (not currently used)
+    .state("users", {
+      url: "/users?sort",
+      templateUrl: "/views/users/index.html",
+      controller: "userController"
+    })
+    //used to navigate to a given project detail page
+    .state("users.detail", {
+      url: "/:userId",
+      views: {
+          "@":{
+            templateUrl: "/views/users/detail.html",
+            controller: "userController"
           }
         }
     })
@@ -189,6 +205,7 @@
         return false;
       }
       else if (result.errCode) {
+        console.log(result.errText);
         notifications.showError({
           message: result.errText,
           hideDelay: 3000,
@@ -246,7 +263,7 @@
         $scope.features = result.data;
         $scope.featureInfo = result;
         delete $scope.featureInfo["data"];
-        $scope.setFeature(0);
+        $scope.setActiveFeature(0);
       }
     });
 
@@ -402,13 +419,12 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", "paging", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler, paging){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userPermissions, resultHandler){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
     var Product = $resource("api/products/:productId", {productId: "@productId"});
 
     $scope.permissions = userPermissions;
-    $scope.pageSize = 20;
     $scope.projects = [];
     $scope.url = "projects";
 
@@ -448,11 +464,8 @@
     $scope.productId = "";
 
     $scope.query = {
-      limit: $scope.pageSize //overrides the server side setting
+
     };
-    if($stateParams.page && !$stateParams.projectId){
-      $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
-    }
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
       $scope.query.sort = $scope.sort.field;
@@ -486,15 +499,29 @@
       }
     });
 
-    $scope.getProjectData = function(query){
-      console.log(query);
+    $scope.getProjectData = function(query, append){
       Project.get(query, function(result){
         if(resultHandler.process(result)){
-          $scope.projects = result.data;
+          if(append && append==true){
+            $scope.projects = $scope.projects.concat(result.data);
+          }
+          else{
+            $scope.projects = result.data;
+          }
           $scope.projectInfo = result;
           delete $scope.projectInfo["data"];
+          console.log($scope.projectInfo);
         }
       });
+    };
+
+    $scope.getMore = function(){
+      var query = $scope.projectInfo.query;
+      query.limit = $scope.projectInfo.limit;
+      query.skip = $scope.projectInfo.skip;
+      query.sort = $scope.sort.field;
+      query.sortOrder = $scope.sort.order;
+      $scope.getProjectData(query, true);
     };
 
     $scope.getRating = function(total, count){
@@ -524,6 +551,10 @@
       if($scope.projects[0] && $scope.projects[0].pagetext){
         return marked($scope.projects[0].pagetext);
       }
+    };
+
+    $scope.applySort = function(){
+      window.location = "#projects?sort=" + $scope.sort.id + "product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
 
     $scope.getProjectData($scope.query); //get initial data set
@@ -613,6 +644,43 @@
       return binary ;
     }
 
+
+  }]);
+
+  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+    var User = $resource("api/users/:userId", {userId: "@userId"});
+    var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+
+    $scope.query = {};
+    $scope.projectCount = 0;
+
+    if($stateParams.userId){
+      $scope.query.userId = $stateParams.userId;
+      Project.get({projectId:'count', userid: $stateParams.userId}, function(result){
+        if(resultHandler.process(result)){
+          $scope.projectCount = result.data;
+        }
+      });
+
+    }
+
+
+    $scope.getUserData = function(query, append){
+      User.get(query, function(result){
+        if(resultHandler.process(result)){
+          if(append && append==true){
+            $scope.users = $scope.users.concat(result.data);
+          }
+          else{
+            $scope.users = result.data;
+          }
+          $scope.userInfo = result;
+          delete $scope.userInfo["data"];
+        }
+      });
+    };
+
+    $scope.getUserData($scope.query);
 
   }]);
 

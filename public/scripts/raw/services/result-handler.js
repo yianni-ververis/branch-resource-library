@@ -5,6 +5,7 @@ app.service('resultHandler', ["notifications", function(notifications){
       return false;
     }
     else if (result.errCode) {
+      console.log(result.errText);
       notifications.showError({
         message: result.errText,
         hideDelay: 3000,

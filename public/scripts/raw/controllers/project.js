@@ -1,10 +1,9 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", "paging", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler, paging){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userPermissions, resultHandler){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
   var Product = $resource("api/products/:productId", {productId: "@productId"});
 
   $scope.permissions = userPermissions;
-  $scope.pageSize = 20;
   $scope.projects = [];
   $scope.url = "projects";
 
@@ -44,11 +43,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.productId = "";
 
   $scope.query = {
-    limit: $scope.pageSize //overrides the server side setting
+
   };
-  if($stateParams.page && !$stateParams.projectId){
-    $scope.query.skip = ($stateParams.page-1) * $scope.pageSize;
-  }
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
     $scope.query.sort = $scope.sort.field;
@@ -82,15 +78,29 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   });
 
-  $scope.getProjectData = function(query){
-    console.log(query);
+  $scope.getProjectData = function(query, append){
     Project.get(query, function(result){
       if(resultHandler.process(result)){
-        $scope.projects = result.data;
+        if(append && append==true){
+          $scope.projects = $scope.projects.concat(result.data);
+        }
+        else{
+          $scope.projects = result.data;
+        }
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
+        console.log($scope.projectInfo);
       }
     });
+  };
+
+  $scope.getMore = function(){
+    var query = $scope.projectInfo.query;
+    query.limit = $scope.projectInfo.limit;
+    query.skip = $scope.projectInfo.skip;
+    query.sort = $scope.sort.field;
+    query.sortOrder = $scope.sort.order;
+    $scope.getProjectData(query, true);
   };
 
   $scope.getRating = function(total, count){
@@ -120,6 +130,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     if($scope.projects[0] && $scope.projects[0].pagetext){
       return marked($scope.projects[0].pagetext);
     }
+  };
+
+  $scope.applySort = function(){
+    window.location = "#projects?sort=" + $scope.sort.id + "product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
   $scope.getProjectData($scope.query); //get initial data set

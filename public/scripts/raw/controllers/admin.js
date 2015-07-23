@@ -37,7 +37,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
       $scope.features = result.data;
       $scope.featureInfo = result;
       delete $scope.featureInfo["data"];
-      $scope.setFeature(0);
+      $scope.setActiveFeature(0);
     }
   });
 

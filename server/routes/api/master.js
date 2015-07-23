@@ -37,12 +37,13 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res){
   }
   //check that the user has sufficient permissions for this operation
   if((!userPermissions || userPermissions.read!=true) && entity.requiresAuthentication){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions("Unable to get "+req.params.entity));
   }
   else{
     if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
       query["createuser"]=user._id;
     }
+    console.log(query);
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
     });
@@ -64,12 +65,12 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
   }
   //check that the user has sufficient permissions for this operation
   if((!userPermissions || userPermissions.read!=true) && entity.requiresAuthentication){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions("Unable to count "+req.params.entity));
   }
   else{
-    if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
-      query["createuser"]=user._id;
-    }
+    // if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
+    //   query["createuser"]=user._id;
+    // }
     console.log(query);
     MasterController.count(req.query, query, entity, function(results){
       res.json(results||{});
@@ -91,15 +92,23 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
   var user = req.user;
   var userPermissions;
   //check that the user has sufficient permissions for this operation
+  if(req.user){
+    userPermissions = req.user.role.permissions[req.params.entity];
+  }
+  //check that the user has sufficient permissions for this operation
   if((!userPermissions || userPermissions.read!=true) && entity.requiresAuthentication){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions("Unable to get "+req.params.entity));
   }
   else{
     if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
       query["createuser"]=user._id;
     }
     MasterController.get(req.query, query, entity, function(results){
-      if(results.data[0] && results.data[0].project_site.indexOf('github')!=-1 && ((results.data[0].last_git_check && results.data[0].last_git_check < epoch.addMinutes(-60))||(!results.data[0].last_git_check))){
+      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].project_site.indexOf('github')!=-1 && ((results.data[0].last_git_check && results.data[0].last_git_check < epoch.addMinutes(-60))||(!results.data[0].last_git_check)))){
+        //if we're here then the following criteria has been met
+        // - entity == "projects"
+        // - project has a project_site
+        // - the git details have not been updated for an hour +
         var params = results.data[0].project_site.split("/");
         var repo = params.pop();
         var gituser = params.pop();
@@ -128,6 +137,20 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
       }
     });
   }
+});
+
+//This route is for fetching the thumbnail image assigned to a given entity document
+//Authnetication requirements to be defined
+router.get('/:entity/:id/thumbnail', Auth.isLoggedIn, function(req, res){
+  console.log('here');
+  MasterController.getThumbnail({_id: req.params.id}, entities[req.params.entity], function(result){
+    if(result){
+      res.send(result.thumbnail);
+    }
+    else {
+      res.send(Error.noRecord());
+    }
+  });
 });
 
 //This route is for creating a new record on the specified entity and returning the new record
@@ -191,7 +214,7 @@ router.delete("/:entity", Auth.isLoggedIn, function(req, res){
   var user = req.user;
   var userPermissions = req.user.role.permissions[entity];
   if(!userPermissions || userPermissions.delete!=true){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions());
   }
   else{
     if(userPermissions.allOwners!=true){
@@ -213,7 +236,7 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
   var user = req.user;
   var userPermissions = req.user.role.permissions[entity];
   if(!userPermissions || userPermissions.delete!=true){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions());
   }
   else{
     if(userPermissions.allOwners!=true){

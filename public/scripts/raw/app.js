@@ -34,7 +34,7 @@
     })
     //used to navigate to the project list page
     .state("projects", {
-      url: "/projects?page&sort&category&product",
+      url: "/projects?sort&category&product",
       templateUrl: "/views/projects/index.html",
       controller: "projectController"
     })
@@ -45,6 +45,22 @@
           "@":{
             templateUrl: "/views/projects/detail.html",
             controller: "projectController"
+          }
+        }
+    })
+    //used to navigate to a user list page (not currently used)
+    .state("users", {
+      url: "/users?sort",
+      templateUrl: "/views/users/index.html",
+      controller: "userController"
+    })
+    //used to navigate to a given project detail page
+    .state("users.detail", {
+      url: "/:userId",
+      views: {
+          "@":{
+            templateUrl: "/views/users/detail.html",
+            controller: "userController"
           }
         }
     })
@@ -60,5 +76,6 @@
   include "./controllers/home.js"
   include "./controllers/project.js"
   include "./controllers/comment.js"
+  include "./controllers/user.js"
 
 })();

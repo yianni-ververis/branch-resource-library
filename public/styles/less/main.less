@@ -3,11 +3,17 @@
 @import "./colors.less";
 @import "./fonts.less";
 
+html{
+  background: url('/resources/open-source-2012.jpg') top left no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
 body{
   color: @default-text;
   font-family: sans-serif, arial;
   font-size: 12px;
-  background-color: @background;
+  background-color: transparent;
 }
 
 ul.plainlist{
@@ -83,7 +89,7 @@ img{
 }
 
 .page{
-  min-height: 600px;
+  min-height: ~"calc(100% - 80px)";
 }
 
 .paging, .sorting{
@@ -147,6 +153,22 @@ img{
   text-align: right;
 }
 
+.result-header{
+  font-size: 12px;
+  text-indent: 10px;
+  color: @header-grey;
+  height: 50px;
+  line-height: 42px;
+  select{
+    width: 200px;
+  }
+}
+
+.center{
+  margin: 0 auto;
+  display: block;
+}
+
 @import "./icons.less";
 @import "./buttons.less";
 @import "./notifications.less";
@@ -162,3 +184,4 @@ img{
 @import "./home/home-mobile.less";
 @import "./login/login-main.less";
 @import "./project/project-main.less";
+@import "./user/user-main.less";

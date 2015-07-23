@@ -32,7 +32,7 @@ module.exports = {
               }
               responseObj.currentPage = (parseInt(entity.skip) / parseInt(entity.limit)) + 1 || 1;
             }
-            responseObj.query = query;
+            responseObj.query = parsedQuery;
             responseObj.skip = parseInt(entity.skip) + parseInt(entity.limit);
             responseObj.limit = entity.limit;
             responseObj.data = results
@@ -42,9 +42,19 @@ module.exports = {
       }
     });
   },
-  count: function(query, entity, callbackFn){
-    console.log(entity);
-    entity.model.count(query, function(err, result){
+  count: function(query, parsedQuery, entity, callbackFn){
+    entity.model.count(parsedQuery, function(err, result){
+      if(err){
+        console.log(err);
+        callbackFn.call(null, Error.errorGetting(err.message));
+      }
+      else{
+        callbackFn.call(null, result);
+      }
+    });
+  },
+  getThumbnail: function(query, entity, callbackFn){
+    entity.model.findOne(query, function(err, result){
       if(err){
         console.log(err);
         callbackFn.call(null, Error.errorGetting(err.message));
