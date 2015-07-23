@@ -45,20 +45,6 @@ app.get('/', function(req, res){
 
 var Project = require('./server/models/project.js');
 
-app.get('/thumbnail/:projectid', function(req, res){
-  Project.findOne({_id: req.params.projectid}, function(err, result){
-    if(err){
-      console.log(err);
-    }
-    if(result){
-      res.send(result.thumbnail);
-    }
-    else {
-      res.send(Error.noRecord());
-    }
-  });
-});
-
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);

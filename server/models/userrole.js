@@ -8,7 +8,6 @@ var UserRoleSchema = new Schema({
     trim: true
   },
   permissions:{
-    default: {}
     //example
     // project:{
     //   allOwners: false,

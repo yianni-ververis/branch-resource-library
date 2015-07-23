@@ -1,0 +1,22 @@
+<div class="user-header">
+  <div class="frosted-cover white-bk">
+    <div class="container">
+      <ul class="plainlist stat-list">
+        <li>
+          <h1>Projects</h1>
+          <span><a href="#">{{projectCount}}</a></span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="container">
+    <div class="img">
+      <img src="api/users/{{users[0]._id}}/thumbnail" onError="this.src='resources/bagavatar.jpeg'"/>
+    </div>
+  </div>
+</div>
+<div class="user-body">
+  <div class="container content">
+    {{users[0].username}}
+  </div>
+</div>
