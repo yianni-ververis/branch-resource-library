@@ -1,11 +1,13 @@
-app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var User = $resource("api/users/:userId", {userId: "@userId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
   var UserRoles = $resource("api/userroles/:roleId", {roleId: "@roleId"});
   var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
 
-  $scope.permissions = userPermissions;
+  if(userManager.user){
+    $scope.permissions = userManager.user.role.permissions;
+  }
 
   $scope.collections = [
     "users",
@@ -88,7 +90,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     console.log($scope.roles[$scope.activeRole]);
     UserRoles.save({roleId:$scope.roles[$scope.activeRole]._id}, $scope.roles[$scope.activeRole], function(result){
       if(resultHandler.process(result, "Save")){
-        $scope.permissions.refresh();
+        $scope.userManager.refresh();
       }
     });
   };

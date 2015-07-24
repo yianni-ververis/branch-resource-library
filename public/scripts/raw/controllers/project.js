@@ -1,9 +1,11 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userPermissions, resultHandler){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
   var Product = $resource("api/products/:productId", {productId: "@productId"});
 
-  $scope.permissions = userPermissions;
+  if(userManager.user){
+    $scope.permissions = userManager.user.role.permissions;
+  }
   $scope.projects = [];
   $scope.url = "projects";
 

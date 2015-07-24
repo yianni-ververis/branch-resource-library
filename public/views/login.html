@@ -2,9 +2,9 @@
   <div class="row">
     <div class="form-signin block">
       <h2>Login</h2>
-      <form action='auth/login' method='post'>
-        <input class='form-control' name='username' placeholder='Username'>
-        <input class='form-control' name='password' placeholder='Password' type='password'>
+      <form ng-submit="login()">
+        <input class='form-control' ng-model='username' placeholder='Username'>
+        <input class='form-control' ng-model='password' placeholder='Password' type='password'>
         <button class='ghost-button green' type='submit'>Login</button>
       </form>
 

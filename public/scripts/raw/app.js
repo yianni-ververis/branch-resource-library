@@ -18,13 +18,15 @@
     //login and signup page
     .state("loginsignup", {
       url: "/loginsignup",
-      templateUrl : "/views/loginsignup.html"
+      templateUrl : "/views/loginsignup.html",
+      controller: "authController"
     })
     //login page
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("login", {
-      url: "/login",
-      templateUrl : "/views/login.html"
+      url: "/login?url",
+      templateUrl : "/views/login.html",
+      controller: "authController"
     })
     //used to navigate to the admin console
     .state("admin", {
@@ -68,11 +70,13 @@
 
   //directives
   include "./directives/paging.js"
+  include "./directives/header.js"
   //services
-  include "./services/permissions.js"
+  include "./services/user-manager.js"
   include "./services/result-handler.js"
   //controllers
   include "./controllers/admin.js"
+  include "./controllers/auth.js"
   include "./controllers/home.js"
   include "./controllers/project.js"
   include "./controllers/comment.js"

@@ -49,7 +49,7 @@ module.exports = {
         callbackFn.call(null, Error.errorGetting(err.message));
       }
       else{
-        callbackFn.call(null, result);
+        callbackFn.call(null, {count:result});
       }
     });
   },

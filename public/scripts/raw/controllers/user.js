@@ -1,4 +1,4 @@
-app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var User = $resource("api/users/:userId", {userId: "@userId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
 
@@ -9,7 +9,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     $scope.query.userId = $stateParams.userId;
     Project.get({projectId:'count', userid: $stateParams.userId}, function(result){
       if(resultHandler.process(result)){
-        $scope.projectCount = result.data;
+        $scope.projectCount = result.count;
       }
     });
 

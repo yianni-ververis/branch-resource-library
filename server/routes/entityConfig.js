@@ -43,17 +43,6 @@ module.exports = {
       limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    users:{
-      collection: "users",
-      model: require("../models/user"),
-      populates: "role",
-      exemptFromOwnership: true,
-      sort: {
-        dateline: -1
-      },
-      limit: 10,
-      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
-    },
     userroles:{
       collection: "userroles",
       model: require("../models/userrole"),

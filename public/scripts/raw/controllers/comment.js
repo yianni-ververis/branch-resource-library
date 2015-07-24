@@ -1,4 +1,4 @@
-app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
 
   $("#summernote").summernote();
@@ -64,7 +64,9 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
       pagetext: commentText,
       commenttext: commentText
     }, function(result){
-      resultHandler.process(result, "Create");
+      if(resultHandler.process(result)){
+        $scope.comments.push(result);
+      }
     })
   }
 

@@ -1,4 +1,4 @@
-app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});

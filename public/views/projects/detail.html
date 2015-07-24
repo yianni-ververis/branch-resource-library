@@ -3,7 +3,7 @@
     <div class="col-md-4">
       <h1>{{projects[0].title}}</h1>
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
-      <img src="/thumbnail/{{projects[0]._id}}" />
+      <img src="api/projects/{{projects[0]._id}}/thumbnail" />
     </div>
     <div class="col-md-5">
       <ul class="plainlist">
@@ -53,7 +53,12 @@
       <h2>Comments</h2>
     </div>
     <div class="col-md-12 project-comments">
-      <paging-control info="commentInfo" enablesorting="true" sortoptions="sortOptions" sort="sort" url="url"></paging-control>
+      <div class="result-header">
+        Showing {{projects.length}} of {{projectInfo.total}} comments
+        <div class="sorting">
+          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+        </div>
+      </div>
       <ul class="plainlist">
         <li ng-repeat="comment in comments">
           <img src="" />
@@ -63,7 +68,6 @@
           </div>
         </li>
       </ul>
-      <paging-control info="commentInfo" sort="sort" url="url"></paging-control>
       <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
       <div id="summernote" class="">
 

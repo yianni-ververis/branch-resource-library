@@ -18,13 +18,15 @@
     //login and signup page
     .state("loginsignup", {
       url: "/loginsignup",
-      templateUrl : "/views/loginsignup.html"
+      templateUrl : "/views/loginsignup.html",
+      controller: "authController"
     })
     //login page
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("login", {
-      url: "/login",
-      templateUrl : "/views/login.html"
+      url: "/login?url",
+      templateUrl : "/views/login.html",
+      controller: "authController"
     })
     //used to navigate to the admin console
     .state("admin", {
@@ -163,36 +165,52 @@
   	return module;
   }));
 
+  app.directive('header', ['userManager', function (userManager) {
+    return {
+      restrict: "A",
+      replace: true,
+      scope:{
+
+      },
+      templateUrl: "/views/header.html",
+      link: function(scope){
+        scope.userManager = userManager;      
+      }
+    }
+  }]);
+
   //services
-  app.service('userPermissions', ['$resource', function($resource){
+  app.service('userManager', ['$resource', function($resource){
     var System = $resource("system/:path", {path: "@path"});
-    this.permissions = {};
+    this.menu = {};
+    this.userInfo = {};
     var that = this;
     this.canCreate = function(entity){
-      return this.permissions[entity] && this.permissions[entity].create && this.permissions[entity].create==true
+      return this.userInfo.userInfo.permissions[entity] && this.userInfo.userInfo.permissions[entity].create && this.userInfo.userInfo.permissions[entity].create==true
     }
     this.canRead = function(entity){
       console.log(entity);
-      return this.permissions[entity] && this.permissions[entity].read && this.permissions[entity].read==true
+      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].read && this.userInfo.permissions[entity].read==true
     }
     this.canUpdate = function(entity){
-      return this.permissions[entity] && this.permissions[entity].update && this.permissions[entity].update==true
+      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].update && this.userInfo.permissions[entity].update==true
     }
     this.canDelete = function(entity){
       return
-      (this.permissions[entity] && this.permissions[entity].softDelete && this.permissions[entity].softDelete==true)
+      (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].softDelete && this.userInfo.permissions[entity].softDelete==true)
       ||
-      (this.permissions[entity] && this.permissions[entity].hardDelete && this.permissions[entity].hardDelete==true)
+      (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].hardDelete && this.userInfo.permissions[entity].hardDelete==true)
     }
     this.canSeeAll = function(entity){
-      return this.permissions[entity] && this.permissions[entity].allOwners && this.permissions[entity].allOwners==true
+      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].allOwners && this.userInfo.permissions[entity].allOwners==true
     }
     this.canApprove = function(entity){
-      return this.permissions[entity] && this.permissions[entity].approve && this.permissions[entity].approve==true
+      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].approve && this.userInfo.permissions[entity].approve==true
     }
     this.refresh = function(){
-      System.get({path:'userpermissions'}, function(result){
-        that.permissions = result;
+      System.get({path:'userInfo'}, function(result){
+        that.menu = result.menu;
+        that.userInfo = result.user;
       });
     }
     this.refresh();
@@ -224,14 +242,16 @@
   }]);
 
   //controllers
-  app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+  app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var User = $resource("api/users/:userId", {userId: "@userId"});
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
     var UserRoles = $resource("api/userroles/:roleId", {roleId: "@roleId"});
     var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
 
-    $scope.permissions = userPermissions;
+    if(userManager.user){
+      $scope.permissions = userManager.user.role.permissions;
+    }
 
     $scope.collections = [
       "users",
@@ -314,7 +334,7 @@
       console.log($scope.roles[$scope.activeRole]);
       UserRoles.save({roleId:$scope.roles[$scope.activeRole]._id}, $scope.roles[$scope.activeRole], function(result){
         if(resultHandler.process(result, "Save")){
-          $scope.permissions.refresh();
+          $scope.userManager.refresh();
         }
       });
     };
@@ -365,7 +385,33 @@
     }
   }]);
 
-  app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+    var Login = $resource("auth/login");
+    var Signup = $resource("auth/signup");
+
+    if($stateParams.url){
+      $scope.returnUrl = $stateParams.url;
+    }
+
+    $scope.login = function(){
+      Login.save({
+        username: $scope.username,
+        password: $scope.password
+      }, function(result){
+        if(resultHandler.process(result)){
+          userManager.refresh();
+          window.location = "#" + $scope.returnUrl || "/";
+        }
+      });
+    };
+
+    $scope.signup = function(){
+
+    };
+
+  }]);
+
+  app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
@@ -419,12 +465,14 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userPermissions, resultHandler){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
     var Product = $resource("api/products/:productId", {productId: "@productId"});
 
-    $scope.permissions = userPermissions;
+    if(userManager.user){
+      $scope.permissions = userManager.user.role.permissions;
+    }
     $scope.projects = [];
     $scope.url = "projects";
 
@@ -560,7 +608,7 @@
     $scope.getProjectData($scope.query); //get initial data set
   }]);
 
-  app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+  app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
 
     $("#summernote").summernote();
@@ -626,7 +674,9 @@
         pagetext: commentText,
         commenttext: commentText
       }, function(result){
-        resultHandler.process(result, "Create");
+        if(resultHandler.process(result)){
+          $scope.comments.push(result);
+        }
       })
     }
 
@@ -647,7 +697,7 @@
 
   }]);
 
-  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userPermissions", "resultHandler", function($scope, $resource, $state, $stateParams, userPermissions, resultHandler){
+  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var User = $resource("api/users/:userId", {userId: "@userId"});
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
 
@@ -658,7 +708,7 @@
       $scope.query.userId = $stateParams.userId;
       Project.get({projectId:'count', userid: $stateParams.userId}, function(result){
         if(resultHandler.process(result)){
-          $scope.projectCount = result.data;
+          $scope.projectCount = result.count;
         }
       });
 

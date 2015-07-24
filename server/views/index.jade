@@ -19,59 +19,6 @@ html(ng-app="branch")
     meta(name="viewport" content="width=device-width, initial-scale=1")
   body    
     notifications-bar.notifications.notifications-container
-    div.header.navbar-fixed-top
-      div.container        
-        button.navbar-toggle.collapsed(data-toggle="collapse" data-target="#navbar")
-          span.sr-only Toggle navigation
-          span.icon-bar
-          span.icon-bar
-          span.icon-bar
-        div.logo
-          a(href="#/") Home          
-        div#navbar.navbar-collapse.collapse          
-          ul.nav.navbar-nav.navbar-main                      
-            if isAuthenticated
-              li.dropdown
-                a.dropdown-toggle.green(
-                    href="#" 
-                    data-toggle="dropdown" 
-                    role="button" 
-                    aria-expanded="false" 
-                    data-count=notificationCount||""
-                  ) #{user.username}
-                  span.caret
-                ul.dropdown-menu(role="menu")
-                  if user.role.name != "user"
-                    li
-                      a(ui-sref="admin") Admin Console
-                    li
-                      a(ui-sref="profile") Profile
-                    li
-                      a(ui-sref="projects.new") Create Project
-                  li
-                    a(href="/auth/logout") Logout
-            else     
-              li.green
-                a(ui-sref="loginsignup") Login/Signup    
-            li.dropdown
-              a.dropdown-toggle(
-                  href="#" 
-                  data-toggle="dropdown" 
-                  role="button" 
-                  aria-expanded="false" 
-                  data-count=notificationCount||""
-                ) Qlik
-                span.caret
-              ul.dropdown-menu(role="menu")
-                li
-                  a(href="http://www.qlik.com" target="_window") Qlik.com   
-                li
-                  a(href="http://market.qlik.com" target="_window") Qlik Market
-                li
-                  a(href="http://community.qlik.com" target="_window") Qlik Community                                               
-            li
-              a(href="#articles") Articles             
-            li
-              a(href="#projects") Projects
+    div(header)
     div.main(ui-view)        
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")

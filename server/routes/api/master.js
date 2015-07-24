@@ -73,7 +73,8 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
     // }
     console.log(query);
     MasterController.count(req.query, query, entity, function(results){
-      res.json(results||{});
+      console.log(results);
+      res.json(results);
     });
   }
 });
@@ -142,7 +143,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
 //This route is for fetching the thumbnail image assigned to a given entity document
 //Authnetication requirements to be defined
 router.get('/:entity/:id/thumbnail', Auth.isLoggedIn, function(req, res){
-  console.log('here');
   MasterController.getThumbnail({_id: req.params.id}, entities[req.params.entity], function(result){
     if(result){
       res.send(result.thumbnail);
@@ -166,6 +166,8 @@ router.post("/:entity/", Auth.isLoggedIn, function(req, res){
   }
   else{
     data.createuser = user._id;
+    data.userid = user._id;
+    data.dateline = Date.now;
     MasterController.save(null, data, entities[entity], function(result){
       res.json(result);
     });
