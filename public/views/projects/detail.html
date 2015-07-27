@@ -62,7 +62,7 @@
       <ul class="plainlist">
         <li ng-repeat="comment in comments">
           <img src="" />
-          <h3>{{comment.userid.username}}</h3><span> - {{comment.dateline*1000 | date:'dd MMM yy HH:mm'}}</span>
+          <h3>{{comment.userid.username}}</h3><span> - {{comment.dateline*1000 | date:'dd MMM yy HH:mm'}} - {{comment.dateline | date:'dd MMM yy HH:mm'}}</span>
           <div class="" ng-bind-html="getCommentText(comment.commenttext)">
 
           </div>

@@ -6,6 +6,10 @@ console.log(Schema);
 var commentSchema = new Schema({
   commenttext: Buffer,
   pagetext: Buffer,
+  dateline: {
+    type: Date,
+    default: Date.now
+  },
   threadid: Schema.ObjectId,
   userid: {
     type: Schema.ObjectId,
