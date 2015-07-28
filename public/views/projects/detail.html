@@ -54,7 +54,7 @@
     </div>
     <div class="col-md-12 project-comments">
       <div class="result-header">
-        Showing {{projects.length}} of {{projectInfo.total}} comments
+        Showing {{comments.length}} of {{commentInfo.total}} comments
         <div class="sorting">
           <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
         </div>
@@ -62,7 +62,7 @@
       <ul class="plainlist">
         <li ng-repeat="comment in comments">
           <img src="" />
-          <h3>{{comment.userid.username}}</h3><span> - {{comment.dateline*1000 | date:'dd MMM yy HH:mm'}} - {{comment.dateline | date:'dd MMM yy HH:mm'}}</span>
+          <h3>{{comment.userid.username}}</h3><span> - {{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
           <div class="" ng-bind-html="getCommentText(comment.commenttext)">
 
           </div>

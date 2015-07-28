@@ -14,11 +14,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   console.log('params - ',$stateParams);
 
   $scope.sortOptions = {
-    dateline: {
-      id: "dateline",
+    createdate: {
+      id: "createdate",
       name: "Last Updated",
       order: -1,
-      field: "dateline"
+      field: "createdate"
     },
     rating:{
       id: "rating",
@@ -40,7 +40,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   };
 
-  $scope.sort = $scope.sortOptions.dateline;
+  $scope.sort = $scope.sortOptions.createdate;
   $scope.categoryId = "";
   $scope.productId = "";
 
@@ -49,9 +49,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
-    $scope.query.sort = $scope.sort.field;
-    $scope.query.sortOrder = $scope.sort.order;
   }
+  $scope.query.sort = $scope.sort.field;
+  $scope.query.sortOrder = $scope.sort.order;
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
   }

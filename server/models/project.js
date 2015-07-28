@@ -7,11 +7,13 @@ var projectSchema = new Schema({
   short_description: String,
   thumbnail: Buffer,
   overview: String,
-  dateline: Number,
-  last_updated: Number,
-  last_git_check: Number,
+  createdate: Date,
+  last_updated: Date,
+  last_git_check: Date,
   project_site: String,
   git_clone_url: String,
+  git_repo: String,
+  git_user: String,
   threadid: String,
   taglist: Buffer,
   userid: {
@@ -24,7 +26,7 @@ var projectSchema = new Schema({
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'users'
   },
   forumid: {
     type: Schema.ObjectId,
