@@ -37,7 +37,13 @@
         </li>
       </ul>
     </div>
-    <div class="col-md-3 align-center">
+    <div class="col-md-3 align-left">
+      <ul class="plainlist moderation-list">
+        <li class="icon flag large" ng-if="userManager.canFlag('projects')" ng-click="flagProject(projects[0])" ng-class="{flagged: projects[0].flagged==true}">{{projects[0].flagged==true?'Flagged':'Flag'}}</li>
+        <li class="icon approve large" ng-if="(userManager.canApprove('projects') && projects[0].approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(projects[0])">Approve</li>
+        <li class="icon remove large" ng-if="userManager.canHide('projects') && projects[0].approved==true" ng-click="hideProject(projects[0])">Unapprove</li>
+        <li class="icon delete large" ng-if="userManager.canDelete('projects')" ng-click="deleteProject(projects[0])">Delete</li>
+      </ul>
       <button class="ghost-button grey">Download</button>
     </div>
   </div>

@@ -3,33 +3,38 @@ app.service('userManager', ['$resource', function($resource){
   this.menu = {};
   this.userInfo = {};
   var that = this;
+  this.canUpdateAll = function(entity){
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].allOwners && this.userInfo.role.permissions[entity].allOwners==true;
+  }
   this.canCreate = function(entity){
-    return this.userInfo.userInfo.permissions[entity] && this.userInfo.userInfo.permissions[entity].create && this.userInfo.userInfo.permissions[entity].create==true
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].create && this.userInfo.role.permissions[entity].create==true;
   }
   this.canRead = function(entity){
-    console.log(entity);
-    return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].read && this.userInfo.permissions[entity].read==true
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].read && this.userInfo.role.permissions[entity].read==true;
   }
   this.canUpdate = function(entity){
-    return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].update && this.userInfo.permissions[entity].update==true
-  }
-  this.canDelete = function(entity){
-    return
-    (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].softDelete && this.userInfo.permissions[entity].softDelete==true)
-    ||
-    (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].hardDelete && this.userInfo.permissions[entity].hardDelete==true)
-  }
-  this.canSeeAll = function(entity){
-    return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].allOwners && this.userInfo.permissions[entity].allOwners==true
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true;
   }
   this.canApprove = function(entity){
-    return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].approve && this.userInfo.permissions[entity].approve==true
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].approve && this.userInfo.role.permissions[entity].approve==true;
+  }
+  this.canFlag = function(entity){
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].flag && this.userInfo.role.permissions[entity].flag==true;
+  }
+  this.canHide = function(entity){
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].hide && this.userInfo.role.permissions[entity].hide==true;
+  }
+  this.canDelete = function(entity){
+    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true;
   }
   this.refresh = function(){
     System.get({path:'userInfo'}, function(result){
       that.menu = result.menu;
       that.userInfo = result.user;
     });
+  }
+  this.hasPermissions = function(){
+    return this.userInfo && this.userInfo.role && this.userInfo.role.permissions;
   }
   this.refresh();
 }]);

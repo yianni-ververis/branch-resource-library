@@ -1,0 +1,38 @@
+.confirm-smokescreen{
+  background-color: rgba(150,150,150,0.7);
+  z-index: 10000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: none;
+  &.active{
+    display: block;
+  }
+  .confirm-dialog{
+    color: @header-grey;
+    position: relative;
+    text-align: center;
+    padding: 10px;
+    width: 340px;
+    height: 110px;
+    margin: 200px auto;
+    background-color: white;
+    border-radius: 2px;
+    border: 1px solid @content-border;
+    p{
+      font-size: 14px;
+      font-weight: lighter;
+    }
+    ul{
+      padding: 0;
+      list-style-type: none;
+      width: 100%;
+      li{
+        padding: 0 5px;
+        display: inline-block;
+      }
+    }
+  }
+}

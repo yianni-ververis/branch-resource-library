@@ -26,7 +26,7 @@ function buildMenu(user){
     },
     {
       label: "Logout",
-      href: "#logout"
+      href: "/auth/logout"
     }
   ];
   if(user){

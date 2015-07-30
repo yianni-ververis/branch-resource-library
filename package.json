@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Qlik-PE/branch-resource-library",
   "dependencies": {
     "MD5": "^1.2.1",
-    "atob": "^1.1.2",    
+    "atob": "^1.1.2",
     "bcryptjs": "^2.2.0",
     "body-parser": "^1.12.0",
     "btoa": "^1.1.2",
@@ -34,7 +34,7 @@
     "markdown": "^0.5.0",
     "marked": "^0.3.3",
     "milli-epoch": "0.0.1",
-    "mongoose": "^3.8.24",
+    "mongoose": "^4.1.0",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "request": "^2.55.0"

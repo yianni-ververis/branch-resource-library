@@ -1,7 +1,7 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngPaging", "ngSanitize" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngSanitize" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "pagingConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, pagingConfigProvider) {
+  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider) {
     $urlRouterProvider.otherwise("/");
 
     notificationsConfigProvider.setAutoHide(true);
@@ -69,102 +69,7 @@
   }]);
 
   //directives
-  //this is a directive/module specific to Branch and it's server paging mechanism
-  (function (root, factory) {
-  	if (typeof exports === 'object') {
-  		module.exports = factory(root, require('angular'));
-  	} else if (typeof define === 'function' && define.amd) {
-  		define(['angular'], function (angular) {
-  			return (root.ngPaging = factory(root, angular));
-  		});
-  	} else {
-  		root.ngPaging = factory(root, root.angular);
-  	}
-  }(this, function (window, angular) {
-  	var module = angular.module('ngPaging', []);
-    module.provider('pagingConfig', function() {
-      return {
-  			$get: function(){
-  				return {}
-  			}
-  		};
-    });
-
-    module.factory('paging', ['$rootScope', function ($rootScope) {
-  		return {};
-    }]);
-
-
-    module.directive('pagingControl', ['pagingConfig', '$timeout', function (pagingConfig, $timeout) {
-      return {
-  			restrict: "E",
-  			scope:{
-  				info: "=",
-  				sortoptions: "=",
-  				sort: "=",
-  				url: "="
-  			},
-        template: function(elem, attr){
-          html = '<div class="project-result-header">\
-  	        Showing {{info.pages[info.currentPage-1].pageStart + 1 || 1}} - {{info.pages[info.currentPage-1].pageEnd}} of {{info.total}} results\
-  	        <div class="paging">\
-  	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
-  	          <ul class="page-list plainlist">\
-  	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#{{url}}?page=1&sort={{sort.id}}" class="icon first"></a>\
-  	            </li>\
-  	            <li ng-hide="info.currentPage==1">\
-  	              <a href="#{{url}}?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
-  	            </li>\
-  	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
-  	              <a href="#{{url}}?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
-  	            </li>\
-  	            <li ng-show="info.currentPage < info.pages.length">\
-  	              <a href="#{{url}}?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
-  	            </li>\
-  	            <li ng-show="info.currentPage < info.pages.length">\
-  	              <a href="#{{url}}?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
-  	            </li>\
-  	          </ul>\
-  	        </div>';
-  					if(attr.enablesorting){
-  							html += '<div class="sorting">\
-  			          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortoptions track by item.id"/>\
-  			        </div>'
-  					}
-  	        html += '</div>';
-  					return html;
-        },
-        link: function(scope){
-  				scope.pageInRange = function(pageIndex){
-  					var minPage, maxPage;
-  					if(scope.info.pages.length==1){
-  						return false;
-  					}
-  					else if(scope.info.currentPage <= 2){
-  						minPage = 1;
-  						maxPage = 5
-  					}
-  					else if (scope.info.currentPage >= scope.info.pages.length - 2) {
-  						minPage = scope.info.pages.length - 5;
-  						maxPage = scope.info.pages.length;
-  					}
-  					else{
-  						minPage = scope.info.currentPage - 2;
-  						maxPage = scope.info.currentPage + 2;
-  					}
-  					return (pageIndex >= minPage && pageIndex <= maxPage);
-  				};
-  				scope.applySort = function(){
-  			    window.location = "#"+scope.url+"?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
-  			  };
-        }
-      }
-    }]);
-
-  	return module;
-  }));
-
+  //include "./directives/paging.js"
   app.directive('header', ['userManager', function (userManager) {
     return {
       restrict: "A",
@@ -179,33 +84,102 @@
     }
   }]);
 
+  (function (root, factory) {
+  	if (typeof exports === 'object') {
+  		module.exports = factory(root, require('angular'));
+  	} else if (typeof define === 'function' && define.amd) {
+  		define(['angular'], function (angular) {
+  			return (root.ngConfirm = factory(root, angular));
+  		});
+  	} else {
+  		root.ngConfirm = factory(root, root.angular);
+  	}
+  }(this, function (window, angular) {
+  	var module = angular.module('ngConfirm', []);
+    module.provider('confirmConfig', function() {
+      return {
+  			$get: function(){
+  				return {}
+  			}
+  		};
+    });
+
+    module.factory('confirm', ['$rootScope', function ($rootScope) {
+  		return {
+  			prompt: function(message, options, callbackFn){
+  				$rootScope.$broadcast('confirmPrompt', {message: message, options: options, callbackFn: callbackFn});
+  			}
+  		};
+    }]);
+
+
+    module.directive('confirmDialog', ['confirmConfig', '$timeout', function (confirmConfig, $timeout) {
+      return {
+  			restrict: "E",
+  			scope:{
+
+  			},
+        template: function(elem, attr){
+          html = "<div class='confirm-smokescreen' ng-class='{active:active==true}'>";
+          html += "<div class='confirm-dialog'>";
+          html += "<p>{{message}}</p>";
+          html += "<ul>";
+          html += "<li ng-repeat='option in options'><button class='ghost-button grey' ng-click='returnOption($index)'>{{option}}</button></li>";
+          html += "</ul>";
+          html += "</div>";
+  	      html += "</div>";
+  				return html;
+        },
+        link: function(scope){
+  				scope.$on('confirmPrompt', function(event, data){
+            scope.message = data.message;
+            scope.options = data.options;
+            scope.callback = data.callbackFn;
+            scope.active = true;
+          });
+          scope.returnOption = function(index){
+            scope.message = null;
+            scope.options = null;
+            scope.active = false;
+            scope.callback.call(null, index);
+            scope.callback = null;
+          };
+        }
+      }
+    }]);
+
+  	return module;
+  }));
+
   //services
   app.service('userManager', ['$resource', function($resource){
     var System = $resource("system/:path", {path: "@path"});
     this.menu = {};
     this.userInfo = {};
     var that = this;
+    this.canUpdateAll = function(entity){
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].allOwners && this.userInfo.role.permissions[entity].allOwners==true;
+    }
     this.canCreate = function(entity){
-      return this.userInfo.userInfo.permissions[entity] && this.userInfo.userInfo.permissions[entity].create && this.userInfo.userInfo.permissions[entity].create==true
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].create && this.userInfo.role.permissions[entity].create==true;
     }
     this.canRead = function(entity){
-      console.log(entity);
-      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].read && this.userInfo.permissions[entity].read==true
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].read && this.userInfo.role.permissions[entity].read==true;
     }
     this.canUpdate = function(entity){
-      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].update && this.userInfo.permissions[entity].update==true
-    }
-    this.canDelete = function(entity){
-      return
-      (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].softDelete && this.userInfo.permissions[entity].softDelete==true)
-      ||
-      (this.userInfo.permissions[entity] && this.userInfo.permissions[entity].hardDelete && this.userInfo.permissions[entity].hardDelete==true)
-    }
-    this.canSeeAll = function(entity){
-      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].allOwners && this.userInfo.permissions[entity].allOwners==true
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true;
     }
     this.canApprove = function(entity){
-      return this.userInfo.permissions[entity] && this.userInfo.permissions[entity].approve && this.userInfo.permissions[entity].approve==true
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].approve && this.userInfo.role.permissions[entity].approve==true;
+    }
+    this.canFlag = function(entity){
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].flag && this.userInfo.role.permissions[entity].flag==true;
+    }
+    this.canHide = function(entity){
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].hide && this.userInfo.role.permissions[entity].hide==true;
+    }
+    this.canDelete = function(entity){
+      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true;
     }
     this.refresh = function(){
       System.get({path:'userInfo'}, function(result){
@@ -213,13 +187,20 @@
         that.userInfo = result.user;
       });
     }
+    this.hasPermissions = function(){
+      return this.userInfo && this.userInfo.role && this.userInfo.role.permissions;
+    }
     this.refresh();
   }]);
 
   app.service('resultHandler', ["notifications", function(notifications){
+    this.processing = false;
     this.process = function(result, action, preventRedirect){   //deals with the result in a generic way. Return true if the result is a success otherwise returns false
-      if(result.redirect && !preventRedirect){
-        window.location = result.redirect;
+      if(result.redirect && !preventRedirect){  //should only redirect a user to the login page
+        if(!this.processing){
+          this.processing = true;
+          window.location = result.redirect + "?url=" + window.location.hash.replace("#/","");
+        }
         return false;
       }
       else if (result.errCode) {
@@ -249,16 +230,15 @@
     var UserRoles = $resource("api/userroles/:roleId", {roleId: "@roleId"});
     var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
 
-    if(userManager.user){
-      $scope.permissions = userManager.user.role.permissions;
-    }
+    $scope.userManager = userManager;  
 
     $scope.collections = [
       "users",
       "userroles",
       "features",
       "projects",
-      "comments"
+      "comments",
+      "blogs"
     ];
 
     User.get({}, function(result){
@@ -465,14 +445,14 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler){
-    var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm){
+    var Project = $resource("api/projects/:projectId/:function", {projectId: "@projectId", function: "@function"});
     var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
     var Product = $resource("api/products/:productId", {productId: "@productId"});
 
-    if(userManager.user){
-      $scope.permissions = userManager.user.role.permissions;
-    }
+    $scope.userManager = userManager;
+    $scope.Confirm = confirm;
+
     $scope.projects = [];
     $scope.url = "projects";
 
@@ -602,8 +582,51 @@
     };
 
     $scope.applySort = function(){
-      window.location = "#projects?sort=" + $scope.sort.id + "product=" + $scope.productId + "&category=" + $scope.categoryId;
+      window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
+
+    $scope.flagProject = function(project){
+      Project.save({projectId:project._id, function: "flag"}, function(result){
+        if(resultHandler.process(result)){
+          project.flagged = true;
+        }
+      });
+    };
+
+    $scope.hideProject = function(project){
+      Project.save({projectId:project._id, function: "hide"}, function(result){
+        if(resultHandler.process(result)){
+          project.approved = false;
+        }
+      });
+    };
+
+    $scope.approveProject = function(project){
+      Project.save({projectId:project._id, function: "approve"}, function(result){
+        if(resultHandler.process(result)){
+          project.approved = true;
+          project.flagged = false;
+        }
+      });
+    };
+
+    $scope.deleteProject = function(project, index){
+      $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
+        if(result==0){
+          if($stateParams.projectId){
+            window.location = "#projects";
+          }
+          else {
+            Project.delete({projectId: project._id}, function(result){
+                if(resultHandler.process(result)){
+                  $scope.projects.splice(index, 1);
+                }
+            });
+          }
+        }
+      });
+    };
+
 
     $scope.getProjectData($scope.query); //get initial data set
   }]);

@@ -1,8 +1,16 @@
 .icon{
   font-family: branch-icons;
 
-  &.small{
+  &.small::before{
     font-size: 14px;
+  }
+
+  &.medium::before{
+    font-size: 20px;
+  }
+
+  &.large::before{
+    font-size: 28px;
   }
 }
 
@@ -27,5 +35,29 @@
 .last{
   &::before{
     content: "\E809";
+  }
+}
+
+.approve{
+  &::before{
+    content: "\E813";
+  }
+}
+
+.remove{  //can't use hide as bootstrap uses it for another purpose
+  &::before{
+    content: "\E814";
+  }
+}
+
+.delete{
+  &::before{
+    content: "\E807";
+  }
+}
+
+.flag{
+  &::before{
+    content: "\E815";
   }
 }

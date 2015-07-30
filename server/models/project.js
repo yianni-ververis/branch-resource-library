@@ -20,6 +20,10 @@ var projectSchema = new Schema({
     type: Boolean,
     default: true
   },
+  flagged: {
+    type: Boolean,
+    default: false
+  },
   userid: {
     type: Schema.ObjectId,
     ref: 'users'
