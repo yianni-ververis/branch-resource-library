@@ -3,7 +3,7 @@ var atob     = require("atob");
 var entities = require("../routes/entityConfig");
 
 module.exports = {
-  isLoggedIn: function(req, res, next){    
+  isLoggedIn: function(req, res, next){
     if(req.method=="GET" && (entities[req.params.entity].requiresAuthentication!=undefined && entities[req.params.entity].requiresAuthentication==false)){
       next();
     }
@@ -21,7 +21,7 @@ module.exports = {
         }
         else {
           console.log(req.url);
-          res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login?url="+req.url})
+          res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
         }
       });
     }
@@ -32,12 +32,12 @@ module.exports = {
           next();
         }
         else {
-          res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login?url="+req.url})
+          res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
         }
       });
     }
     else{
-      res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login?url="+req.url})
+      res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
     }
   }
 }

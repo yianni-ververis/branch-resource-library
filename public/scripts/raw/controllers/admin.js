@@ -5,16 +5,15 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   var UserRoles = $resource("api/userroles/:roleId", {roleId: "@roleId"});
   var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
 
-  if(userManager.user){
-    $scope.permissions = userManager.user.role.permissions;
-  }
+  $scope.userManager = userManager;  
 
   $scope.collections = [
     "users",
     "userroles",
     "features",
     "projects",
-    "comments"
+    "comments",
+    "blogs"
   ];
 
   User.get({}, function(result){

@@ -1,11 +1,11 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler){
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm){
+  var Project = $resource("api/projects/:projectId/:function", {projectId: "@projectId", function: "@function"});
   var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
   var Product = $resource("api/products/:productId", {productId: "@productId"});
 
-  if(userManager.user){
-    $scope.permissions = userManager.user.role.permissions;
-  }
+  $scope.userManager = userManager;
+  $scope.Confirm = confirm;
+
   $scope.projects = [];
   $scope.url = "projects";
 
@@ -135,8 +135,51 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.applySort = function(){
-    window.location = "#projects?sort=" + $scope.sort.id + "product=" + $scope.productId + "&category=" + $scope.categoryId;
+    window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
+
+  $scope.flagProject = function(project){
+    Project.save({projectId:project._id, function: "flag"}, function(result){
+      if(resultHandler.process(result)){
+        project.flagged = true;
+      }
+    });
+  };
+
+  $scope.hideProject = function(project){
+    Project.save({projectId:project._id, function: "hide"}, function(result){
+      if(resultHandler.process(result)){
+        project.approved = false;
+      }
+    });
+  };
+
+  $scope.approveProject = function(project){
+    Project.save({projectId:project._id, function: "approve"}, function(result){
+      if(resultHandler.process(result)){
+        project.approved = true;
+        project.flagged = false;
+      }
+    });
+  };
+
+  $scope.deleteProject = function(project, index){
+    $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
+      if(result==0){
+        if($stateParams.projectId){
+          window.location = "#projects";
+        }
+        else {
+          Project.delete({projectId: project._id}, function(result){
+              if(resultHandler.process(result)){
+                $scope.projects.splice(index, 1);
+              }
+          });
+        }
+      }
+    });
+  };
+
 
   $scope.getProjectData($scope.query); //get initial data set
 }]);

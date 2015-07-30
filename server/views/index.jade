@@ -1,7 +1,7 @@
 doctype html
 html(ng-app="branch")
   head
-    title("Qlik Branch")
+    title Qlik Branch
     link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
     link(rel="stylesheet" href="bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.css")
     link(rel="stylesheet", href="/bower_components/font-awesome/css/font-awesome.min.css")    
@@ -19,6 +19,7 @@ html(ng-app="branch")
     meta(name="viewport" content="width=device-width, initial-scale=1")
   body    
     notifications-bar.notifications.notifications-container
+    confirm-dialog
     div(header)
     div.main(ui-view)        
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")

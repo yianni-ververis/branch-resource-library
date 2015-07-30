@@ -24,7 +24,7 @@
 .permission-list{
   li{
     label{
-      width: 10%;
+      width: 9%;
       text-align: center;
       margin-right: 0;
     }
@@ -41,7 +41,7 @@
       height: 22px !important;
       line-height: 25px !important;
       margin-top: 0;
-      margin-left: 5%;
+      margin-left: 4%;
       border: none;
       box-shadow: none;
     }
@@ -154,5 +154,35 @@
   span{
     color: @header-grey;
     font-size: 20px;
+  }
+}
+
+.moderation-list{
+  .icon{
+    cursor: pointer;
+  }
+  color: @disabled;
+  .flag:hover, .remove:hover, .delete:hover, .flag.flagged, .remove.hidden{
+    color: @red;
+  }
+  .approve:hover{
+    color: @green;
+  }
+
+  .large{
+    position: relative;
+    &::before{
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    height: 40px;
+    line-height: 40px;
+    padding-left: 30px;
+    font-weight: lighter;
+
+    &:last-of-type{
+      margin-bottom: 10px;
+    }
   }
 }

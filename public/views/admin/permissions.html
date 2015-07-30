@@ -4,7 +4,7 @@
     <li ng-class="{active:activeRole===$index}" ng-repeat="role in roles" ng-click="setRole($index)">
       <a>{{role.name}}</a>
     </li>
-    <li ng-show="permissions.canCreate('userroles')" >
+    <li ng-show="userManager.canCreate('userroles')" >
       <input class="form-control new-input" ng-model="newrolename" placeholder="New Role"/>
       <div class="new inline" ng-click="newRole(newrolename)">Add</div>
     </li>
@@ -13,9 +13,9 @@
 <div class="col-md-9">
   <h2 class="underline">Permissions</h2>
   <div class="permission-summary">
-    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!permissions.canCreate('userroles')" ng-model="copyRoleName"/>
-    <div class="copy inline" ng-show="permissions.canCreate('userroles')" ng-click="copyRole(copyRoleName)">Copy</div>
-    <button ng-click="delete(activeRole)" ng-show="permissions.canDelete('userroles') && copyRoleName!='admin'" class="btn btn-default btn-delete">Delete</button>
+    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!userManager.canCreate('userroles')" ng-model="copyRoleName"/>
+    <div class="copy inline" ng-show="userManager.canCreate('userroles')" ng-click="copyRole(copyRoleName)">Copy</div>
+    <button ng-click="delete(activeRole)" ng-show="userManager.canDelete('userroles') && copyRoleName!='admin'" class="btn btn-default btn-delete">Delete</button>
   </div>
   <ul class="permission-list list">
     <li class="table-header">
@@ -25,6 +25,7 @@
       <label>Read</label>
       <label>Update</label>
       <label>Approve</label>
+      <label>Flag</label>
       <label>Hide</label>
       <label>Delete</label>
     </li>
@@ -35,8 +36,46 @@
       <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].read"/>
       <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].update"/>
       <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].approve"/>
-      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].softDelete"/>
-      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].hardDelete"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].flag"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].hide"/>
+      <input class="form-control" type="checkbox" ng-change="saveRole()" ng-model="roles[activeRole].permissions[entity].delete"/>
     </li>
   </ul>
+  <div class="permission-key">
+    <h2 class="underline">Key</h2>
+    <ul class="permission-list list">
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="All Owners"/>
+        <span>Allows the logged in user to edit an item regardless of who owns it.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Create"/>
+        <span>Allows the logged in user to create a new item.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Read"/>
+        <span>Allows the logged in user to view an item.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Update"/>
+        <span>Allows the logged in user to update an item.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Approve"/>
+        <span>Allows the logged in user to approve an item. If an item is not approved it can only be viewed by users with Hide or Delete permissions.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Flag"/>
+        <span>Allows the logged in user to flag an item for removal.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Hide"/>
+        <span>Allows the logged in user to Hide/Unapprove an item.</span>
+      </li>
+      <li>
+        <input class="form-control list-label" ng-disabled="true" value="Delete"/>
+        <span>Allows the logged in user to delete an item. This removes the item from the database.</span>
+      </li>
+    </ul>
+  </div>
 </div>

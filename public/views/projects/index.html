@@ -44,7 +44,7 @@
                 <p>{{project.short_description}}</p>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <ul class="stats plainlist">
                 <li class="rating">
                   <span ng-show="!project.votenum || project.votenum==0">Not yet rated</span>
@@ -54,6 +54,14 @@
                 <li><i>{{project.views}}</i> Views</li>
                 <li><i>{{project.replycount}}</i> Comments</li>
                 <li>Last Update: <i>{{project.last_updated | date:'dd MMM yy HH:mm'}}</i></li>
+              </ul>
+            </div>
+            <div class="col-md-1">
+              <ul class="plainlist moderation-list">
+                <li class="icon flag medium" ng-if="userManager.canFlag('projects')" ng-click="flagProject(project)" ng-class="{flagged: project.flagged==true}"></li>
+                <li class="icon approve medium" ng-if="(userManager.canApprove('projects') && project.approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(project)"></li>
+                <li class="icon remove medium" ng-if="userManager.canHide('projects') && project.approved==true" ng-click="hideProject(project)"></li>
+                <li class="icon delete medium" ng-if="userManager.canDelete('projects')" ng-click="deleteProject(project, $index)"></li>
               </ul>
             </div>
           </li>

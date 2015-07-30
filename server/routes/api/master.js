@@ -11,7 +11,7 @@ var express = require("express"),
         // required
         version: "3.0.0",
         // optional
-        debug: true,
+        debug: false,
         protocol: "https",
         host: "api.github.com", // should be api.github.com for GitHub
         pathPrefix: "", // for some GHEs; none for GitHub
@@ -20,6 +20,11 @@ var express = require("express"),
             "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
         }
     });
+
+//load in the functions
+var flag = require("./flag");
+var hide = require("./hide");
+var approve = require("./approve");
 
 GitHub.authenticate({type: "basic", username: "switchnick", password: "c0mp0und"});
 
@@ -48,7 +53,7 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res){
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
         || (entity.requiresAuthentication!=true && entity.exemptFromApproval!=true && !user)){
       query["approved"]=true;
-    }    
+    }
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
     });
@@ -110,7 +115,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
       query["createuser"]=user._id;
     }
     MasterController.get(req.query, query, entity, function(results){
-      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].project_site.indexOf('github')!=-1 && ((results.data[0].last_git_check && results.data[0].last_git_check < epoch.addMinutes(-60))||(!results.data[0].last_git_check)))){
+      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].project_site.indexOf('github')!=-1 && ((results.data[0].last_git_check && results.data[0].last_git_check < (new Date() - (1 / 24)))||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
@@ -120,6 +125,9 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         var gituser = params.pop();
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           console.log('Getting git info');
+          console.log(results.data[0].last_git_check);
+          var d = new Date();
+          console.log(d-(1/24));
           if(err){
             res.json(Error.custom(err.message));
           }
@@ -130,8 +138,8 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             results.data[0].last_updated = epoch.toEpoch(new Date(gitresult.updated_at));
             results.data[0].last_git_check = epoch.now();
             GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
-              console.log(atob(readmeresult.content));
-              results.data[0].pagetext = atob(readmeresult.content);
+              //console.log(atob(readmeresult.content));
+              results.data[0].content = atob(readmeresult.content);
               results.data[0].save();
               res.json(results || {});
             });
@@ -211,6 +219,10 @@ router.post("/:entity/:id", Auth.isLoggedIn, function(req, res){
     });
   }
 });
+
+router.post("/:entity/:id/flag", Auth.isLoggedIn, flag);
+router.post("/:entity/:id/hide", Auth.isLoggedIn, hide);
+router.post("/:entity/:id/approve", Auth.isLoggedIn, approve);
 
 //This route is for deleting a list of records on the specified entity
 //url parameters can be used to add filtering

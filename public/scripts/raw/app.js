@@ -1,7 +1,7 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngPaging", "ngSanitize" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngSanitize" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "pagingConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, pagingConfigProvider) {
+  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider) {
     $urlRouterProvider.otherwise("/");
 
     notificationsConfigProvider.setAutoHide(true);
@@ -69,8 +69,9 @@
   }]);
 
   //directives
-  include "./directives/paging.js"
+  //include "./directives/paging.js"
   include "./directives/header.js"
+  include "./directives/confirm-dialog.js"
   //services
   include "./services/user-manager.js"
   include "./services/result-handler.js"
