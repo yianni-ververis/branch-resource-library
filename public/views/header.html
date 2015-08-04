@@ -23,9 +23,14 @@
             <li><a href="http://community.qlik.com" target="_window">Qlik Community</a></li>
           </ul>
         </li>
-        <li><a href="#articles">Articles</a></li>
-        <li><a href="#projects">Projects</a></li>
+        <li ng-class="{active: activeItem=='articles'}"><a href="#articles">Articles</a></li>
+        <li ng-class="{active: activeItem=='projects'}"><a href="#projects">Projects</a></li>
       </ul>
     </div>
+  </div>
+  <div class="container breadcrumb-container">
+    <ul>
+      <li ng-repeat="crumb in breadcrumbs"><a href="#{{crumb.link}}">{{crumb.text}}</a></li>
+    </ul>
   </div>
 </div>
