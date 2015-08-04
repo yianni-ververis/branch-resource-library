@@ -1,5 +1,5 @@
 .header{
-  background-color: white;    
+  background-color: white;
   @media screen and (min-width: @tablet-width) {
     min-height: 50px;
     padding: 15px 0;
@@ -11,6 +11,9 @@
         font-weight: lighter;
         display: inline-block;
         float: right;
+        &.active{
+          border-bottom: 2px solid @green;
+        }
       }
     }
   }

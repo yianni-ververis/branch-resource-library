@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title){
   var Project = $resource("api/projects/:projectId/:function", {projectId: "@projectId", function: "@function"});
   var Category = $resource("api/projectcategories/:projectCategoryId", {projectCategoryId: "@projectCategoryId"});
   var Product = $resource("api/products/:productId", {productId: "@productId"});
@@ -88,6 +88,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         else{
           $scope.projects = result.data;
+          //if this is the detail view we'll update the breadcrumbs
+          if($state.current.name == "projects.detail"){
+            $scope.$root.$broadcast('spliceCrumb', {
+              text: $scope.projects[0].title,
+              link: "/projects/"+$scope.projects[0]._id
+            });
+          }
         }
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
