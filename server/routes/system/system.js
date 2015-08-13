@@ -22,7 +22,7 @@ function buildMenu(user){
   var basicMenu = [
     {
       label: "Create Project",
-      href: ""
+      href: "#projects/new"
     },
     {
       label: "Logout",

@@ -68,7 +68,7 @@
       data:{
         crumb: ""
       }
-    })
+    })    
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",
@@ -543,6 +543,7 @@
     $scope.query.sortOrder = $scope.sort.order;
     if($stateParams.projectId){
       $scope.query.projectId = $stateParams.projectId;
+      $scope.projectId = $stateParams.projectId;
     }
     if($stateParams.product){
       $scope.productId = $stateParams.product;
@@ -627,6 +628,7 @@
     $scope.getPageText = function(){
       if($scope.projects[0] && $scope.projects[0].content){
         return marked($scope.projects[0].content);
+        //return $scope.projects[0].content;
       }
     };
 
@@ -676,8 +678,10 @@
       });
     };
 
-
-    $scope.getProjectData($scope.query); //get initial data set
+    //only load the project if we have a valid projectId or we are in list view
+    if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+      $scope.getProjectData($scope.query); //get initial data set
+    }
   }]);
 
   app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){

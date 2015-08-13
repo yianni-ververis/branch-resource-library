@@ -68,7 +68,7 @@
       data:{
         crumb: ""
       }
-    })
+    })    
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",

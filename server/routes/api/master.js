@@ -115,14 +115,13 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
       query["createuser"]=user._id;
     }
     MasterController.get(req.query, query, entity, function(results){
-      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].project_site.indexOf('github')!=-1 && ((results.data[0].last_git_check && results.data[0].last_git_check < (new Date() - (1 / 24)))||(!results.data[0].last_git_check)))){
+      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check < (new Date() - (1 / 24)))||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
         // - the git details have not been updated for an hour +
-        var params = results.data[0].project_site.split("/");
-        var repo = params.pop();
-        var gituser = params.pop();
+        var repo = results.data[0].git_repo;
+        var gituser = results.data[0].git_user;
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           console.log('Getting git info');
           console.log(results.data[0].last_git_check);

@@ -54,6 +54,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.query.sortOrder = $scope.sort.order;
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
+    $scope.projectId = $stateParams.projectId;
   }
   if($stateParams.product){
     $scope.productId = $stateParams.product;
@@ -138,6 +139,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.getPageText = function(){
     if($scope.projects[0] && $scope.projects[0].content){
       return marked($scope.projects[0].content);
+      //return $scope.projects[0].content;
     }
   };
 
@@ -187,6 +189,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     });
   };
 
-
-  $scope.getProjectData($scope.query); //get initial data set
+  //only load the project if we have a valid projectId or we are in list view
+  if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+    $scope.getProjectData($scope.query); //get initial data set
+  }
 }]);

@@ -1,84 +1,100 @@
 <div class="container page">
-  <div class="row project-detail-summary content">
-    <div class="col-md-4">
-      <h1>{{projects[0].title}}</h1>
-      by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
-      <img src="api/projects/{{projects[0]._id}}/thumbnail" />
-    </div>
-    <div class="col-md-5">
-      <ul class="plainlist">
-        <li>
-          <label>Project Website:</label>
-          <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
-        </li>
-        <li>
-          <label>Updated at:</label>
-          {{projects[0].last_updated*1000 | date:'dd MMM yy HH:mm'}}
-        </li>
-        <li>
-          <label>Git Clone Url:</label>
-          {{projects[0].git_clone_url}}
-        </li>
-        <li>
-          <label>Project State:</label>
-          {{projects[0].open}}
-        </li>
-        <li>
-          <label>Release version:</label>
-          TBD
-        </li>
-        <li>
-          <label>Branch Contributors:</label>
-          TBD
-        </li>
-        <li>
-          <label>Tags:</label>
-          {{getBuffer(projects[0].taglist.data)}}
-        </li>
-      </ul>
-    </div>
-    <div class="col-md-3 align-left">
-      <ul class="plainlist moderation-list">
-        <li class="icon flag large" ng-if="userManager.canFlag('projects')" ng-click="flagProject(projects[0])" ng-class="{flagged: projects[0].flagged==true}">{{projects[0].flagged==true?'Flagged':'Flag'}}</li>
-        <li class="icon approve large" ng-if="(userManager.canApprove('projects') && projects[0].approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(projects[0])">Approve</li>
-        <li class="icon remove large" ng-if="userManager.canHide('projects') && projects[0].approved==true" ng-click="hideProject(projects[0])">Unapprove</li>
-        <li class="icon delete large" ng-if="userManager.canDelete('projects')" ng-click="deleteProject(projects[0])">Delete</li>
-      </ul>
-      <button class="ghost-button grey">Download</button>
-    </div>
-  </div>
-  <div class="row content">
-    <div class="col-md-12">
-      <h2>Details</h2>
-    </div>
-    <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
-    </div>
-  </div>
-  <div class="row content" ng-controller="commentController">
-    <div class="col-md-12">
-      <h2>Comments</h2>
-    </div>
-    <div class="col-md-12 project-comments">
-      <div class="result-header">
-        Showing {{comments.length}} of {{commentInfo.total}} comments
-        <div class="sorting">
-          <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
-        </div>
+  <div ng-hide="{{projectId=='new'}}">
+    <div class="row project-detail-summary content">
+      <div class="col-md-4">
+        <h1>{{projects[0].title}}</h1>
+        by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
+        <img src="api/projects/{{projects[0]._id}}/thumbnail" />
       </div>
-      <ul class="plainlist">
-        <li ng-repeat="comment in comments">
-          <img src="" />
-          <h3>{{comment.userid.username}}</h3><span> - {{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
-          <div class="" ng-bind-html="getCommentText(comment.content)">
-
+      <div class="col-md-5">
+        <ul class="plainlist">
+          <li>
+            <label>Project Website:</label>
+            <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
+          </li>
+          <li>
+            <label>Updated at:</label>
+            {{projects[0].last_updated*1000 | date:'dd MMM yy HH:mm'}}
+          </li>
+          <li>
+            <label>Git Clone Url:</label>
+            {{projects[0].git_clone_url}}
+          </li>
+          <li>
+            <label>Project State:</label>
+            {{projects[0].open}}
+          </li>
+          <li>
+            <label>Release version:</label>
+            TBD
+          </li>
+          <li>
+            <label>Branch Contributors:</label>
+            TBD
+          </li>
+          <li>
+            <label>Tags:</label>
+            {{getBuffer(projects[0].taglist.data)}}
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-3 align-left">
+        <ul class="plainlist moderation-list">
+          <li class="icon flag large" ng-if="userManager.canFlag('projects')" ng-click="flagProject(projects[0])" ng-class="{flagged: projects[0].flagged==true}">{{projects[0].flagged==true?'Flagged':'Flag'}}</li>
+          <li class="icon approve large" ng-if="(userManager.canApprove('projects') && projects[0].approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(projects[0])">Approve</li>
+          <li class="icon remove large" ng-if="userManager.canHide('projects') && projects[0].approved==true" ng-click="hideProject(projects[0])">Unapprove</li>
+          <li class="icon delete large" ng-if="userManager.canDelete('projects')" ng-click="deleteProject(projects[0])">Delete</li>
+        </ul>
+        <button class="ghost-button grey">Download</button>
+      </div>
+    </div>
+    <div class="row content">
+      <div class="col-md-12">
+        <h2>Details</h2>
+      </div>
+      <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
+      </div>
+    </div>
+    <div class="row content" ng-controller="commentController">
+      <div class="col-md-12">
+        <h2>Comments</h2>
+      </div>
+      <div class="col-md-12 project-comments">
+        <div class="result-header">
+          Showing {{comments.length}} of {{commentInfo.total}} comments
+          <div class="sorting">
+            <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
           </div>
-        </li>
-      </ul>
-      <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
-      <div id="summernote" class="">
+        </div>
+        <ul class="plainlist">
+          <li ng-repeat="comment in comments">
+            <img src="" />
+            <h3>{{comment.userid.username}}</h3><span> - {{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
+            <div class="" ng-bind-html="getCommentText(comment.content)">
+
+            </div>
+          </li>
+        </ul>
+        <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
+        <div id="summernote" class="">
+
+        </div>
 
       </div>
+    </div>
+  </div>
+  <div ng-show="{{projectId=='new'}}">
+    <div class="row content">
+      <h1>New Project</h1>
+      <label>Name:</label>
+      <input class="form-control" type="text" ng-model="" placeholder="">
+      <label>Short Description:</label>
+      <input class="form-control" type="text" ng-model="" placeholder="">
+      <label>Qlik Software:</label>
 
+      <label>Version:</label>
+      <label>Status:</label>
+      <input type="radio" name="name" value="">
     </div>
   </div>
 </div>

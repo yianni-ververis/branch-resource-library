@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    md5 = require('MD5');
 
 var userSchema = new Schema({
   email: {
@@ -33,5 +34,11 @@ var userSchema = new Schema({
   twitter: String,
   website: String
 });
+
+userSchema.methods = {
+  authenticate: function(password) {
+    return (md5(md5(password)+this.salt)) == this.password;
+  }
+};
 
 module.exports = mongoose.model('users', userSchema);

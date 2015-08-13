@@ -14,7 +14,7 @@ module.exports = {
       var ascii = req.headers.authorization.split(" ").pop();
       var credentials = atob(ascii).split(":");
       var username = credentials[0], password = credentials[1];
-      User.findOne({email: username}).populate("role partner").exec(function(err, user){
+      User.findOne({username: username}).populate("role").exec(function(err, user){
         if(user.authenticate(password)==true){
           req.user = user;
           next();
@@ -26,7 +26,7 @@ module.exports = {
       });
     }
     else if(req.headers.username && req.headers.password){
-      User.findOne({email: req.headers.username}).populate("role partner").exec(function(err, user){
+      User.findOne({username: req.headers.username}).populate("role").exec(function(err, user){
         if(user.authenticate(req.headers.password)==true){
           req.user = user;
           next();
