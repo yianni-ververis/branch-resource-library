@@ -26,7 +26,7 @@ var flag = require("./flag");
 var hide = require("./hide");
 var approve = require("./approve");
 
-GitHub.authenticate({type: "basic", username: "switchnick", password: "c0mp0und"});
+GitHub.authenticate({type: "basic", username: "", password: ""});
 
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
