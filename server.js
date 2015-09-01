@@ -31,13 +31,14 @@ app.use('/js', express.static(__dirname + '/public/scripts/build'));
 app.use('/views', express.static(__dirname + '/public/views'));
 app.use('/css', express.static(__dirname + '/public/styles/css'));
 app.use('/resources', express.static(__dirname + '/public/resources'));
+app.use('/attachments', express.static(__dirname + '/public/attachments'));
 
 app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(bodyParser.json({limit: '2mb'}));
-app.use(bodyParser.urlencoded({limit: '2mb'}));
+app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({limit: '5mb'}));
 
 app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});

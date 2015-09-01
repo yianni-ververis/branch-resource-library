@@ -8,8 +8,8 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.login = function(){
     Login.save({
-      username: $scope.username,
-      password: $scope.password
+      username: $scope.loginusername,
+      password: $scope.loginpassword
     }, function(result){
       if(resultHandler.process(result)){
         userManager.refresh();

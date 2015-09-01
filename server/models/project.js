@@ -5,7 +5,8 @@ var projectSchema = new Schema({
   title: String,
   content: String,
   short_description: String,
-  thumbnail: Buffer,
+  thumbnail: String,  //Url to file
+  image: String,      //Url to file
   overview: String,
   createdate: Date,
   last_updated: Date,
@@ -16,6 +17,14 @@ var projectSchema = new Schema({
   git_user: String,
   threadid: String,
   taglist: Buffer,
+  views:{
+    type: Number,
+    default: 0
+  },
+  comments: [{
+    type: Schema.ObjectId,
+    ref: 'comments'
+  }],
   approved: {
     type: Boolean,
     default: true
@@ -40,9 +49,13 @@ var projectSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'projectcategories'
   },
+  category: {
+    type: Schema.ObjectId,
+    ref: 'picklistitems'
+  },
   product: {
     type: Schema.ObjectId,
-    ref: 'products'
+    ref: 'picklistitems'
   }
 });
 

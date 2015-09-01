@@ -18,7 +18,7 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
             console.log(state);
             scope.breadcrumbs.push({
               text: state.data.crumb,
-              link: state.url.prefix
+              link: state.data.link
             });
             state = state.parent;
           }

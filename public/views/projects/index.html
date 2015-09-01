@@ -12,7 +12,7 @@
         <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category=&product={{productId}}" class=clear>x</a>
         <h1>Category</h1>
         <ul class="plainlist">
-          <li ng-repeat="category in projectCategories" ng-class="{active:category._id == categoryId}"><a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{category._id}}&product={{productId}}">{{category.title}}</a></li>
+          <li ng-repeat="category in projectCategories" ng-class="{active:category._id == categoryId}"><a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{category._id}}&product={{productId}}">{{category.name}}</a></li>
         </ul>
       </div>
 
@@ -33,7 +33,7 @@
           <li ng-repeat="project in projects" id="{{project._id}}">
             <div class="col-md-9">
               <div class="thumb-container">
-                <img src="api/projects/{{project._id}}/thumbnail"/>
+                <img src="{{project.thumbnail}}"/>
               </div>
               <div class="project-summary">
                 <a href="#projects/{{project._id}}">{{project.title}}</a>
@@ -53,13 +53,8 @@
                 <li>Last Update: <i>{{project.last_updated | date:'dd MMM yy HH:mm'}}</i></li>
               </ul>
             </div>
-            <div class="col-md-1">
-              <ul class="plainlist moderation-list">
-                <li class="icon flag medium" ng-if="userManager.canFlag('projects')" ng-click="flagProject(project)" ng-class="{flagged: project.flagged==true}"></li>
-                <li class="icon approve medium" ng-if="(userManager.canApprove('projects') && project.approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(project)"></li>
-                <li class="icon remove medium" ng-if="userManager.canHide('projects') && project.approved==true" ng-click="hideProject(project)"></li>
-                <li class="icon delete medium" ng-if="userManager.canDelete('projects')" ng-click="deleteProject(project, $index)"></li>
-              </ul>
+            <div class="col-md-1" moderation entity="'projects'" entityid="projectId">
+
             </div>
           </li>
         </ul>

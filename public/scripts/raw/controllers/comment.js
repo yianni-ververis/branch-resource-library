@@ -6,6 +6,13 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $scope.comments = [];
   $scope.pageSize = 10;
 
+  console.log($scope.entityid);
+
+  $scope.$watch("entityid", function(newVal, oldVal){
+    console.log('changed to' + newVal);
+    console.log('changed from' + oldVal);
+  });
+
   $scope.sortOptions = {
     newest: {
       id: "newest",
@@ -46,9 +53,9 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
     });
   };
 
-  if($stateParams.projectId){
-    $scope.commentQuery.threadid = $stateParams.projectId;
-    $scope.url = "projects/" + $stateParams.projectId;
+  if($scope.entityid){
+    $scope.commentQuery.entityId = $scope.entityid;
+    $scope.url = $scope.entity + "/" + $scope.entityId;
     $scope.getCommentData($scope.commentQuery);
   }
 
@@ -60,7 +67,7 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $scope.saveComment = function(){
     var commentText = $("#summernote").code();
     Comment.save({}, {
-      threadid: $stateParams.projectId,
+      entityId: $scope.entityid,
       pagetext: commentText,
       commenttext: commentText
     }, function(result){

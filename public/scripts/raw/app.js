@@ -1,7 +1,7 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngSanitize" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider) {
+  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
 
     notificationsConfigProvider.setAutoHide(true);
@@ -66,9 +66,10 @@
         }
       },
       data:{
-        crumb: ""
+        crumb: "New Project",
+        link: "projects/new"
       }
-    })    
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",
@@ -93,6 +94,8 @@
   //include "./directives/paging.js"
   include "./directives/header.js"
   include "./directives/confirm-dialog.js"
+  include "./directives/comments.js"
+  include "./directives/moderation.js"
   //services
   include "./services/user-manager.js"
   include "./services/result-handler.js"
@@ -103,5 +106,6 @@
   include "./controllers/project.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"
+  include "./controllers/moderation.js"
 
 })();
