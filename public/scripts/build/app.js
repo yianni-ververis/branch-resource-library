@@ -282,6 +282,98 @@
   	return module;
   }));
 
+  app.directive('searchInput', ['searchExchange', '$state', '$interpolate', function (searchExchange, $state, $interpolate) {
+    return {
+      restrict: "E",
+      replace: true,
+      scope:{
+
+      },
+      templateUrl: "/views/search/search-input.html",
+      link: function(scope){
+        var ignoreKeys = [
+          16
+        ];
+        var reservedKeys = [ //these keys should not execute another search, they are reserved for the suggestions mechanism
+          9,
+          13,
+          38,
+          40,
+          39,
+          37,
+          32
+        ];
+        scope.$on('senseready', function(params){
+          console.log('sense is ready');
+        });
+
+        scope.$on('searchResults', function(results){
+          console.log(results);
+        });
+
+        scope.keyDown = function(event){
+
+
+        };
+
+        scope.keyUp = function(event){
+          if(ignoreKeys.indexOf(event.keyCode) != -1){
+            return;
+          }
+          if(reservedKeys.indexOf(event.keyCode) == -1){
+            if(scope.searchText.length > 0){
+              scope.preSearch();
+            }
+            else{
+              //clear the search
+            }
+          }
+        };
+
+        scope.preSearch = function(){
+          searchExchange.search(scope.searchText);
+        }
+      }
+    }
+  }]);
+
+  app.directive("searchFilter", ["searchExchange", function(searchExchange){
+    return {
+      restrict: "E",
+      replace: true,
+      scope: {
+
+      },
+      link: function($scope, element, attr){
+        $scope.title = attr.title;
+        searchExchange.addFilter(attr.field, attr.title, function(result){
+          $scope.$apply(function(){
+            $scope.info = result;
+            $scope.render();
+          });
+        });
+        $scope.toggleValue =  function(elemNum){
+          $scope.$parent.toggleSelect(attr.field, elemNum);
+        }
+        $scope.$on('searchResults', function(){
+          $scope.render();
+        });
+
+        $scope.render = function(){
+          $scope.info.object.getLayout().then(function(layout){
+            $scope.info.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
+              $scope.$apply(function(){
+                console.log(data[0].qMatrix);
+                $scope.info.items = data[0].qMatrix;
+              });
+            });
+          });
+        }
+      },
+      templateUrl: "/views/search/search-filter.html"
+    }
+  }])
+
   //services
   app.service('userManager', ['$resource', function($resource){
     var System = $resource("system/:path", {path: "@path"});
@@ -352,6 +444,73 @@
       }
     }
   }]);
+
+  app.service('searchExchange', ["$rootScope", function($rootScope){
+    var that = this;
+    var config = {
+      host: "10.211.55.3:8080/anon",
+      isSecure: false
+    };
+
+    this.objects = {};
+
+    var senseApp;
+
+    qsocks.Connect(config).then(function(global){
+      global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+        senseApp = app;
+        $rootScope.$broadcast("senseready", app);
+      }, function(error) {
+          if (error.code == "1002") { //app already opened on server
+              global.getActiveDoc().then(function(app){
+                senseApp = app;
+                $rootScope.$broadcast("senseready", app);
+              });
+          } else {
+              console.log(error)
+          }
+      });
+    });
+    $rootScope.$on("senseready", function(params){
+      console.log("exchange says sense is ready");
+    });
+
+    this.search = function(searchText){
+      that.terms = searchText.split(" ");
+      senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+        $rootScope.$broadcast('searchResults', results);
+      });
+    };
+
+    this.addFilter = function(field, title, callbackFn){
+      that.objects[field] = {
+        title: title,
+        name: field,
+        type: "session-listbox"
+      };
+      $rootScope.$on("senseready", function(event, senseApp){
+        var lbDef = {
+          qInfo:{
+            qType: "ListObject"
+          },
+          qListObjectDef:{
+            qStateName: "$",
+            qDef:{
+              qFieldDefs:[field]
+            }
+          }
+        };
+        senseApp.createSessionObject(lbDef).then(function(response){
+          // that.objects[name].handle= response.handle;
+          // that.objects[name].object = new qsocks.GenericObject(response.connection, response.handle);
+          //that.renderObject(field, "session-listbox");
+          callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
+        });
+
+      });
+    };
+
+  }])
 
   //controllers
   app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
@@ -648,7 +807,7 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title, searchExchange){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -1136,6 +1295,32 @@
 
   app.controller("moderationController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
     $scope.userManager = userManager;
+  }]);
+
+  app.controller("senseController", ["$scope", "$resource", "$state", "$stateParams", function($scope, $resource, $state, $stateParams){
+    var config = {
+      host: "52.11.126.107/peportal",
+      isSecure: false
+    };
+
+    var senseApp;
+
+    qsocks.Connect(config).then(function(global){
+      global.openDoc("0911af14-71f8-4ba7-8bf9-be2f847dc292").then(function(app){
+        senseApp = app;
+        $scope.$broadcast("ready", app);
+      }, function(error) {
+          if (error.code == "1002") { //app already opened on server
+              global.getActiveDoc().then(function(app){
+                senseApp = app;
+                $scope.$broadcast("senseready", app);
+              });
+          } else {
+              console.log(error)
+          }
+      });
+    });
+
   }]);
 
 

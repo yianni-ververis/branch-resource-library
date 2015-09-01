@@ -1,0 +1,6 @@
+<div class="picklist content">
+  <h1>{{title}}</h1>
+  <ul class="plainlist">
+    <li ng-class="{active:item[0].qState == 'S'}" ng-repeat="item in info.items" ng-click="toggleValue(item[0].qElemNumber)" data-state="{{item[0].qState}}" data-elem="{{item[0].qElemNumber}}">{{item[0].qText}}</li>
+  </ul>
+</div>

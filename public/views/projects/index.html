@@ -15,13 +15,11 @@
           <li ng-repeat="category in projectCategories" ng-class="{active:category._id == categoryId}"><a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{category._id}}&product={{productId}}">{{category.name}}</a></li>
         </ul>
       </div>
-
+      <search-filter class="picklist content" data-field="product" data-title="Product"></search-filter>
 
     </div>
     <div class="col-md-10">
-      <div class="search-container content">
-        Placeholder for search
-      </div>
+      <search-input></search-input>
       <div class="results-container content">
         <div class="result-header">
           Showing {{projects.length}} of {{projectInfo.total}} results
