@@ -1,0 +1,29 @@
+<div class="col-md-3" style="padding-left:0px;">
+  <ul class="tabs plainlist">
+    <h2 class="underline">Picklist</h2>
+    <li ng-class="{active:activePicklist===$index}" ng-repeat="list in picklists" ng-click="setActivePickList($index)">
+      <a>{{list.name}}</a>
+    </li>
+    <li ng-show="userManager.canCreate('picklists')" >
+      <input class="form-control new-input" ng-model="newlistname" placeholder="New Picklist"/>
+      <div class="new inline" ng-click="newPicklist(newlistname)">Add</div>
+    </li>
+  </ul>
+</div>
+<div class="col-md-9">
+  <h2 class="underline">Items</h2>
+  <!-- <div class="picklist-summary">
+    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!userManager.canCreate('picklists')" ng-model="copyListName"/>
+    <div class="copy inline" ng-show="userManager.canCreate('picklists')" ng-click="copyPickist(copyListName)">Copy</div>
+    <button ng-click="delete(activePicklist)" ng-show="userManager.canDelete('picklists')" class="btn btn-default btn-delete">Delete</button>
+  </div> -->
+  <ul class="picklist-list list">
+    <li ng-repeat="item in picklistItems">
+      <input class="form-control editable" ng-disabled="userManager.canUpdate('picklists')" ng-model="item.name"/>
+    </li>
+  </ul>
+  <div class="">
+    <input class="form-control" type="text" placeholder="New Item" ng-model="newlistitem" />
+    <div class="new inline" ng-click="newPicklistItem(newlistitem)">Add</div>
+  </div>
+</div>

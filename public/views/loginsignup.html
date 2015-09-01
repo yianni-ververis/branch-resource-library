@@ -1,5 +1,5 @@
 <div class="container loginsignup page">
-  <div class="col-md-12">
+  <div class="col-md-6">
     <div class="block">
       <h2>Signup</h2>
       <form ng-submit="signup()">
@@ -10,5 +10,16 @@
         <button class="ghost-button green" type="submit">Signup</button>
       </form>
     </div>
-  </div>  
+  </div>
+  <div class="col-md-6">
+    <div class="form-signin block">
+      <h2>Login</h2>
+      <form ng-submit="login()">
+        <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
+        <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
+        <button class='ghost-button green' type='submit'>Login</button>
+      </form>
+
+    </div>
+  </div>
 </div>

@@ -1,7 +1,21 @@
 var express = require('express'),
     router = express.Router(),
     Error = require('../../controllers/error'),
-    MasterController = require('../../controllers/master');
+    MasterController = require('../../controllers/master'),
+    git = require("github"),
+    GitHub = new git({
+        // required
+        version: "3.0.0",
+        // optional
+        debug: false,
+        protocol: "https",
+        host: "api.github.com", // should be api.github.com for GitHub
+        pathPrefix: "", // for some GHEs; none for GitHub
+        timeout: 5000,
+        headers: {
+            "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
+        }
+    });
 
 router.get('/userInfo', function(req, res){
   var menu = buildMenu(req.user);
@@ -15,6 +29,24 @@ router.get('/userInfo', function(req, res){
     user: userNoPassword,
     menu: menu
   });
+});
+
+router.post('/git/projects', function(req, res){
+  try{
+    GitHub.authenticate({type: "basic", username: req.body.user, password: req.body.password});
+    GitHub.repos.getAll({user:req.body.user}, function(err, repos){
+      if(err){
+        console.log(err);
+        res.json(Error.custom("Could not Git Projects"));
+      }
+      else{
+        res.json({repos: repos});
+      }
+    });
+  }
+  catch(ex){
+    res.json(Error.custom("Unable to authenticate"));
+  }
 });
 
 function buildMenu(user){
@@ -53,7 +85,7 @@ function buildMenu(user){
     topMenu = {
       items:[{
         label: "Login",
-        href: "#login",
+        href: "#loginsignup",
         items: []
       }]
     };

@@ -90,5 +90,27 @@ module.exports = {
         name: 1
       },
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
+    picklists: {
+      collection: "picklists",
+      model: require("../models/picklist"),
+      populates: "",
+      exemptFromOwnership: true,
+      exemptFromApproval: true,
+      sort: {
+        name: 1
+      },
+      requiresAuthentication: false
+    },
+    picklistitems: {
+      collection: "picklistitems",
+      model: require("../models/picklistitem"),
+      populates: "",
+      exemptFromOwnership: true,
+      exemptFromApproval: true,
+      sort: {
+        name: 1
+      },
+      requiresAuthentication: false
     }
 };

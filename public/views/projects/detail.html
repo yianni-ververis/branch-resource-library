@@ -4,7 +4,7 @@
       <div class="col-md-4">
         <h1>{{projects[0].title}}</h1>
         by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
-        <img src="api/projects/{{projects[0]._id}}/thumbnail" />
+        <img src="{{projects[0].thumbnail}}" />
       </div>
       <div class="col-md-5">
         <ul class="plainlist">
@@ -14,7 +14,7 @@
           </li>
           <li>
             <label>Updated at:</label>
-            {{projects[0].last_updated*1000 | date:'dd MMM yy HH:mm'}}
+            {{projects[0].last_updated | date:'dd MMM yy HH:mm'}}
           </li>
           <li>
             <label>Git Clone Url:</label>
@@ -55,46 +55,99 @@
       <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
       </div>
     </div>
-    <div class="row content" ng-controller="commentController">
-      <div class="col-md-12">
-        <h2>Comments</h2>
-      </div>
-      <div class="col-md-12 project-comments">
-        <div class="result-header">
-          Showing {{comments.length}} of {{commentInfo.total}} comments
-          <div class="sorting">
-            <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
-          </div>
-        </div>
-        <ul class="plainlist">
-          <li ng-repeat="comment in comments">
-            <img src="" />
-            <h3>{{comment.userid.username}}</h3><span> - {{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
-            <div class="" ng-bind-html="getCommentText(comment.content)">
+    <div comments entity="'projects'" entityid="projectId">
 
-            </div>
-          </li>
-        </ul>
-        <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
-        <div id="summernote" class="">
-
-        </div>
-
-      </div>
     </div>
   </div>
   <div ng-show="{{projectId=='new'}}">
     <div class="row content">
-      <h1>New Project</h1>
-      <label>Name:</label>
-      <input class="form-control" type="text" ng-model="" placeholder="">
-      <label>Short Description:</label>
-      <input class="form-control" type="text" ng-model="" placeholder="">
-      <label>Qlik Software:</label>
+      <h1>Summary</h1>
+      <div class="row">
+        <div class="col-md-6">
+          <label>Name:</label>
+          <input class="form-control" type="text" ng-model="newProjectName" placeholder="" />
+          <label>Short Description:</label>
+          <input class="form-control" type="text" ng-model="newProjectDescription" placeholder="" />
+          <label>Project Type:</label>
+          <select class="form-control" type="text" ng-model="newProjectCategory" ng-options="item.name for item in projectCategories track by item._id">
+            <option value=""></option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label>Thumbnail:</label>
+          <!-- <form enctype="multipart/form-data" id="newScreenshotForm"> -->
+          <span class="btn btn-default btn-file">
+            Choose
+            <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="thumbnail"/>
+          </span>
+          <!-- </form> -->
+          <img src="{{newProjectThumbnail}}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <label>Status:</label>
+          <select class="form-control" ng-model="newProjectStatus" ng-options="item.name for item in projectStatuses track by item._id">
+            <option value=""></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label>Qlik Software:</label>
+          <select class="form-control" ng-model="newProjectProduct" ng-change="getProductVersions(newProjectProduct)" ng-options="item.name for item in projectProducts track by item._id">
+            <option value=""></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label>Version:</label>
+          <ul ng-if="newProjectProduct!=null">
+            <li ng-repeat="version in productVersions">
+              <input class="product-version" type="checkbox" /> {{version.name}}
+            </li>
+          </ul>
+          <div class="">
+            <span ng-if="newProjectProduct==null">Please specify the software</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <label>Tags</label>
+          <input class="form-control" type="text" name="name" value="" placeholder="">
+        </div>
+      </div>
+    </div>
+    <div class="row content">
+      <h1>Details</h1>
+      <div class="col-md-12">
+        <input type="radio" name="usegit" ng-model="usegit" value="true" checked>Link to GitHub project
+        <input type="radio" name="usegit" ng-model="usegit" value="false">Enter details manually
+      </div>
+      <div class="" ng-show="usegit=='true'">
+        <div class="" ng-if="gitProjects.length==0">
+          Log in to GitHub
+          <form ng-submit="getGitProjects(gituser, gitpassword)">
+            <label>Username: </label>
+            <input type="text" ng-model="gituser" class="form-control" />
+            <label>Password: </label>
+            <input type="password" ng-model="gitpassword" class="form-control" />
+            <button type="submit" name="button">Login</button>
+          </form>
+        </div>
+        <div class="" ng-if="gitProjects.length>0">
+          <ul class="plainlist">
+            <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)">
+              {{project.name}}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="" ng-show="usegit=='false'">
+        <h3>Content</h3>
+        <div id="newProjectContent" class="" ng-model="newProjectContent">
 
-      <label>Version:</label>
-      <label>Status:</label>
-      <input type="radio" name="name" value="">
+        </div>
+      </div>
+      <button type="button" name="button" ng-click="validateNewProjectData()">Create</button>
     </div>
   </div>
 </div>

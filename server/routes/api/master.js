@@ -7,6 +7,7 @@ var express = require("express"),
     epoch = require("milli-epoch"),
     git = require("github"),
     atob = require("atob"),
+    GitCredentials = require("../../../gitCredentials"),
     GitHub = new git({
         // required
         version: "3.0.0",
@@ -22,11 +23,13 @@ var express = require("express"),
     });
 
 //load in the functions
+var create = require("./create");
+var update = require("./update");
 var flag = require("./flag");
 var hide = require("./hide");
 var approve = require("./approve");
 
-GitHub.authenticate({type: "basic", username: "", password: ""});
+GitHub.authenticate({type: "token", token: GitCredentials.token });
 
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
@@ -134,7 +137,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             //update the contributors
 
             //update the update date and git check data
-            results.data[0].last_updated = epoch.toEpoch(new Date(gitresult.updated_at));
+            results.data[0].last_updated = new Date(gitresult.updated_at);
             results.data[0].last_git_check = epoch.now();
             GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
               //console.log(atob(readmeresult.content));
@@ -165,60 +168,10 @@ router.get('/:entity/:id/thumbnail', Auth.isLoggedIn, function(req, res){
   });
 });
 
-//This route is for creating a new record on the specified entity and returning the new record
-//Requires "create" permission on the specified entity
-router.post("/:entity/", Auth.isLoggedIn, function(req, res){
-  var entity = req.params.entity;
-  var user = req.user;
-  var userPermissions = req.user.role.permissions[entity];
-  var data = req.body;
-  if(!userPermissions || userPermissions.create!=true){
-    console.log('should get here');
-    res.json(Error.insufficientPermissions());
-  }
-  else{
-    data.createuser = user._id;
-    data.userid = user._id;
-    //data.dateline = Date.now;
-    MasterController.save(null, data, entities[entity], function(result){
-      res.json(result);
-    });
-  }
-});
-
-
-//This route is for saving a specific record on the specified entity
-//url parameters can be used to add filtering
-//Requires "update" permission on the specified entity
-router.post("/:entity/:id", Auth.isLoggedIn, function(req, res){
-  var query = req.query || {};
-  query["_id"] = req.params.id;
-  var entity = req.params.entity;
-  var user = req.user;
-  var userPermissions = req.user.role.permissions[entity];
-  var data = req.body;
-  console.log(userPermissions);
-  //check that the user has sufficient permissions for this operation
-  if(!userPermissions || userPermissions.update!=true){
-    res.json(Error.insufficientPermissions);
-  }
-  else{
-    if(userPermissions.allOwners!=true && !entities[entity].exemptFromOwnership){
-      query["createuser"]=user._id;
-    }
-    MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they own (where applicable)
-      if(response.data.length > 0){
-        MasterController.save(query, data, entities[entity], function(result){
-          res.json(result);
-        });
-      }
-      else{
-        res.json(Error.noRecord);
-      }
-    });
-  }
-});
-
+router.post("/projects", Auth.isLoggedIn, create.createProject);
+router.post("/:entity", Auth.isLoggedIn, create.create);
+router.post("/projects/:id", Auth.isLoggedIn, update.updateProject);
+router.post("/:entity/:id", Auth.isLoggedIn, update.update);
 router.post("/:entity/:id/flag", Auth.isLoggedIn, flag);
 router.post("/:entity/:id/hide", Auth.isLoggedIn, hide);
 router.post("/:entity/:id/approve", Auth.isLoggedIn, approve);
