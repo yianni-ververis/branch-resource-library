@@ -589,7 +589,15 @@
     };
 
     $scope.signup = function(){
-
+      Signup.save({
+        username: $scope.username,
+        password: $scope.password,
+        email: $scope.email
+      }, function(result) {
+        if (resultHandler.process(result)) {
+          
+        }
+      })
     };
 
   }]);
