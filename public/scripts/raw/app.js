@@ -98,6 +98,7 @@
   include "./directives/moderation.js"
   include "./directives/search-input.js"
   include "./directives/search-filter.js"
+  include "./directives/search-results.js"
   //services
   include "./services/user-manager.js"
   include "./services/result-handler.js"

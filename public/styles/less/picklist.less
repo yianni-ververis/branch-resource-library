@@ -16,9 +16,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    height: 20px;
-    line-height: 20px;
     cursor: pointer;
+    padding: 3px;
     /*text-indent: 15px;
     &:before{
       content: "";
@@ -31,9 +30,11 @@
     }
     */
 
-    &.active{
-      color: @green;
-      font-weight: bold;
+    &.selected{
+      background-color: @green2;
+    }
+    &.grey{
+      background-color: @content-border;
     }
     a:visited{
       text-decoration:none;

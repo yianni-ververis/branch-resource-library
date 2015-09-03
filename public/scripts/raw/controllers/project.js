@@ -4,6 +4,12 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
   var Git = $resource("system/git/:path", {path: "@path"});
 
+  $scope.$on('searchResults', function(){
+    $scope.senseOnline = true;
+  });
+
+  $scope.pageSize = 20;
+
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
 
@@ -47,8 +53,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.productId = "";
 
   $scope.query = {
-
+    limit: $scope.pageSize
   };
+  
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
   }

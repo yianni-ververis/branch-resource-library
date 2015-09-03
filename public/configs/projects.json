@@ -1,0 +1,45 @@
+{
+  "fields":[
+    "thumbnail",
+    "title",
+    "username",
+    "short_description"
+  ],
+  "template": "/views/projects/project-results.html",
+  "sortingx":{
+    "createdate": {
+      "id": "createdate",
+      "name": "Last Updated",
+      "order": -1,
+      "field": "createdate"
+    },
+    "rating":{
+      "id": "rating",
+      "name": "Highest Rated",
+      "order": [-1,-1],
+      "field":["votenum", "votetotal"]
+    },
+    "lastpost": {
+      "id": "lastpost",
+      "name": "Most recent comments",
+      "order": -1,
+      "field": "lastpost"
+    },
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title"
+    }
+  },
+  "sorting":{
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title",
+      "senseType": "qSortByAcsii"
+    }
+  },
+  "defaultSort": "title"
+}

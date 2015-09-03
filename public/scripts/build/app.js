@@ -292,7 +292,8 @@
       templateUrl: "/views/search/search-input.html",
       link: function(scope){
         var ignoreKeys = [
-          16
+          16,
+          27
         ];
         var reservedKeys = [ //these keys should not execute another search, they are reserved for the suggestions mechanism
           9,
@@ -303,35 +304,189 @@
           37,
           32
         ];
+
+        var Key = {
+            BACKSPACE: 8,
+            ESCAPE: 27,
+            TAB: 9,
+            ENTER: 13,
+            SHIFT: 16,
+            UP: 38,
+            DOWN: 40,
+            RIGHT: 39,
+            LEFT: 37,
+            DELETE: 46,
+            SPACE: 32
+        };
+
+        scope.searchTimeout = 300;
+        scope.suggestTimeout = 100;
+        scope.searchTimeoutFn;
+        scope.suggestTimeoutFn;
+        scope.suggesting = false;
+        scope.activeSuggestion = 0;
+
+        scope.cursorPosition = 0;
         scope.$on('senseready', function(params){
           console.log('sense is ready');
         });
 
-        scope.$on('searchResults', function(results){
-          console.log(results);
+        scope.$on('searchResults', function(event, results){
+
         });
 
-        scope.keyDown = function(event){
+        scope.$on('suggestResults', function(event, results){
 
+          scope.suggestions = results.qSuggestions;
+          scope.showSuggestion();
+        });
+
+        scope.$on('cleared', function(results){
+          scope.searchText = "";
+          scope.cursorPosition = 0;
+          scope.suggestions = [];
+          scope.suggesting = false;
+          scope.activeSuggestion = 0;
+          scope.ghostPart = "";
+          scope.ghostQuery = "";
+          scope.ghostDisplay = "";
+        });
+
+
+
+        scope.keyDown = function(event){
+          if(event.keyCode == Key.ESCAPE){
+            scope.hideSuggestion();
+            return;
+          }
+          if(event.keyCode == Key.DOWN){
+            //show the suggestions again
+            scope.showSuggestion();
+          }
+          if(event.keyCode == Key.RIGHT){
+            //activate the next suggestion
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.nextSuggestion();
+            }
+          }
+          if(event.keyCode == Key.LEFT){
+            //activate the previous suggestion
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.prevSuggestion();
+            }
+          }
+          if(event.keyCode == Key.ENTER || event.keyCode == Key.TAB){
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.acceptSuggestion();
+            }
+          }
+          if(event.keyCode == Key.SPACE){
+              scope.hideSuggestion();
+          }
 
         };
 
         scope.keyUp = function(event){
+          scope.cursorPosition = event.target.selectionStart;
           if(ignoreKeys.indexOf(event.keyCode) != -1){
             return;
           }
           if(reservedKeys.indexOf(event.keyCode) == -1){
             if(scope.searchText.length > 0){
               scope.preSearch();
+              scope.preSuggest();
             }
             else{
               //clear the search
+              scope.clear();
             }
           }
         };
 
+        scope.nextSuggestion = function(){
+          if(scope.activeSuggestion==scope.suggestions.length-1){
+            scope.activeSuggestion = 0;
+          }
+          else{
+            scope.activeSuggestion++;
+          }
+          scope.drawGhost();
+        };
+        scope.prevSuggestion = function(){
+          if(scope.activeSuggestion==0){
+            scope.activeSuggestion = scope.suggestions.length-1;
+          }
+          else{
+            scope.activeSuggestion--;
+          }
+          scope.drawGhost();
+        };
+        scope.hideSuggestion = function(){
+          scope.suggesting = false;
+          scope.activeSuggestion = 0;
+          scope.ghostPart = "";
+          scope.ghostQuery = "";
+          scope.ghostDisplay = "";
+        };
+        scope.showSuggestion = function(){
+          if(scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length && scope.suggestions.length > 0){
+            scope.suggesting = true;
+            scope.drawGhost();
+          }
+        };
+        scope.setAndAccept = function(index){
+          scope.activeSuggestion = index;
+          scope.drawGhost();
+          scope.acceptSuggestion();
+        }
+        scope.acceptSuggestion = function(){
+          scope.searchText = scope.ghostQuery;
+          scope.suggestions = [];
+          scope.hideSuggestion();
+          scope.preSearch();
+        };
+        scope.drawGhost = function(){
+          scope.ghostPart = getGhostString(scope.searchText, scope.suggestions[scope.activeSuggestion].qValue);
+          scope.ghostQuery = scope.searchText + scope.ghostPart;
+          scope.ghostDisplay = "<span style='color: transparent;'>"+scope.searchText+"</span>"+scope.ghostPart;
+        }
+
+        scope.preSuggest = function(){
+          if(scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length){
+            if(scope.suggestTimeoutFn){
+              clearTimeout(scope.suggestTimeoutFn);
+            }
+            scope.suggestTimeoutFn = setTimeout(function(){
+              searchExchange.suggest(scope.searchText);
+            }, scope.suggestTimeout);
+          }
+        };
+
         scope.preSearch = function(){
-          searchExchange.search(scope.searchText);
+          if(scope.searchTimeoutFn){
+            clearTimeout(scope.searchTimeoutFn);
+          }
+          scope.searchTimeoutFn = setTimeout(function(){
+            searchExchange.search(scope.searchText);
+          }, scope.searchTimeout);
+        };
+
+        scope.clear = function(){
+          searchExchange.clear();
+        };
+
+        function getGhostString(query, suggestion){
+          var suggestBase = query;
+          while(suggestBase.length > suggestion.length){
+            suggestBase = suggestBase.split(" ");
+            suggestBase.splice(0,1);
+            suggestBase = suggestBase.join(" ");
+          }
+          var re = new RegExp(suggestBase, "i")
+          return suggestion.replace(re,"");
         }
       }
     }
@@ -346,16 +501,17 @@
       },
       link: function($scope, element, attr){
         $scope.title = attr.title;
-        searchExchange.addFilter(attr.field, attr.title, function(result){
-          $scope.$apply(function(){
-            $scope.info = result;
-            $scope.render();
-          });
-        });
+
         $scope.toggleValue =  function(elemNum){
           $scope.$parent.toggleSelect(attr.field, elemNum);
         }
         $scope.$on('searchResults', function(){
+          $scope.render();
+        });
+        $scope.$on("update", function(params){
+          $scope.render();
+        });
+        $scope.$on('cleared', function(){
           $scope.render();
         });
 
@@ -368,9 +524,78 @@
               });
             });
           });
-        }
+        };
+
+        $scope.selectValue = function(value){
+          $scope.info.object.selectListObjectValues("/qListObjectDef", [value], true).then(function(){
+            searchExchange.render();
+          });
+        };
+
+        searchExchange.addFilter(attr.field, attr.title, function(result){
+          $scope.$apply(function(){
+            $scope.info = result;
+            $scope.render();
+          });
+        });
+
       },
       templateUrl: "/views/search/search-filter.html"
+    }
+  }])
+
+  app.directive("searchResults", ["searchExchange", function(searchExchange){
+    return {
+      restrict: "E",
+      replace: true,
+      scope: {
+        pagesize: "="
+      },
+      link: function($scope, element, attr){
+        $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+attr.config+'.json', success: function(json){
+          $scope.config = JSON.parse(json);
+          $scope.template = $scope.config.template;
+          $scope.fields = $scope.config.fields;
+          $scope.sortOptions = $scope.config.sorting;
+          $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
+
+          $scope.items = [];
+          $scope.$on('searchResults', function(){
+            $scope.render();
+          });
+          $scope.$on("update", function(params){
+            $scope.render();
+          });
+          $scope.$on('cleared', function(){
+            $scope.render();
+          });
+
+          $scope.render = function(){
+            $scope.info.object.getLayout().then(function(layout){
+              //$scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop:0, qLeft:0, qHeight: $scope.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+              $scope.$apply(function(){
+                $scope.items = layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
+                  var item = {}
+                  for (var i=0; i < row.length; i++){
+                    item[layout.qHyperCube.qDimensionInfo[i].qFallbackTitle] = row[i].qText;
+                  }
+                  return item;
+                });
+              });
+            //});
+            });
+          };
+
+          searchExchange.addResults($scope.fields, $scope.pagesize, $scope.sort, function(result){
+            $scope.$apply(function(){
+              $scope.info = result;
+              $scope.render();
+            });
+          });
+
+        }});
+      },
+      templateUrl: "/views/search/search-results.html"
     }
   }])
 
@@ -453,6 +678,7 @@
     };
 
     this.objects = {};
+    this.online = false;
 
     var senseApp;
 
@@ -468,26 +694,49 @@
               });
           } else {
               console.log(error)
+              $rootScope.$broadcast("senseoffline");
           }
       });
     });
     $rootScope.$on("senseready", function(params){
-      console.log("exchange says sense is ready");
+      console.log('connected to sense app');
+      that.online = true;
     });
+    $rootScope.$on("senseoffline", function(params){
+      console.log('could not connected to sense app. using mongo instead.');
+      that.online = false;
+    });
+
+    this.clear = function(){
+      if(senseApp){
+        senseApp.clearAll().then(function(){
+            $rootScope.$broadcast("cleared");
+        });
+      }
+      else{
+        $rootScope.$broadcast("cleared");
+      }
+    };
+
+    this.render = function(){
+      $rootScope.$broadcast("update");
+    }
 
     this.search = function(searchText){
       that.terms = searchText.split(" ");
-      senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+      senseApp.selectAssociations({qContext: "CurrentSelections"}, that.terms, 0 ).then(function(results){
         $rootScope.$broadcast('searchResults', results);
       });
     };
 
+    this.suggest = function(searchText){
+      senseApp.searchSuggest({}, searchText.split(" ")).then(function(results){
+        console.log(results);
+        $rootScope.$broadcast('suggestResults', results);
+      });
+    };
+
     this.addFilter = function(field, title, callbackFn){
-      that.objects[field] = {
-        title: title,
-        name: field,
-        type: "session-listbox"
-      };
       $rootScope.$on("senseready", function(event, senseApp){
         var lbDef = {
           qInfo:{
@@ -497,18 +746,68 @@
             qStateName: "$",
             qDef:{
               qFieldDefs:[field]
+            },
+            qAutoSortByState: {
+              qDisplayNumberOfRows: 8
             }
           }
         };
         senseApp.createSessionObject(lbDef).then(function(response){
-          // that.objects[name].handle= response.handle;
-          // that.objects[name].object = new qsocks.GenericObject(response.connection, response.handle);
-          //that.renderObject(field, "session-listbox");
           callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
         });
 
       });
     };
+
+    this.addResults = function(fields, pageSize, sorting, callbackFn){
+      $rootScope.$on("senseready", function(event, senseApp){
+        var hDef = {
+          "qInfo" : {
+              "qType" : "HyperCube"
+          },
+          "qHyperCubeDef": {
+            "qInitialDataFetch": [
+              {
+                "qHeight" : pageSize,
+                "qWidth" : fields.length
+              }
+            ],
+            "qDimensions" : buildFieldDefs(fields, sorting),
+            "qMeasures": [],
+          	"qSuppressZero": false,
+          	"qSuppressMissing": false,
+          	"qMode": "S",
+          	"qInterColumnSortOrder": [1],
+          	"qStateName": "$"
+          }
+        }
+        senseApp.createSessionObject(hDef).then(function(response){
+          callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
+        });
+      });
+    }
+
+    function buildFieldDefs(fields, sorting){
+      return fields.map(function(f){
+        var def = {
+    			"qDef": {
+    				"qFieldDefs": [
+    					f
+    				],
+            "qSortIndicator" : "A"
+    			},
+    			"qNullSuppression": true
+    		}
+        if(f==sorting.id){
+          var sort = {
+            "autoSort": false
+          };
+          sort[sorting.senseType] = sorting.order;
+          def.qDef["qSortCriterias"] = [sort];
+        }
+        return def;
+      });
+    }
 
   }])
 
@@ -813,6 +1112,12 @@
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
     var Git = $resource("system/git/:path", {path: "@path"});
 
+    $scope.$on('searchResults', function(){
+      $scope.senseOnline = true;
+    });
+
+    $scope.pageSize = 20;
+
     $scope.userManager = userManager;
     $scope.Confirm = confirm;
 
@@ -856,8 +1161,9 @@
     $scope.productId = "";
 
     $scope.query = {
-
+      limit: $scope.pageSize
     };
+    
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
     }

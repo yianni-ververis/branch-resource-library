@@ -1,0 +1,35 @@
+<div class="result-header">
+  Showing {{items.length}} of {{projectInfo.total}} results
+  <div class="sorting">
+    <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+  </div>
+</div>
+<ul class="project-list plainlist">
+  <li ng-repeat="project in items" id="{{project._id}}">
+    <div class="col-md-9">
+      <div class="thumb-container">
+        <img src="{{project.thumbnail}}"/>
+      </div>
+      <div class="project-summary">
+        <a href="#projects/{{project._id}}">{{project.title}}</a>
+        <a href="#users/{{project.userid._id}}">{{project.username || project.userid.username}}</a>
+        <p>{{project.short_description}}</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <ul class="stats plainlist">
+        <li class="rating">
+          <span ng-show="!project.votenum || project.votenum==0">Not yet rated</span>
+          {{(Math.round(project.votetotal / project.votenum))}}
+          <span class="star" ng-repeat="star in stars track by $index" ng-if="getRating(project.votetotal, project.votenum)">★</span>
+        </li>
+        <li><i>{{project.views}}</i> Views</li>
+        <li><i>{{project.replycount}}</i> Comments</li>
+        <li>Last Update: <i>{{project.last_updated | date:'dd MMM yy HH:mm'}}</i></li>
+      </ul>
+    </div>
+    <div class="col-md-1" moderation entity="'projects'" entityid="projectId">
+
+    </div>
+  </li>
+</ul>

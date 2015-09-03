@@ -7,16 +7,17 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
     },
     link: function($scope, element, attr){
       $scope.title = attr.title;
-      searchExchange.addFilter(attr.field, attr.title, function(result){
-        $scope.$apply(function(){
-          $scope.info = result;
-          $scope.render();
-        });
-      });
+
       $scope.toggleValue =  function(elemNum){
         $scope.$parent.toggleSelect(attr.field, elemNum);
       }
       $scope.$on('searchResults', function(){
+        $scope.render();
+      });
+      $scope.$on("update", function(params){
+        $scope.render();
+      });
+      $scope.$on('cleared', function(){
         $scope.render();
       });
 
@@ -29,7 +30,21 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
             });
           });
         });
-      }
+      };
+
+      $scope.selectValue = function(value){
+        $scope.info.object.selectListObjectValues("/qListObjectDef", [value], true).then(function(){
+          searchExchange.render();
+        });
+      };
+
+      searchExchange.addFilter(attr.field, attr.title, function(result){
+        $scope.$apply(function(){
+          $scope.info = result;
+          $scope.render();
+        });
+      });
+
     },
     templateUrl: "/views/search/search-filter.html"
   }
