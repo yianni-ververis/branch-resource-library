@@ -20,6 +20,8 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "picklistitems"
   ];
 
+  $scope.pageSize = 20;
+
   User.get({}, function(result){
     if(resultHandler.process(result)){
       $scope.users = result.data;

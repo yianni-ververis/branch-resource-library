@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title, searchExchange){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -55,7 +55,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.query = {
     limit: $scope.pageSize
   };
-  
+
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
   }
@@ -332,6 +332,12 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     });
   };
+
+  $scope.$on("senseready", function(){
+    if($state.current.name=="projects"){
+        //searchExchange.render();
+    }
+  })
 
   //only load the project if we have a valid projectId or we are in list view
   if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){

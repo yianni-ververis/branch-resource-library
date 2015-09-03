@@ -672,18 +672,25 @@
 
   app.service('searchExchange', ["$rootScope", function($rootScope){
     var that = this;
+    // var config = {
+    //   host: "10.211.55.3:8080/anon",
+    //   isSecure: false
+    // };
     var config = {
-      host: "10.211.55.3:8080/anon",
-      isSecure: false
+      host: "diplomaticpulse.qlik.com",
+      isSecure: true
     };
 
     this.objects = {};
     this.online = false;
 
+    this.queue = [];
+
     var senseApp;
 
     qsocks.Connect(config).then(function(global){
-      global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+      //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+      global.openDoc("b8cd05a8-bb43-4670-bda5-1b6ff16640b8").then(function(app){
         senseApp = app;
         $rootScope.$broadcast("senseready", app);
       }, function(error) {
@@ -699,6 +706,10 @@
       });
     });
     $rootScope.$on("senseready", function(params){
+      //execute any queued up items
+      for (var i=0;i<that.queue.length;i++){
+        that.queue[i].call();
+      }
       console.log('connected to sense app');
       that.online = true;
     });
@@ -737,54 +748,65 @@
     };
 
     this.addFilter = function(field, title, callbackFn){
-      $rootScope.$on("senseready", function(event, senseApp){
-        var lbDef = {
-          qInfo:{
-            qType: "ListObject"
+      var lbDef = {
+        qInfo:{
+          qType: "ListObject"
+        },
+        qListObjectDef:{
+          qStateName: "$",
+          qDef:{
+            qFieldDefs:[field]
           },
-          qListObjectDef:{
-            qStateName: "$",
-            qDef:{
-              qFieldDefs:[field]
-            },
-            qAutoSortByState: {
-              qDisplayNumberOfRows: 8
-            }
+          qAutoSortByState: {
+            qDisplayNumberOfRows: 8
           }
-        };
+        }
+      };
+      var fn = function(){
         senseApp.createSessionObject(lbDef).then(function(response){
           callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
         });
-
-      });
+      }
+      if(that.online){
+        fn.call();
+      }
+      else{
+        that.queue.push(fn);
+      }
     };
 
     this.addResults = function(fields, pageSize, sorting, callbackFn){
-      $rootScope.$on("senseready", function(event, senseApp){
-        var hDef = {
-          "qInfo" : {
-              "qType" : "HyperCube"
-          },
-          "qHyperCubeDef": {
-            "qInitialDataFetch": [
-              {
-                "qHeight" : pageSize,
-                "qWidth" : fields.length
-              }
-            ],
-            "qDimensions" : buildFieldDefs(fields, sorting),
-            "qMeasures": [],
-          	"qSuppressZero": false,
-          	"qSuppressMissing": false,
-          	"qMode": "S",
-          	"qInterColumnSortOrder": [1],
-          	"qStateName": "$"
-          }
+      var hDef = {
+        "qInfo" : {
+            "qType" : "HyperCube"
+        },
+        "qHyperCubeDef": {
+          "qInitialDataFetch": [
+            {
+              "qHeight" : pageSize,
+              "qWidth" : fields.length
+            }
+          ],
+          "qDimensions" : buildFieldDefs(fields, sorting),
+          "qMeasures": [],
+        	"qSuppressZero": false,
+        	"qSuppressMissing": false,
+        	"qMode": "S",
+        	"qInterColumnSortOrder": [1],
+        	"qStateName": "$"
         }
+      }
+      var fn = function(){
         senseApp.createSessionObject(hDef).then(function(response){
           callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
         });
-      });
+      }
+      if(that.online){
+        fn.call();
+      }
+      else{
+        that.queue.push(fn);
+      }
     }
 
     function buildFieldDefs(fields, sorting){
@@ -833,6 +855,8 @@
       "picklists",
       "picklistitems"
     ];
+
+    $scope.pageSize = 20;
 
     User.get({}, function(result){
       if(resultHandler.process(result)){
@@ -1106,7 +1130,7 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title, searchExchange){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -1163,7 +1187,7 @@
     $scope.query = {
       limit: $scope.pageSize
     };
-    
+
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
     }
@@ -1440,6 +1464,12 @@
         }
       });
     };
+
+    $scope.$on("senseready", function(){
+      if($state.current.name=="projects"){
+          //searchExchange.render();
+      }
+    })
 
     //only load the project if we have a valid projectId or we are in list view
     if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
