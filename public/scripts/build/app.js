@@ -282,6 +282,391 @@
   	return module;
   }));
 
+  app.directive('searchInput', ['searchExchange', '$state', '$interpolate', function (searchExchange, $state, $interpolate) {
+    return {
+      restrict: "E",
+      replace: true,
+      scope:{
+
+      },
+      templateUrl: "/views/search/search-input.html",
+      link: function(scope){
+        var ignoreKeys = [
+          16,
+          27
+        ];
+        var reservedKeys = [ //these keys should not execute another search, they are reserved for the suggestions mechanism
+          9,
+          13,
+          38,
+          40,
+          39,
+          37,
+          32
+        ];
+
+        var Key = {
+            BACKSPACE: 8,
+            ESCAPE: 27,
+            TAB: 9,
+            ENTER: 13,
+            SHIFT: 16,
+            UP: 38,
+            DOWN: 40,
+            RIGHT: 39,
+            LEFT: 37,
+            DELETE: 46,
+            SPACE: 32
+        };
+
+        scope.searchTimeout = 300;
+        scope.suggestTimeout = 100;
+        scope.searchTimeoutFn;
+        scope.suggestTimeoutFn;
+        scope.suggesting = false;
+        scope.activeSuggestion = 0;
+
+        scope.cursorPosition = 0;
+        scope.$on('senseready', function(params){
+          console.log('sense is ready');
+        });
+
+        scope.$on('searchResults', function(event, results){
+
+        });
+
+        scope.$on('suggestResults', function(event, results){
+
+          scope.suggestions = results.qSuggestions;
+          scope.showSuggestion();
+        });
+
+        scope.$on('cleared', function(results){
+          scope.searchText = "";
+          scope.cursorPosition = 0;
+          scope.suggestions = [];
+          scope.suggesting = false;
+          scope.activeSuggestion = 0;
+          scope.ghostPart = "";
+          scope.ghostQuery = "";
+          scope.ghostDisplay = "";
+        });
+
+
+
+        scope.keyDown = function(event){
+          if(event.keyCode == Key.ESCAPE){
+            scope.hideSuggestion();
+            return;
+          }
+          if(event.keyCode == Key.DOWN){
+            //show the suggestions again
+            scope.showSuggestion();
+          }
+          if(event.keyCode == Key.RIGHT){
+            //activate the next suggestion
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.nextSuggestion();
+            }
+          }
+          if(event.keyCode == Key.LEFT){
+            //activate the previous suggestion
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.prevSuggestion();
+            }
+          }
+          if(event.keyCode == Key.ENTER || event.keyCode == Key.TAB){
+            if(scope.suggesting){
+              event.preventDefault();
+              scope.acceptSuggestion();
+            }
+          }
+          if(event.keyCode == Key.SPACE){
+              scope.hideSuggestion();
+          }
+
+        };
+
+        scope.keyUp = function(event){
+          scope.cursorPosition = event.target.selectionStart;
+          if(ignoreKeys.indexOf(event.keyCode) != -1){
+            return;
+          }
+          if(reservedKeys.indexOf(event.keyCode) == -1){
+            if(scope.searchText.length > 0){
+              scope.preSearch();
+              scope.preSuggest();
+            }
+            else{
+              //clear the search
+              scope.clear();
+            }
+          }
+        };
+
+        scope.nextSuggestion = function(){
+          if(scope.activeSuggestion==scope.suggestions.length-1){
+            scope.activeSuggestion = 0;
+          }
+          else{
+            scope.activeSuggestion++;
+          }
+          scope.drawGhost();
+        };
+        scope.prevSuggestion = function(){
+          if(scope.activeSuggestion==0){
+            scope.activeSuggestion = scope.suggestions.length-1;
+          }
+          else{
+            scope.activeSuggestion--;
+          }
+          scope.drawGhost();
+        };
+        scope.hideSuggestion = function(){
+          scope.suggesting = false;
+          scope.activeSuggestion = 0;
+          scope.ghostPart = "";
+          scope.ghostQuery = "";
+          scope.ghostDisplay = "";
+        };
+        scope.showSuggestion = function(){
+          if(scope.searchText && scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length && scope.suggestions.length > 0){
+            scope.suggesting = true;
+            scope.drawGhost();
+          }
+        };
+        scope.setAndAccept = function(index){
+          scope.activeSuggestion = index;
+          scope.drawGhost();
+          scope.acceptSuggestion();
+        }
+        scope.acceptSuggestion = function(){
+          scope.searchText = scope.ghostQuery;
+          scope.suggestions = [];
+          scope.hideSuggestion();
+          scope.preSearch();
+        };
+        scope.drawGhost = function(){
+          scope.ghostPart = getGhostString(scope.searchText, scope.suggestions[scope.activeSuggestion].qValue);
+          scope.ghostQuery = scope.searchText + scope.ghostPart;
+          scope.ghostDisplay = "<span style='color: transparent;'>"+scope.searchText+"</span>"+scope.ghostPart;
+        }
+
+        scope.preSuggest = function(){
+          if(scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length){
+            if(scope.suggestTimeoutFn){
+              clearTimeout(scope.suggestTimeoutFn);
+            }
+            scope.suggestTimeoutFn = setTimeout(function(){
+              searchExchange.suggest(scope.searchText);
+            }, scope.suggestTimeout);
+          }
+        };
+
+        scope.preSearch = function(){
+          if(scope.searchTimeoutFn){
+            clearTimeout(scope.searchTimeoutFn);
+          }
+          scope.searchTimeoutFn = setTimeout(function(){
+            searchExchange.search(scope.searchText);
+          }, scope.searchTimeout);
+        };
+
+        scope.clear = function(){
+          searchExchange.clear();
+        };
+
+        function getGhostString(query, suggestion){
+          var suggestBase = query;
+          while(suggestBase.length > suggestion.length){
+            suggestBase = suggestBase.split(" ");
+            suggestBase.splice(0,1);
+            suggestBase = suggestBase.join(" ");
+          }
+          var re = new RegExp(suggestBase, "i")
+          return suggestion.replace(re,"");
+        }
+      }
+    }
+  }]);
+
+  app.directive("searchFilter", ["searchExchange", function(searchExchange){
+    return {
+      restrict: "E",
+      replace: true,
+      scope: {
+
+      },
+      link: function($scope, element, attr){
+        $scope.title = attr.title;
+
+        $scope.toggleValue =  function(elemNum){
+          $scope.$parent.toggleSelect(attr.field, elemNum);
+        }
+        $scope.$on('searchResults', function(){
+          $scope.render();
+        });
+        $scope.$on("update", function(params){
+          $scope.render();
+        });
+        $scope.$on('cleared', function(){
+          $scope.render();
+        });
+
+        $scope.render = function(){
+          $scope.info.object.getLayout().then(function(layout){
+            $scope.info.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
+              $scope.$apply(function(){
+                console.log(data[0].qMatrix);
+                $scope.info.items = data[0].qMatrix;
+              });
+            });
+          });
+        };
+
+        $scope.selectValue = function(value){
+          $scope.info.object.selectListObjectValues("/qListObjectDef", [value], true).then(function(){
+            searchExchange.render();
+          });
+        };
+
+        searchExchange.addFilter(attr.field, attr.title, function(result){
+          $scope.$apply(function(){
+            $scope.info = result;
+            $scope.render();
+          });
+        });
+
+      },
+      templateUrl: "/views/search/search-filter.html"
+    }
+  }])
+
+  app.directive("searchResults", ["searchExchange", function(searchExchange){
+    return {
+      restrict: "E",
+      replace: true,
+      scope: {
+        pagesize: "="
+      },
+      link: function($scope, element, attr){
+        $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+attr.config+'.json', success: function(json){
+          $scope.config = JSON.parse(json);
+          $scope.template = $scope.config.template;
+          $scope.fields = $scope.config.fields;
+          $scope.sortOptions = $scope.config.sorting;
+          $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
+
+          $scope.items = [];
+
+          $scope.pageTop = 0;
+          $scope.pageBottom = $scope.pagesize;
+          $scope.currentPage = 1;
+          $scope.pages = [];
+
+          $scope.$on('searchResults', function(){
+            $scope.render();
+          });
+          $scope.$on("update", function(params){
+            $scope.render();
+          });
+          $scope.$on('cleared', function(){
+            $scope.render();
+          });
+
+          $scope.changePage = function(direction){
+            $scope.pageTop += ($scope.pagesize * direction);
+            $scope.render();
+          };
+
+          $scope.setPage = function(pageNumber){
+            $scope.pageTop = ($scope.pagesize * pageNumber);
+            $scope.render();
+          }
+
+          $scope.pageInRange = function(pageIndex){
+  					var minPage, maxPage;
+  					if($scope.pages.length==1){
+  						return false;
+  					}
+  					else if($scope.currentPage <= 2){
+  						minPage = 1;
+  						maxPage = 5
+  					}
+  					else if ($scope.currentPage >= $scope.pages.length - 2) {
+  						minPage = $scope.pages.length - 5;
+  						maxPage = $scope.pages.length;
+  					}
+  					else{
+  						minPage = $scope.currentPage - 2;
+  						maxPage = $scope.currentPage + 2;
+  					}
+  					return (pageIndex >= minPage && pageIndex <= maxPage);
+  				};
+
+          $scope.render = function(){
+            $scope.info.object.getLayout().then(function(layout){
+              $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+                $scope.$apply(function(){
+                  $scope.pageTop = data[0].qArea.qTop;
+                  $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
+                  $scope.currentPage = Math.floor($scope.pageBottom / $scope.pagesize);
+                  $scope.total = layout.qHyperCube.qSize.qcy;
+                  $scope.pages = [];
+                  for(var i=1;i<(Math.ceil($scope.total/$scope.pagesize)+1);i++){
+                    $scope.pages.push(i);
+                  }
+                  $scope.items = data[0].qMatrix.map(function(row){
+                    var item = {}
+                    for (var i=0; i < row.length; i++){
+                      item[layout.qHyperCube.qDimensionInfo[i].qFallbackTitle] = row[i].qText;
+                    }
+                    return item;
+                  });
+                });
+              });
+            });
+          };
+
+          $scope.applySort = function(){
+            $scope.info.object.applyPatches([{
+              qPath: "/qHyperCubeDef/qInterColumnSortOrder",
+              qOp: "replace",
+              qValue: getFieldIndex($scope.sort.field)
+            }], true).then(function(result){
+              $scope.render();
+            });
+          };
+
+          function getFieldIndex(field, asString){
+            for (var i=0;i<$scope.fields.length;i++){
+              if($scope.fields[i].name==field){
+                if(asString!=undefined && asString==false){
+                  return [i];
+                }
+                else {
+                  return "["+i+"]";
+                }
+              }
+            }
+            return 0;
+          }
+
+          searchExchange.addResults($scope.fields, $scope.pagesize, $scope.sortOptions, getFieldIndex($scope.sort.field, false), function(result){
+            $scope.$apply(function(){
+              $scope.info = result;
+              $scope.render();
+            });
+          });
+
+        }});
+      },
+      templateUrl: "/views/search/search-results.html"
+    }
+  }])
+
   //services
   app.service('userManager', ['$resource', function($resource){
     var System = $resource("system/:path", {path: "@path"});
@@ -353,8 +738,171 @@
     }
   }]);
 
+  app.service('searchExchange', ["$rootScope", function($rootScope){
+    var that = this;
+    var config = {
+      host: "10.211.55.3:8080/anon",
+      isSecure: false
+    };
+    // var config = {
+    //   host: "diplomaticpulse.qlik.com",
+    //   isSecure: true
+    // };
+
+    this.objects = {};
+    this.online = false;
+
+    this.queue = [];
+
+    var senseApp;
+
+    qsocks.Connect(config).then(function(global){
+      global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+      //global.openDoc("b8cd05a8-bb43-4670-bda5-1b6ff16640b8").then(function(app){
+        senseApp = app;
+        $rootScope.$broadcast("senseready", app);
+      }, function(error) {
+          if (error.code == "1002") { //app already opened on server
+              global.getActiveDoc().then(function(app){
+                senseApp = app;
+                $rootScope.$broadcast("senseready", app);
+              });
+          } else {
+              console.log(error)
+              $rootScope.$broadcast("senseoffline");
+          }
+      });
+    });
+    $rootScope.$on("senseready", function(params){
+      //execute any queued up items
+      for (var i=0;i<that.queue.length;i++){
+        that.queue[i].call();
+      }
+      console.log('connected to sense app');
+      that.online = true;
+    });
+    $rootScope.$on("senseoffline", function(params){
+      console.log('could not connected to sense app. using mongo instead.');
+      that.online = false;
+    });
+
+    this.clear = function(){
+      if(senseApp){
+        senseApp.clearAll().then(function(){
+            $rootScope.$broadcast("cleared");
+        });
+      }
+      else{
+        $rootScope.$broadcast("cleared");
+      }
+    };
+
+    this.render = function(){
+      $rootScope.$broadcast("update");
+    }
+    this.fresh = function(){
+        this.search("");
+    }
+
+    this.search = function(searchText){
+      that.terms = searchText.split(" ");
+      senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+        $rootScope.$broadcast('searchResults', results);
+      });
+    };
+
+    this.suggest = function(searchText){
+      senseApp.searchSuggest({}, searchText.split(" ")).then(function(results){
+        console.log(results);
+        $rootScope.$broadcast('suggestResults', results);
+      });
+    };
+
+    this.addFilter = function(field, title, callbackFn){
+      var lbDef = {
+        qInfo:{
+          qType: "ListObject"
+        },
+        qListObjectDef:{
+          qStateName: "$",
+          qDef:{
+            qFieldDefs:[field]
+          },
+          qAutoSortByState: {
+            qDisplayNumberOfRows: 8
+          }
+        }
+      };
+      var fn = function(){
+        senseApp.createSessionObject(lbDef).then(function(response){
+          callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
+        });
+      }
+      if(that.online){
+        fn.call();
+      }
+      else{
+        that.queue.push(fn);
+      }
+    };
+
+    this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn){
+      var hDef = {
+        "qInfo" : {
+            "qType" : "table"
+        },
+        "qHyperCubeDef": {
+          "qInitialDataFetch": [
+            {
+              "qHeight" : pageSize,
+              "qWidth" : fields.length
+            }
+          ],
+          //"qInitialDataFetch": [],
+          "qDimensions" : buildFieldDefs(fields, sorting),
+          "qMeasures": [],
+        	"qSuppressZero": false,
+        	"qSuppressMissing": false,
+        	"qInterColumnSortOrder": defaultSort
+        }
+      }
+      var fn = function(){
+        senseApp.createSessionObject(hDef).then(function(response){
+          callbackFn.call(null, {handle: response.handle, object: response});
+        });
+      }
+      if(that.online){
+        fn.call();
+      }
+      else{
+        that.queue.push(fn);
+      }
+    }
+
+    function buildFieldDefs(fields, sorting){
+      return fields.map(function(f){
+        var def = {
+    			"qDef": {
+    				"qFieldDefs": [f.name]
+          },
+          qNullSuppression: f.suppressNull
+    		}
+        if(sorting[f.name]){
+          var sort = {
+            //"autoSort": false
+            //"qSortByLoadOrder" : 1
+          };
+          sort[sorting[f.name].senseType] = sorting[f.name].order;
+          def["qDef"]["qSortCriterias"] = [sort];
+        }
+        return def;
+      });
+    }
+
+  }])
+
   //controllers
-  app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+  app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange){
     var User = $resource("api/users/:userId", {userId: "@userId"});
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
@@ -375,6 +923,8 @@
       "picklists",
       "picklistitems"
     ];
+
+    $scope.pageSize = 20;
 
     User.get({}, function(result){
       if(resultHandler.process(result)){
@@ -421,7 +971,7 @@
 
     $scope.setTab = function(index){
       $scope.activeTab = index;
-
+      searchExchange.clear();
       if(index==2){
         //if the feature entities haven't been loaded get the first page of data
         //PROJECTS
@@ -648,11 +1198,17 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
     var Git = $resource("system/git/:path", {path: "@path"});
+
+    $scope.$on('searchResults', function(){
+      $scope.senseOnline = true;
+    });
+
+    $scope.pageSize = 20;
 
     $scope.userManager = userManager;
     $scope.Confirm = confirm;
@@ -660,6 +1216,8 @@
     $scope.projects = [];
     $scope.gitProjects = [];
     $scope.url = "projects";
+
+    $scope.searching = true;
 
     $scope.stars = new Array(5);
 
@@ -697,8 +1255,9 @@
     $scope.productId = "";
 
     $scope.query = {
-
+      limit: $scope.pageSize
     };
+
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
     }
@@ -733,14 +1292,6 @@
 
     $scope.getPicklistItems("Product", "projectProducts", true);
     $scope.getPicklistItems("Category", "projectCategories", true);
-
-    // Category.get({}, function(result){
-    //   if(resultHandler.process(result)){
-    //     $scope.projectCategories = result.data;
-    //     $scope.projectCategoryInfo = result;
-    //     delete $scope.projectCategoryInfo["data"];
-    //   }
-    // });
 
     $scope.getProductVersions = function(product){
       $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -976,6 +1527,24 @@
       });
     };
 
+    $scope.search = function(){
+      searchExchange.clear();
+      $scope.searching = true;
+    };
+
+    $scope.browse = function(){
+      searchExchange.clear();
+      $scope.searching = false;
+    };
+
+    $scope.clear = function(){
+      searchExchange.clear();
+    };
+
+
+    searchExchange.clear();
+
+
     //only load the project if we have a valid projectId or we are in list view
     if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
       $scope.getProjectData($scope.query); //get initial data set
@@ -1003,8 +1572,13 @@
 
   app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
+    var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
 
-    $("#summernote").summernote();
+    $scope.userManager = userManager;
+
+    $("#summernote").summernote({
+      height: 100
+    });
 
     $scope.comments = [];
     $scope.pageSize = 10;
@@ -1063,19 +1637,28 @@
     }
 
     $scope.getCommentText = function(text){
-      var buffer = _arrayBufferToBase64(text.data);
-      return marked(buffer);
+      if(text && text.data){
+        var buffer = _arrayBufferToBase64(text.data);
+        return marked(buffer);
+      }
+      else{
+        return "";
+      }
     }
 
     $scope.saveComment = function(){
       var commentText = $("#summernote").code();
       Comment.save({}, {
         entityId: $scope.entityid,
-        pagetext: commentText,
-        commenttext: commentText
+        content: commentText
       }, function(result){
         if(resultHandler.process(result)){
+          $("#summernote").code("");
           $scope.comments.push(result);
+          //update comment count on entity
+          Entity.save({path:"updatecommentcount"}, {value: 1}, function(result){
+            resultHandler.process(result);
+          });
         }
       })
     }
@@ -1136,6 +1719,32 @@
 
   app.controller("moderationController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
     $scope.userManager = userManager;
+  }]);
+
+  app.controller("senseController", ["$scope", "$resource", "$state", "$stateParams", function($scope, $resource, $state, $stateParams){
+    var config = {
+      host: "52.11.126.107/peportal",
+      isSecure: false
+    };
+
+    var senseApp;
+
+    qsocks.Connect(config).then(function(global){
+      global.openDoc("0911af14-71f8-4ba7-8bf9-be2f847dc292").then(function(app){
+        senseApp = app;
+        $scope.$broadcast("ready", app);
+      }, function(error) {
+          if (error.code == "1002") { //app already opened on server
+              global.getActiveDoc().then(function(app){
+                senseApp = app;
+                $scope.$broadcast("senseready", app);
+              });
+          } else {
+              console.log(error)
+          }
+      });
+    });
+
   }]);
 
 

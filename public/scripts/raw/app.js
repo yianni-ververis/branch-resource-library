@@ -96,9 +96,13 @@
   include "./directives/confirm-dialog.js"
   include "./directives/comments.js"
   include "./directives/moderation.js"
+  include "./directives/search-input.js"
+  include "./directives/search-filter.js"
+  include "./directives/search-results.js"
   //services
   include "./services/user-manager.js"
   include "./services/result-handler.js"
+  include "./services/search-exchange.js"
   //controllers
   include "./controllers/admin.js"
   include "./controllers/auth.js"
@@ -107,5 +111,6 @@
   include "./controllers/comment.js"
   include "./controllers/user.js"
   include "./controllers/moderation.js"
+  include "./controllers/sense-engine.js"
 
 })();

@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <h2>Comments</h2>
   </div>
-  <div class="col-md-12 project-comments">
+  <div class="col-md-12 project-comments" ng-show="userManager.canRead('comments')">
     <div class="result-header">
       Showing {{comments.length}} of {{commentInfo.total}} comments
       <div class="sorting">
@@ -18,10 +18,14 @@
         </div>
       </li>
     </ul>
-    <button type="button" class="form-control" ng-click="saveComment()">Reply</button>
-    <div id="summernote" class="">
+    <div ng-show="userManager.canCreate('comments')">
+      <div id="summernote" class="">
 
+      </div>
     </div>
-
+    <button ng-show="userManager.canCreate('comments')" type="button" class="form-control" ng-click="saveComment()">Reply</button>
+  </div>
+  <div ng-hide="userManager.canRead('comments')">
+    Please login to view comments
   </div>
 </div>

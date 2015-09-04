@@ -1,0 +1,23 @@
+.search-suggestion-container{
+  height: 40px;
+  margin-top: 34px;
+  margin-bottom: 0px;
+  ul{
+    li{
+      padding: 2px 10px;
+      display: inline-block;
+      color: @header-grey;
+      border-right: 1px solid @content-border;
+      cursor: pointer;
+
+      &:last-of-type{
+        border-right: none;
+      }
+      &.active{
+        background-color: @header-grey;
+        color: white;
+      }
+
+    }
+  }
+}

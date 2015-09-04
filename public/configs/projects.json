@@ -1,0 +1,57 @@
+{
+  "fields":[
+    {
+      "name": "title",
+      "suppressNull": false
+    },
+    {
+      "name": "id",
+      "suppressNull": false
+    },
+    {
+      "name": "thumbnail",
+      "suppressNull": false
+    },
+    {
+      "name": "userid",
+      "suppressNull": true
+    },
+    {
+      "name": "username",
+      "suppressNull": true
+    },
+    {
+      "name": "short_description",
+      "suppressNull": false
+    },
+    {
+      "name": "last_updated",
+      "suppressNull": false
+    }
+  ],
+  "template": "/views/projects/project-results.html",
+  "sorting":{
+    "last_updated": {
+      "id": "last_updated",
+      "name": "Last Updated",
+      "order": -1,
+      "field": "last_updated",
+      "senseType": "qSortByNumeric"
+    },
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title",
+      "senseType": "qSortByAscii"
+    },
+    "username": {
+      "id": "username",
+      "name": "User",
+      "order": 1,
+      "field": "username",
+      "senseType": "qSortByAscii"
+    }
+  },
+  "defaultSort": "last_updated"
+}

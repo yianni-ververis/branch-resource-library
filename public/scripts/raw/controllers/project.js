@@ -1,8 +1,14 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, title){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
   var Git = $resource("system/git/:path", {path: "@path"});
+
+  $scope.$on('searchResults', function(){
+    $scope.senseOnline = true;
+  });
+
+  $scope.pageSize = 20;
 
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
@@ -10,6 +16,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.projects = [];
   $scope.gitProjects = [];
   $scope.url = "projects";
+
+  $scope.searching = true;
 
   $scope.stars = new Array(5);
 
@@ -47,8 +55,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.productId = "";
 
   $scope.query = {
-
+    limit: $scope.pageSize
   };
+
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
   }
@@ -83,14 +92,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.getPicklistItems("Product", "projectProducts", true);
   $scope.getPicklistItems("Category", "projectCategories", true);
-
-  // Category.get({}, function(result){
-  //   if(resultHandler.process(result)){
-  //     $scope.projectCategories = result.data;
-  //     $scope.projectCategoryInfo = result;
-  //     delete $scope.projectCategoryInfo["data"];
-  //   }
-  // });
 
   $scope.getProductVersions = function(product){
     $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -325,6 +326,24 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     });
   };
+
+  $scope.search = function(){
+    searchExchange.clear();
+    $scope.searching = true;
+  };
+
+  $scope.browse = function(){
+    searchExchange.clear();
+    $scope.searching = false;
+  };
+
+  $scope.clear = function(){
+    searchExchange.clear();
+  };
+
+
+  searchExchange.clear();
+
 
   //only load the project if we have a valid projectId or we are in list view
   if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){

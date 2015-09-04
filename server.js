@@ -32,6 +32,8 @@ app.use('/views', express.static(__dirname + '/public/views'));
 app.use('/css', express.static(__dirname + '/public/styles/css'));
 app.use('/resources', express.static(__dirname + '/public/resources'));
 app.use('/attachments', express.static(__dirname + '/public/attachments'));
+app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
+app.use("/configs", express.static(__dirname + "/public/configs"));
 
 app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());

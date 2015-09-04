@@ -1,7 +1,9 @@
 .picklist{
   position: relative;
+  height: 100%;
+  width: 150px;
   h1{
-    font-size: 16px;
+    font-size: 12px;
     color: @green;
     font-weight: lighter;
   }
@@ -11,14 +13,17 @@
     right: 5px;
     color: @green;
   }
+  ul{
+    height: 100%;
+    overflow-y: auto;
+  }
   li{
     position: relative;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    height: 20px;
-    line-height: 20px;
     cursor: pointer;
+    padding: 3px;
     /*text-indent: 15px;
     &:before{
       content: "";
@@ -31,11 +36,11 @@
     }
     */
 
-    &.active{
-      a{
-        color: @green;
-        font-weight: bold;
-      }
+    &.selected{
+      background-color: @green2;
+    }
+    &.grey{
+      background-color: @content-border;
     }
     a:visited{
       text-decoration:none;
