@@ -1,25 +1,22 @@
 <div class="container page">
   <div class="row">
-    <div class="col-md-2 sidebar">
-      <!-- <div class="picklist content">
-        <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{categoryId}}&product=" class=clear>x</a>
-        <h1>Product</h1>
-        <ul class="plainlist">
-          <li ng-repeat="product in projectProducts" ng-class="{active:product._id == productId}"><a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{categoryId}}&product={{product._id}}">{{product.name}}</a></li>
-        </ul>
-      </div>-->
-      <!-- <div class="picklist content">
-        <a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category=&product={{productId}}" class=clear>x</a>
-        <h1>Category</h1>
-        <ul class="plainlist">
-          <li ng-repeat="category in projectCategories" ng-class="{active:category._id == categoryId}"><a href="#projects?page={{page.pageNum}}&sort={{sort.id}}&category={{category._id}}&product={{productId}}">{{category.name}}</a></li>
-        </ul>
-      </div> -->
-      <search-filter class="picklist content" data-field="product" data-title="Product"></search-filter>
-      <search-filter class="picklist content" data-field="category" data-title="Category"></search-filter>
-    </div>
-    <div class="col-md-10">
-      <search-input></search-input>
+    <div class="col-md-12">
+      <ul class="tabs horizontal">
+        <li ng-click="search()" ng-class="{active: searching==true}">
+          Search
+        </li>
+        <li ng-click="browse()" ng-class="{active: searching==false}">
+          Browse
+        </li>
+      </ul>
+      <div ng-show="searching">
+        <search-input></search-input>
+      </div>
+      <div ng-show="!searching" class="plainlist browse-list">
+        <search-filter class="picklist content" data-field="product" data-title="Product"></search-filter>
+        <search-filter class="picklist content" data-field="category" data-title="Category"></search-filter>
+        <button class="btn-clear" ng-click="clear()">Clear All</button>
+      </div>
       <search-results data-config="projects" pagesize="pageSize"></search-results>
     </div>
   </div>

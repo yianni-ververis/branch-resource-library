@@ -17,6 +17,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.gitProjects = [];
   $scope.url = "projects";
 
+  $scope.searching = true;
+
   $scope.stars = new Array(5);
 
   console.log('params - ',$stateParams);
@@ -90,14 +92,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.getPicklistItems("Product", "projectProducts", true);
   $scope.getPicklistItems("Category", "projectCategories", true);
-
-  // Category.get({}, function(result){
-  //   if(resultHandler.process(result)){
-  //     $scope.projectCategories = result.data;
-  //     $scope.projectCategoryInfo = result;
-  //     delete $scope.projectCategoryInfo["data"];
-  //   }
-  // });
 
   $scope.getProductVersions = function(product){
     $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -333,11 +327,23 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     });
   };
 
-  $scope.$on("senseready", function(){
-    if($state.current.name=="projects"){
-        //searchExchange.render();
-    }
-  })
+  $scope.search = function(){
+    searchExchange.clear();
+    $scope.searching = true;
+  };
+
+  $scope.browse = function(){
+    searchExchange.clear();
+    $scope.searching = false;
+  };
+
+  $scope.clear = function(){
+    searchExchange.clear();
+  };
+
+
+  searchExchange.clear();
+
 
   //only load the project if we have a valid projectId or we are in list view
   if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){

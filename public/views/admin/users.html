@@ -1,23 +1,5 @@
 <div class="user">
-  <div class="col-md-12">
-    Placeholder for search
-  </div>
-  <ul class="user-list list" ng-hide="users.length==0">
-    <li>
-      <label>Username</label>
-      <label>Email</label>
-      <label>Last Logon</label>
-      <label>Role</label>
-      <label></label>
-    </li>
-    <li ng-repeat="user in users">
-      <a class="link" ui-sref=".detail({userId:'{{user._id}}'})">{{user.username}}</a>
-      <a class="link" ui-sref=".detail({userId:'{{user._id}}'})">{{user.email}}</a>
-      <a class="link" ui-sref=".detail({userId:'{{user._id}}'})">{{user.email}}</a>
-      <select class="form-control" ng-disabled="!permissions.canUpdate('users')" ng-change="save(user)" ng-model="user.role" ng-options="item.name for item in roles track by item._id">
-      <select>
-      <div class="delete" ng-show="permissions.canDelete('users')" ng-click="delete(user._id)">Delete</div>
-    </li>
-  </ul>
+  <search-input></search-input>
+  <search-results config="users" pagesize="pageSize"></search-results>
   <ng-include ng-show="{{users.length==0}}" src="'/views/noresults.html'"></ng-include>
 </div>

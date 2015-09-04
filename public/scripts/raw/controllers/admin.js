@@ -1,4 +1,4 @@
-app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange){
   var User = $resource("api/users/:userId", {userId: "@userId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
@@ -67,7 +67,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-
+    searchExchange.clear();
     if(index==2){
       //if the feature entities haven't been loaded get the first page of data
       //PROJECTS

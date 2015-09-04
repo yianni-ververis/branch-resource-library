@@ -148,7 +148,7 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
         scope.ghostDisplay = "";
       };
       scope.showSuggestion = function(){
-        if(scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length && scope.suggestions.length > 0){
+        if(scope.searchText && scope.searchText.length > 1 && scope.cursorPosition==scope.searchText.length && scope.suggestions.length > 0){
           scope.suggesting = true;
           scope.drawGhost();
         }

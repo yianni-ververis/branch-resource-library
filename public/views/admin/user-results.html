@@ -1,0 +1,16 @@
+<ul class="user-list list" ng-hide="users.length==0">
+  <li>
+    <label>Username</label>
+    <label>Email</label>
+    <label>Last Logon</label>
+    <label>Role</label>
+    <label></label>
+  </li>
+  <li ng-repeat="user in items">
+    <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.username}}</a>
+    <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.email}}</a>
+    <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.email}}</a>
+    <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.role}}</a>
+    <div class="delete" ng-show="permissions.canDelete('users')" ng-click="delete(user.userid)">Delete</div>
+  </li>
+</ul>

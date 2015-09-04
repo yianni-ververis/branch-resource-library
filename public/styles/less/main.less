@@ -3,8 +3,15 @@
 @import "./colors.less";
 @import "./fonts.less";
 
+//here we override the bootstrap default to ensure that a page is a maximum of 970px wide
+@media (min-width: 1200px){
+  .container{
+      width: 970px;
+  }
+}
+
 html{
-  background: url('/resources/open-source-2012.jpg') top left no-repeat;
+
   background-size: cover;
   background-attachment: fixed;
 }
