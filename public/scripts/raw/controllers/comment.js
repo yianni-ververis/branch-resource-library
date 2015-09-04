@@ -1,7 +1,12 @@
 app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
+  var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
 
-  $("#summernote").summernote();
+  $scope.userManager = userManager;
+
+  $("#summernote").summernote({
+    height: 100
+  });
 
   $scope.comments = [];
   $scope.pageSize = 10;
@@ -60,19 +65,28 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   }
 
   $scope.getCommentText = function(text){
-    var buffer = _arrayBufferToBase64(text.data);
-    return marked(buffer);
+    if(text && text.data){
+      var buffer = _arrayBufferToBase64(text.data);
+      return marked(buffer);
+    }
+    else{
+      return "";
+    }
   }
 
   $scope.saveComment = function(){
     var commentText = $("#summernote").code();
     Comment.save({}, {
       entityId: $scope.entityid,
-      pagetext: commentText,
-      commenttext: commentText
+      content: commentText
     }, function(result){
       if(resultHandler.process(result)){
+        $("#summernote").code("");
         $scope.comments.push(result);
+        //update comment count on entity
+        Entity.save({path:"updatecommentcount"}, {value: 1}, function(result){
+          resultHandler.process(result);
+        });
       }
     })
   }

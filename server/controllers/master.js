@@ -77,21 +77,18 @@ module.exports = {
       });
     }
     else{ //new
-      console.log('creating project 2');
       entity.model.create(data, function(err, result){
         if(err){
           console.log(err);
           callbackFn.call(null, Error.errorSaving(err.errors.status));
         }
         else {
-          console.log('creating project 3');
           entity.model.findOne({_id:result.id}).populate(entity.populates).exec(function(err, result){
             if(err){
               console.log(err);
               callbackFn.call(null, Error.errorSaving(err.errors.status));
             }
             else{
-              console.log('creating project 4');
               callbackFn.call(null, result);
             }
           });
