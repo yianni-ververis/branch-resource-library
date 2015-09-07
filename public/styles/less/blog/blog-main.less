@@ -1,0 +1,36 @@
+.blog{
+  position: relative;
+  width: 100%;
+  .image-preview{
+    width: 100%;
+    img{
+      width: 100%;
+    }
+  }
+  .no-image{
+    height: 100px;
+    padding: 30px;
+    line-height: 20px;
+    color: @header-grey;
+    text-align: center;
+    border: 1px solid @content-border;
+  }
+  .blog-image{
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    &:before{
+      content: "";
+      display: block;
+      padding-top: 12%;
+    }
+    img{
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+}

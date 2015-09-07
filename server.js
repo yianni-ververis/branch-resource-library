@@ -3,12 +3,19 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    qrs = require('./SenseQRS');
+
+qrs.config = {
+  host: "10.211.55.3",
+  app: "bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1"
+};
 
 mongoose.connect('mongodb://localhost:27017/branch');
 
 //load the models
 require('./server/models/project.js');
+require('./server/models/blog.js');
 require('./server/models/projectcategory.js');
 require('./server/models/user.js');
 require('./server/models/userrole.js');

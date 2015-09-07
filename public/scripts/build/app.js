@@ -70,6 +70,44 @@
         link: "projects/new"
       }
     })
+    //used to navigate to the blog list page
+    .state("blogs", {
+      url: "/blogs",
+      templateUrl: "/views/blogs/index.html",
+      controller: "blogController",
+      data: {
+        crumb: "Blogs",
+        link: "#blogs"
+      }
+    })
+    //used to navigate to a given blog detail page
+    .state("blogs.detail", {
+      url: "/:blogId",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/detail.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/new"
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("blogs.addedit", {
+      url: "/:blogId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/addedit.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/new"
+      }
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",
@@ -269,7 +307,8 @@
   			restrict: "A",
   			scope:{
           entity: "=",
-          entityid: "="
+          entityid: "=",
+  				approved: "="
   			},
         templateUrl: "/views/moderation.html",
         link: function(scope){
@@ -544,7 +583,7 @@
     }
   }])
 
-  app.directive("searchResults", ["searchExchange", function(searchExchange){
+  app.directive("searchResults", ["searchExchange", "userManager", function(searchExchange, userManager){
     return {
       restrict: "E",
       replace: true,
@@ -575,6 +614,10 @@
           $scope.$on('cleared', function(){
             $scope.render();
           });
+
+          $scope.showItem = function(approved, entity){
+            return approved=='True' || userManager.canApprove(entity);
+          };
 
           $scope.changePage = function(direction){
             $scope.pageTop += ($scope.pagesize * direction);
@@ -612,7 +655,7 @@
                 $scope.$apply(function(){
                   $scope.pageTop = data[0].qArea.qTop;
                   $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
-                  $scope.currentPage = Math.floor($scope.pageBottom / $scope.pagesize);
+                  $scope.currentPage = Math.ceil($scope.pageBottom / $scope.pagesize);
                   $scope.total = layout.qHyperCube.qSize.qcy;
                   $scope.pages = [];
                   for(var i=1;i<(Math.ceil($scope.total/$scope.pagesize)+1);i++){
@@ -900,6 +943,26 @@
     }
 
   }])
+
+  app.service('picklistService', ['$resource', 'resultHandler', function($resource, resultHandler){
+    var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
+    var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+
+    this.getPicklistItems = function(picklistName, callbackFn){
+      Picklist.get({name: picklistName}, function(result){
+        if(resultHandler.process(result)){
+          if(result.data && result.data[0]){
+            PicklistItem.get({picklistId: result.data[0]._id}, function(result){
+              if(resultHandler.process(result)){
+                callbackFn.call(null, result.data);
+              }
+            });
+          }
+        }
+      });
+    };
+
+  }]);
 
   //controllers
   app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange){
@@ -1221,39 +1284,6 @@
 
     $scope.stars = new Array(5);
 
-    console.log('params - ',$stateParams);
-
-    $scope.sortOptions = {
-      createdate: {
-        id: "createdate",
-        name: "Last Updated",
-        order: -1,
-        field: "createdate"
-      },
-      rating:{
-        id: "rating",
-        name: "Highest Rated",
-        order: [-1,-1],
-        field:["votenum", "votetotal"]
-      },
-      lastpost: {
-        id: "lastpost",
-        name: "Most recent comments",
-        order: -1,
-        field: "lastpost"
-      },
-      title: {
-        id: "title",
-        name: "A-Z",
-        order: 1,
-        field: "title"
-      }
-    };
-
-    $scope.sort = $scope.sortOptions.createdate;
-    $scope.categoryId = "";
-    $scope.productId = "";
-
     $scope.query = {
       limit: $scope.pageSize
     };
@@ -1261,19 +1291,10 @@
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
     }
-    $scope.query.sort = $scope.sort.field;
-    $scope.query.sortOrder = $scope.sort.order;
+
     if($stateParams.projectId){
       $scope.query.projectId = $stateParams.projectId;
       $scope.projectId = $stateParams.projectId;
-    }
-    if($stateParams.product){
-      $scope.productId = $stateParams.product;
-      $scope.query.product = $stateParams.product;
-    }
-    if($stateParams.category){
-      $scope.categoryId = $stateParams.category;
-      $scope.query.category = $stateParams.category;
     }
 
     $scope.getPicklistItems = function(picklistName, out){
@@ -1336,7 +1357,7 @@
       else{
         return 0;
       }
-    }
+    };
 
     $scope.getBuffer = function(binary){
       return _arrayBufferToBase64(binary);
@@ -1361,48 +1382,6 @@
 
     $scope.applySort = function(){
       window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
-    };
-
-    $scope.flagProject = function(project){
-      Project.save({projectId:project._id, function: "flag"}, function(result){
-        if(resultHandler.process(result)){
-          project.flagged = true;
-        }
-      });
-    };
-
-    $scope.hideProject = function(project){
-      Project.save({projectId:project._id, function: "hide"}, function(result){
-        if(resultHandler.process(result)){
-          project.approved = false;
-        }
-      });
-    };
-
-    $scope.approveProject = function(project){
-      Project.save({projectId:project._id, function: "approve"}, function(result){
-        if(resultHandler.process(result)){
-          project.approved = true;
-          project.flagged = false;
-        }
-      });
-    };
-
-    $scope.deleteProject = function(project, index){
-      $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
-        if(result==0){
-          if($stateParams.projectId){
-            window.location = "#projects";
-          }
-          else {
-            Project.delete({projectId: project._id}, function(result){
-                if(resultHandler.process(result)){
-                  $scope.projects.splice(index, 1);
-                }
-            });
-          }
-        }
-      });
     };
 
     $scope.getGitProjects = function(gituser, gitpassword){
@@ -1570,6 +1549,106 @@
     }
   }]);
 
+  app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, picklistService){
+    var Blog = $resource("api/blogs/:blogId", {blogId: "@blogId"});
+    $scope.pageSize = 20;
+    $scope.query = {};
+
+    $scope.blogTypes;
+
+    if($stateParams.blogId){
+      $scope.query.blogId = $stateParams.blogId;
+      $scope.blogId = $stateParams.blogId;
+    }
+
+    picklistService.getPicklistItems("Blog Type", function(items){
+      $scope.blogTypes = items;
+      $scope.newBlogType = items[0];
+    });
+
+    $scope.getBlogData = function(query, append){
+      Blog.get(query, function(result){
+        if(resultHandler.process(result)){
+          if(append && append==true){
+            $scope.blogs = $scope.blogs.concat(result.data);
+          }
+          else{
+            $scope.blogs = result.data;
+            //if this is the detail view we'll update the breadcrumbs
+            if($state.current.name == "blogs.detail"){
+              $scope.$root.$broadcast('spliceCrumb', {
+                text: $scope.blogs[0].title,
+                link: "/blogs/"+$scope.blogs[0]._id
+              });
+            }
+          }
+          $scope.blogInfo = result;
+          delete $scope.blogInfo["data"];
+        }
+      });
+    };
+
+    if($scope.blogId == 'new'){
+      $("#blogContent").summernote({
+        height: 600
+      });
+    }
+    else{
+      $scope.getBlogData($scope.query);
+    }
+
+    $scope.previewThumbnail = function(){
+      var file = $("#blogImage")[0].files[0];
+      var imageName = file.name;
+      var imageType = file.type;
+      var r = new FileReader();
+      r.onloadend = function(event){
+        var imageCanvas = document.createElement('canvas');
+        var imageContext = imageCanvas.getContext('2d');
+        var thumbnail = new Image();
+        thumbnail.onload = function() {
+          var width = thumbnail.width;
+          var height = thumbnail.height;
+          imageCanvas.width = width;
+          imageCanvas.height = Math.round(width / 4);
+
+
+          //draw the image and save the blob
+          imageContext.drawImage(thumbnail, 0, 0, imageCanvas.width, imageCanvas.height);
+          $scope.image = {
+            type: imageType,
+            name: imageName,
+            data: imageCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
+          }
+          $scope.$apply(function(){
+            $scope.newBlogImage = imageCanvas.toDataURL();
+          });
+        };
+        thumbnail.src = r.result;
+      }
+      r.readAsDataURL(file);
+    };
+
+    $scope.validateNewBlogData = function(){
+      $scope.saveBlog();
+    };
+
+    $scope.saveBlog = function(){
+      var data = {
+        standard:{
+          title: $scope.newBlogTitle,
+          content: $("#blogContent").code()
+        },
+        special:{
+          image: $scope.image
+        }
+      };
+      Blog.save({}, data, function(result){
+
+      });
+    };
+  }]);
+
   app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
     var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
@@ -1718,33 +1797,47 @@
   }]);
 
   app.controller("moderationController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
-    $scope.userManager = userManager;
-  }]);
+    var Entity = $resource("/api/"+$scope.entity+"/:entityId/:function", {entityId: "@entityId", function: "@function"});
 
-  app.controller("senseController", ["$scope", "$resource", "$state", "$stateParams", function($scope, $resource, $state, $stateParams){
-    var config = {
-      host: "52.11.126.107/peportal",
-      isSecure: false
+    $scope.userManager = userManager;
+
+    $scope.flagEntity = function(){
+      //Need to implement new flagging functionality
+      Entity.save({entityId: $scope.entityid, function: "flag"}, function(result){
+        if(resultHandler.process(result)){
+
+        }
+      });
     };
 
-    var senseApp;
+    $scope.hideEntity = function(){
+      Entity.save({entityId: $scope.entityid, function: "hide"}, function(result){
+        if(resultHandler.process(result)){
 
-    qsocks.Connect(config).then(function(global){
-      global.openDoc("0911af14-71f8-4ba7-8bf9-be2f847dc292").then(function(app){
-        senseApp = app;
-        $scope.$broadcast("ready", app);
-      }, function(error) {
-          if (error.code == "1002") { //app already opened on server
-              global.getActiveDoc().then(function(app){
-                senseApp = app;
-                $scope.$broadcast("senseready", app);
-              });
-          } else {
-              console.log(error)
-          }
+        }
       });
-    });
+    };
 
+    $scope.approveEntity = function(){
+      Entity.save({entityId: $scope.entityid, function: "approve"}, function(result){
+        if(resultHandler.process(result)){
+
+          //need to remove all flags for the project here
+        }
+      });
+    };
+
+    $scope.deleteEntity = function(){
+      $scope.Confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
+        if(result==0){
+          Entity.delete({entityId: $scope.entityid}, function(result){
+              if(resultHandler.process(result)){
+                window.location = "#"+$scope.entity;
+              }
+          });
+        }
+      });
+    };
   }]);
 
 

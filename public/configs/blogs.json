@@ -1,15 +1,11 @@
 {
   "fields":[
     {
-      "name": "title",
+      "name": "blogTitle",
       "suppressNull": false
     },
     {
-      "name": "id",
-      "suppressNull": false
-    },
-    {
-      "name": "thumbnail",
+      "name": "blogId",
       "suppressNull": false
     },
     {
@@ -21,32 +17,32 @@
       "suppressNull": true
     },
     {
-      "name": "short_description",
+      "name": "createdate",
       "suppressNull": false
     },
     {
-      "name": "last_updated",
+      "name": "blogApproved",
       "suppressNull": false
     },
     {
-      "name": "projectApproved",
+      "name": "blogImage",
       "suppressNull": false
     }
   ],
-  "template": "/views/projects/project-results.html",
+  "template": "/views/blogs/blog-results.html",
   "sorting":{
-    "last_updated": {
-      "id": "last_updated",
-      "name": "Last Updated",
+    "createdate": {
+      "id": "createdate",
+      "name": "Newest",
       "order": -1,
-      "field": "last_updated",
+      "field": "createdate",
       "senseType": "qSortByNumeric"
     },
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
-      "field": "title",
+      "field": "blogTitle",
       "senseType": "qSortByAscii"
     },
     "username": {
@@ -57,5 +53,5 @@
       "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "last_updated"
+  "defaultSort": "createdate"
 }

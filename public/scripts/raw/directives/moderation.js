@@ -29,7 +29,8 @@
 			restrict: "A",
 			scope:{
         entity: "=",
-        entityid: "="
+        entityid: "=",
+				approved: "="
 			},
       templateUrl: "/views/moderation.html",
       link: function(scope){

@@ -1,5 +1,5 @@
 <ul class="project-list plainlist">
-  <li ng-repeat="project in items" id="{{project.id}}">
+  <li ng-repeat="project in items" id="{{project.id}}" ng-if="showItem(project.projectApproved, 'projects')">
     <div class="col-md-9">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}"/>
@@ -7,6 +7,7 @@
       <div class="project-summary">
         <a href="#projects/{{project.id}}">{{project.title}}</a>
         <a href="#users/{{project.userid}}">{{project.username || project.userid.username}}</a>
+        Approved - {{project.projectApproved}}
         <p>{{project.short_description}}</p>
       </div>
     </div>
@@ -22,7 +23,7 @@
         <li>Last Update: <i>{{project.last_updated}}</i></li>
       </ul>
     </div>
-    <div class="col-md-1" moderation entity="'projects'" entityid="projectId">
+    <div class="col-md-1" moderation entity="'projects'" entityid="project.id" approved="project.projectApproved">
 
     </div>
   </li>

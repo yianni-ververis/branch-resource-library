@@ -34,7 +34,7 @@ GitHub.authenticate({type: "token", token: GitCredentials.token });
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
 //Requires "read" permission on the specified entity
-router.get("/:entity", Auth.isLoggedIn, function(req, res){
+router.get("/:entity", Auth.isLoggedIn, function(req, res, next){
   var queryObj = parseQuery(req.query || {}, req.body || {}, "GET", entities[req.params.entity]);
   var query = queryObj.query;
   var entity = queryObj.entity;
@@ -214,6 +214,7 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
       query["createuser"]=user._id;
     }
     MasterController.delete(query, entities[entity], function(result){
+      //need to delete any comments and flags
       res.json(result);
     });
   }

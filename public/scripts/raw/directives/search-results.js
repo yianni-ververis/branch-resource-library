@@ -1,4 +1,4 @@
-app.directive("searchResults", ["searchExchange", function(searchExchange){
+app.directive("searchResults", ["searchExchange", "userManager", function(searchExchange, userManager){
   return {
     restrict: "E",
     replace: true,
@@ -29,6 +29,10 @@ app.directive("searchResults", ["searchExchange", function(searchExchange){
         $scope.$on('cleared', function(){
           $scope.render();
         });
+
+        $scope.showItem = function(approved, entity){
+          return approved=='True' || userManager.canApprove(entity);
+        };
 
         $scope.changePage = function(direction){
           $scope.pageTop += ($scope.pagesize * direction);
@@ -66,7 +70,7 @@ app.directive("searchResults", ["searchExchange", function(searchExchange){
               $scope.$apply(function(){
                 $scope.pageTop = data[0].qArea.qTop;
                 $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
-                $scope.currentPage = Math.floor($scope.pageBottom / $scope.pagesize);
+                $scope.currentPage = Math.ceil($scope.pageBottom / $scope.pagesize);
                 $scope.total = layout.qHyperCube.qSize.qcy;
                 $scope.pages = [];
                 for(var i=1;i<(Math.ceil($scope.total/$scope.pagesize)+1);i++){

@@ -17,6 +17,8 @@ var projectSchema = new Schema({
   git_user: String,
   threadid: String,
   taglist: Buffer,
+  votenum: Number,
+  votetotal: Number,
   views:{
     type: Number,
     default: 0

@@ -23,6 +23,18 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
+    blogs:{
+      collection: "blogs",
+      model: require("../models/blog"),
+      populates: "userid",
+      exemptFromOwnership: false,
+      exemptFromApproval: false,
+      sort: {
+        dateline: -1
+      },
+      limit: 20,
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
     articles:{
       collection: "articles",
       model: require("../models/article"),

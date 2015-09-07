@@ -1,0 +1,20 @@
+<ul class="blog-list plainlist blog">
+  <li ng-repeat="blog in items" id="{{blog.blogId}}" ng-if="showItem(blog.blogApproved, 'blogs')">
+    <div class="blog-image" ng-show="blog.blogImage!='-'">
+      <img src="{{blog.blogImage}}"/>
+    </div>
+    <div class="row">
+      <div class="col-md-9">
+        <a href="#blogs/{{blog.blogId}}">{{blog.blogTitle}}</a>
+      </div>
+      <div class="col-md-2">
+        <ul class="stats plainlist">
+          <li>Created: <i>{{blog.createdate}}</i></li>
+        </ul>
+      </div>
+      <div class="col-md-1" moderation entity="'blogs'" entityid="blog.blogId" approved="blog.blogApproved">
+
+      </div>
+    </div>
+  </li>
+</ul>

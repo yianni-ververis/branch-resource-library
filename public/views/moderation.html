@@ -1,6 +1,6 @@
 <ul class="plainlist moderation-list">
-  <li class="icon flag medium" ng-if="userManager.canFlag(entity)" ng-click="flagProject(project)" ng-class="{flagged: project.flagged==true}"></li>
-  <li class="icon approve medium" ng-if="(userManager.canApprove(entity) && project.approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(project)"></li>
-  <li class="icon remove medium" ng-if="userManager.canHide(entity) && project.approved==true" ng-click="hideProject(project)"></li>
-  <li class="icon delete medium" ng-if="userManager.canDelete(entity)" ng-click="deleteProject(project, $index)"></li>
+  <li class="icon flag medium" ng-if="userManager.canFlag(entity)" ng-click="flagEntity()" ng-class="{flagged: project.flagged==true}"></li>
+  <li class="icon approve medium" ng-if="(userManager.canApprove(entity) && approved=='False') || (userManager.canHide(entity) && approved=='False')" ng-click="approveEntity()"></li>
+  <li class="icon remove medium" ng-if="userManager.canHide(entity) && approved=='True'" ng-click="hideEntity()"></li>
+  <li class="icon delete medium" ng-if="userManager.canDelete(entity)" ng-click="deleteEntity()"></li>  
 </ul>

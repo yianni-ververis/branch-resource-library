@@ -21,39 +21,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.stars = new Array(5);
 
-  console.log('params - ',$stateParams);
-
-  $scope.sortOptions = {
-    createdate: {
-      id: "createdate",
-      name: "Last Updated",
-      order: -1,
-      field: "createdate"
-    },
-    rating:{
-      id: "rating",
-      name: "Highest Rated",
-      order: [-1,-1],
-      field:["votenum", "votetotal"]
-    },
-    lastpost: {
-      id: "lastpost",
-      name: "Most recent comments",
-      order: -1,
-      field: "lastpost"
-    },
-    title: {
-      id: "title",
-      name: "A-Z",
-      order: 1,
-      field: "title"
-    }
-  };
-
-  $scope.sort = $scope.sortOptions.createdate;
-  $scope.categoryId = "";
-  $scope.productId = "";
-
   $scope.query = {
     limit: $scope.pageSize
   };
@@ -61,19 +28,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
   }
-  $scope.query.sort = $scope.sort.field;
-  $scope.query.sortOrder = $scope.sort.order;
+
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
     $scope.projectId = $stateParams.projectId;
-  }
-  if($stateParams.product){
-    $scope.productId = $stateParams.product;
-    $scope.query.product = $stateParams.product;
-  }
-  if($stateParams.category){
-    $scope.categoryId = $stateParams.category;
-    $scope.query.category = $stateParams.category;
   }
 
   $scope.getPicklistItems = function(picklistName, out){
@@ -136,7 +94,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     else{
       return 0;
     }
-  }
+  };
 
   $scope.getBuffer = function(binary){
     return _arrayBufferToBase64(binary);
@@ -161,48 +119,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.applySort = function(){
     window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
-  };
-
-  $scope.flagProject = function(project){
-    Project.save({projectId:project._id, function: "flag"}, function(result){
-      if(resultHandler.process(result)){
-        project.flagged = true;
-      }
-    });
-  };
-
-  $scope.hideProject = function(project){
-    Project.save({projectId:project._id, function: "hide"}, function(result){
-      if(resultHandler.process(result)){
-        project.approved = false;
-      }
-    });
-  };
-
-  $scope.approveProject = function(project){
-    Project.save({projectId:project._id, function: "approve"}, function(result){
-      if(resultHandler.process(result)){
-        project.approved = true;
-        project.flagged = false;
-      }
-    });
-  };
-
-  $scope.deleteProject = function(project, index){
-    $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
-      if(result==0){
-        if($stateParams.projectId){
-          window.location = "#projects";
-        }
-        else {
-          Project.delete({projectId: project._id}, function(result){
-              if(resultHandler.process(result)){
-                $scope.projects.splice(index, 1);
-              }
-          });
-        }
-      }
-    });
   };
 
   $scope.getGitProjects = function(gituser, gitpassword){

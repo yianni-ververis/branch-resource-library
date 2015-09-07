@@ -53,15 +53,23 @@ function buildMenu(user){
   var topMenu;
   var basicMenu = [
     {
-      label: "Create Project",
-      href: "#projects/new"
-    },
-    {
       label: "Logout",
       href: "/auth/logout"
     }
   ];
   if(user){
+    if(user.role.permissions && user.role.permissions.blogs && user.role.permissions.blogs.create==true){
+      basicMenu.splice(0,0,{
+        label: "Create Blog",
+        href: "#blogs/new/edit"
+      });
+    }
+    if(user.role.permissions && user.role.permissions.projects && user.role.permissions.projects.create==true){
+      basicMenu.splice(0,0,{
+        label: "Create Project",
+        href: "#projects/new"
+      });
+    }
     basicMenu.splice(0,0, {
       label: "Profile",
       href: "#users/" + user._id
