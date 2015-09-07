@@ -23,6 +23,7 @@
     "bcryptjs": "^2.2.0",
     "body-parser": "^1.12.0",
     "btoa": "^1.1.2",
+    "config": "^1.16.0",
     "express": "^4.12.0",
     "express-session": "^1.10.3",
     "github": "^0.2.4",
@@ -37,9 +38,11 @@
     "marked": "^0.3.3",
     "milli-epoch": "0.0.1",
     "mongoose": "^4.1.0",
+    "nodemailer": "^1.4.0",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "request": "^2.55.0",
-    "spam-check": "^0.9.9"
+    "spam-check": "^0.9.9",
+    "underscore": "^1.8.3"
   }
 }

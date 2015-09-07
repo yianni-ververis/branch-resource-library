@@ -3,9 +3,23 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    config = require('config')
+    _ = require('underscore')
 
-mongoose.connect('mongodb://localhost:27017/branch');
+mongoose.connect('mongodb://admin:admin@192.168.1.10:27017/branch');
+
+global.$ = {}
+
+$.getRandomString = function(length) {
+  var set = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  return _.shuffle(set.split('')).splice(0, length).join('')
+}
+
+$.smtp = require('nodemailer').createTransport({
+  service: config.smtp.service,
+  auth: config.smtp.auth
+})
 
 //load the models
 require('./server/models/project.js');
