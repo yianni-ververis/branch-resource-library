@@ -2,7 +2,7 @@ doctype html
 html(ng-app="branch")
   head
     title Qlik Branch
-    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.css")
+    link(rel="stylesheet", href="/bower_components/bootstrap/dist/css/bootstrap.min.css")
     link(rel="stylesheet" href="bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.css")
     link(rel="stylesheet", href="/bower_components/font-awesome/css/font-awesome.min.css")    
     link(rel="stylesheet", href="/bower_components/summernote/dist/summernote.css")    
@@ -12,6 +12,7 @@ html(ng-app="branch")
     script(src="/bower_components/angular-resource/angular-resource.min.js")
     script(src="/bower_components/angular-ui-router/release/angular-ui-router.min.js")    
     script(src="/bower_components/angular-sanitize/angular-sanitize.js")
+    script(src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js")
     script(src="/bower_components/ng-notifications-bar/dist/ngNotificationsBar.min.js")    
     script(src="/bower_components/summernote/dist/summernote.min.js")    
     script(src="/node_modules/marked/marked.min.js")
@@ -21,5 +22,5 @@ html(ng-app="branch")
     notifications-bar.notifications.notifications-container
     confirm-dialog
     div(header)
-    div.main(ui-view)        
+    div.main(ui-view)
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
