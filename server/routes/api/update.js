@@ -13,7 +13,7 @@ module.exports = {
     var user = req.user;
     var userPermissions = req.user.role.permissions[entity];
     var data = req.body;
-    console.log(userPermissions);
+    //console.log(userPermissions);
     //check that the user has sufficient permissions for this operation
     if(!userPermissions || userPermissions.update!=true){
       res.json(Error.insufficientPermissions);
@@ -41,11 +41,10 @@ module.exports = {
     //Again this has been separated due to the nature of saving a 'Project'
     var query = req.query || {};
     query["_id"] = req.params.id;
-    var entity = req.params.entity;
+    var entity = 'projects';
     var user = req.user;
     var userPermissions = req.user.role.permissions[entity];
     var data = req.body;
-    console.log(userPermissions);
     //check that the user has sufficient permissions for this operation
     if(!userPermissions || userPermissions.update!=true){
       res.json(Error.insufficientPermissions);

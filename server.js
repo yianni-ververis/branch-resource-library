@@ -28,6 +28,7 @@ require('./server/models/user.js');
 require('./server/models/userrole.js');
 require('./server/models/feature.js');
 require('./server/models/product.js');
+require('./server/models/rating.js');
 
 var Error = require('./server/controllers/error');
 

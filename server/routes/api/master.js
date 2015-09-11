@@ -28,6 +28,7 @@ var update = require("./update");
 var flag = require("./flag");
 var hide = require("./hide");
 var approve = require("./approve");
+var get = require("./get")
 
 GitHub.authenticate({type: "token", token: GitCredentials.token });
 
@@ -170,11 +171,12 @@ router.get('/:entity/:id/thumbnail', Auth.isLoggedIn, function(req, res){
 
 router.post("/projects", Auth.isLoggedIn, create.createProject);
 router.post("/:entity", Auth.isLoggedIn, create.create);
-router.post("/projects/:id", Auth.isLoggedIn, update.updateProject);
+//router.post("/projects/:id", Auth.isLoggedIn, update.updateProject);
 router.post("/:entity/:id", Auth.isLoggedIn, update.update);
 router.post("/:entity/:id/flag", Auth.isLoggedIn, flag);
 router.post("/:entity/:id/hide", Auth.isLoggedIn, hide);
 router.post("/:entity/:id/approve", Auth.isLoggedIn, approve);
+router.post("/:entity/rating/my", Auth.isLoggedIn, get.get);
 
 //This route is for deleting a list of records on the specified entity
 //url parameters can be used to add filtering

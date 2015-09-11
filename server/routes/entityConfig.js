@@ -23,6 +23,12 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
+    ratings: {
+      collection: "ratings",
+      model: require("../models/rating"),
+      populates: "userid",
+      requiresAuthentication: false
+    },
     articles:{
       collection: "articles",
       model: require("../models/article"),

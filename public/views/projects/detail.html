@@ -39,7 +39,7 @@
         </ul>
       </div>
       <div class="col-md-3 align-left">
-        <rating ng-model="rate" max="5" readonly="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" titles="['one', 'two', 'three', 'four', 'five']" ></rating>
+        <rating ng-model="rate" max="5" readonly="isReadonly" ng-click="ratingClick()" titles="['one', 'two', 'three', 'four', 'five']" id="rating"></rating>
         <ul class="plainlist moderation-list">
           <li class="icon flag large" ng-if="userManager.canFlag('projects')" ng-click="flagProject(projects[0])" ng-class="{flagged: projects[0].flagged==true}">{{projects[0].flagged==true?'Flagged':'Flag'}}</li>
           <li class="icon approve large" ng-if="(userManager.canApprove('projects') && projects[0].approved==false) || (userManager.canHide('projects') && project.approved==false)" ng-click="approveProject(projects[0])">Approve</li>

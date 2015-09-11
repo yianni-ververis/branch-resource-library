@@ -39,7 +39,7 @@ module.exports = {
     else{
       data.createuser = user._id;
       data.userid = user._id;
-      //data.dateline = Date.now;
+      data.dateline = Date.now;
       MasterController.save(null, data, entities[entity], function(result){
         res.json(result);
       });

@@ -3,6 +3,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
   var Git = $resource("system/git/:path", {path: "@path"});
+  var Rating = $resource("api/ratings");
+  var MyRating = $resource("api/ratings/rating/my");
 
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
@@ -13,7 +15,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.stars = new Array(5);
 
-  console.log('params - ',$stateParams);
+  //console.log('params - ',$stateParams);
 
   $scope.sortOptions = {
     createdate: {
@@ -46,6 +48,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.categoryId = "";
   $scope.productId = "";
 
+  $scope.rating = {}
+  $scope.getRate = {}
   $scope.query = {
 
   };
@@ -65,6 +69,44 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   if($stateParams.category){
     $scope.categoryId = $stateParams.category;
     $scope.query.category = $stateParams.category;
+  }
+
+  $scope.ratingClick = function() {
+    //$('#rating').css({'color': 'green', 'border':'0 none'})
+    if($scope.rate && !$scope.isReadonly) {
+      $scope.isReadonly = true;
+      $scope.query.votenum = $scope.projects[0].votenum + 1
+      $scope.query.votetotal = $scope.projects[0].votetotal + $scope.rate
+
+      $scope.updateProjectData($scope.query)
+
+      $scope.rating.id = $scope.projects[0]._id
+      $scope.rating.userid = $stateParams.userId
+      $scope.rating.rate = $scope.rate
+      $scope.rating.date = new Date()
+
+      var ratingquery = {
+        entityId: $scope.rating.id,
+        userid: $scope.rating.userid,
+        createdate: $scope.rating.date,
+        rating: $scope.rating.rate
+      }
+
+      $scope.saveRating(ratingquery)
+    }
+  };
+
+  $scope.getMyRating= function(query) {
+    MyRating.save(query, function(result){
+      if(resultHandler.process(result)) {
+        if (result.total > 0 ) {
+          $scope.isReadonly = true
+          $scope.rate = result.data[0].rating
+        } else {
+          $scope.isReadonly = false
+        }
+      }
+    })
   }
 
   $scope.getPicklistItems = function(picklistName, out){
@@ -104,6 +146,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         else{
           $scope.projects = result.data;
+          $scope.getRate.userid = $scope.userManager.userInfo._id;
+          $scope.getRate.entityId = $scope.projects[0]._id
+          
+          $scope.getMyRating($scope.getRate)
           //if this is the detail view we'll update the breadcrumbs
           if($state.current.name == "projects.detail"){
             $scope.$root.$broadcast('spliceCrumb', {
@@ -114,10 +160,25 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
-        console.log($scope.projectInfo);
       }
     });
   };
+
+  $scope.updateProjectData = function(query) {
+    Project.save(query, function(result){
+      if(resultHandler.process(result)) {
+      
+      }
+    })
+  }
+
+  $scope.saveRating = function(rating) {
+    Rating.save(rating, function(result) {
+      if(resultHandler.process(result)) {
+
+      }
+    })
+  }
 
   $scope.getMore = function(){
     var query = $scope.projectInfo.query;
@@ -221,7 +282,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       repo: project.name,
       owner: project.owner.login
     };
-    console.log(project);
+    //console.log(project);
   };
 
   $scope.previewThumbnail = function(){
