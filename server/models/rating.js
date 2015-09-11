@@ -3,8 +3,7 @@ var Schema = mongoose.Schema;
 
 var ratingSchema = new Schema({
   entityId: {
-    type: Schema.ObjectId,
-    ref: 'projects'
+    type: Schema.ObjectId
   },
   userid: {
     type: Schema.ObjectId,
