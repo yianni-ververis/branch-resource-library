@@ -7,8 +7,22 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
   });
+  var defaultSelection;
+
+  if(!userManager.canApprove('projects')){
+    defaultSelection = {
+      field: "approved",
+      values: [0],
+      lock: true
+    }
+  }
+  $scope.$on("cleared", function(){
+    searchExchange.init(defaultSelection);
+  })
 
   $scope.pageSize = 20;
+
+  $scope.onlyApproved = !userManager.canApprove('projects');
 
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
@@ -18,8 +32,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.url = "projects";
 
   $scope.searching = true;
-
-  $scope.stars = new Array(5);
 
   $scope.query = {
     limit: $scope.pageSize
@@ -76,7 +88,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         console.log($scope.projectInfo);
       }
     });
-  };
+  };  
 
   $scope.getMore = function(){
     var query = $scope.projectInfo.query;
@@ -258,7 +270,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
 
-  searchExchange.clear();
+
 
 
   //only load the project if we have a valid projectId or we are in list view
@@ -284,4 +296,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         type: type
     });
   }
+
+  //this effectively initiates the results
+  searchExchange.clear(true);
+
 }]);

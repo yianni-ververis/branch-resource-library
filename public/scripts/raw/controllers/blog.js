@@ -3,6 +3,21 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.pageSize = 20;
   $scope.query = {};
 
+  var defaultSelection;
+
+  if(!userManager.canApprove('blogs')){
+    defaultSelection = {
+      field: "approved",
+      values: [0],
+      lock: true
+    }
+  }
+  $scope.$on("cleared", function(){
+    searchExchange.init(defaultSelection);
+  })
+
+  searchExchange.clear(true);
+
   $scope.blogTypes;
 
   if($stateParams.blogId){
@@ -96,4 +111,24 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
     });
   };
+
+  $scope.getBlogContent = function(text){
+    if(text && text.data){
+      var buffer = _arrayBufferToBase64(text.data);
+      return marked(buffer);
+    }
+    else{
+      return "";
+    }
+  };
+
+  function _arrayBufferToBase64( buffer ) {
+    var binary = '';
+    var bytes = new Uint8Array( buffer );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return binary ;
+  }
 }]);

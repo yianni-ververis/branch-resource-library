@@ -20,7 +20,7 @@
     })
     //login and signup page
     .state("loginsignup", {
-      url: "/loginsignup",
+      url: "/loginsignup?url",
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {

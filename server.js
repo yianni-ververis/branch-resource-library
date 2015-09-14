@@ -46,8 +46,8 @@ app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(bodyParser.json({limit: '5mb'}));
-app.use(bodyParser.urlencoded({limit: '5mb'}));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb'}));
 
 app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});

@@ -27,6 +27,9 @@ app.service('userManager', ['$resource', function($resource){
   this.canDelete = function(entity){
     return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true;
   }
+  this.hasUser = function(){
+    return !$.isEmptyObject(that.userInfo);
+  }
   this.refresh = function(){
     System.get({path:'userInfo'}, function(result){
       that.menu = result.menu;

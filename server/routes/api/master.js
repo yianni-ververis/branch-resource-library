@@ -24,6 +24,7 @@ var express = require("express"),
 
 //load in the functions
 var create = require("./create");
+var read = require("./read");
 var update = require("./update");
 var flag = require("./flag");
 var hide = require("./hide");
@@ -54,7 +55,7 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res, next){
 
     //add filter for approved items
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
-        || (entity.requiresAuthentication!=true && entity.exemptFromApproval!=true && !user)){
+        || (!user)){
       query["approved"]=true;
     }
     MasterController.get(req.query, query, entity, function(results){
@@ -84,13 +85,14 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
     // if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
     //   query["createuser"]=user._id;
     // }
-    console.log(query);
     MasterController.count(req.query, query, entity, function(results){
-      console.log(results);
       res.json(results);
     });
   }
 });
+
+router.get("/:entity/hidden", Auth.isLoggedIn, read.getHidden);
+router.get("/:entity/flagged", Auth.isLoggedIn, read.getFlagged);
 
 //This route is for getting a specific result from the specified entity
 //url parameters can be used to add filtering
@@ -117,8 +119,12 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
     if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
       query["createuser"]=user._id;
     }
+    if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
+        || (!user)){
+      query["approved"]=true;
+    }
     MasterController.get(req.query, query, entity, function(results){
-      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check < (new Date() - (1 / 24)))||(!results.data[0].last_git_check)))){
+      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < (new Date()).getTime() - (360000))||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
@@ -126,10 +132,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
-          console.log('Getting git info');
-          console.log(results.data[0].last_git_check);
-          var d = new Date();
-          console.log(d-(1/24));
           if(err){
             res.json(Error.custom(err.message));
           }
@@ -138,7 +140,8 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
 
             //update the update date and git check data
             results.data[0].last_updated = new Date(gitresult.updated_at);
-            results.data[0].last_git_check = epoch.now();
+            results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
+            results.data[0].last_git_check = Date.now();
             GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
               //console.log(atob(readmeresult.content));
               results.data[0].content = atob(readmeresult.content);
@@ -172,7 +175,8 @@ router.post("/projects", Auth.isLoggedIn, create.createProject);
 router.post("/:entity", Auth.isLoggedIn, create.create);
 router.post("/projects/:id", Auth.isLoggedIn, update.updateProject);
 router.post("/:entity/:id", Auth.isLoggedIn, update.update);
-router.post("/:entity/:id/flag", Auth.isLoggedIn, flag);
+router.post("/:entity/:id/flag", Auth.isLoggedIn, flag.flag);
+router.post("/:entity/:id/unflag", Auth.isLoggedIn, flag.unflag);
 router.post("/:entity/:id/hide", Auth.isLoggedIn, hide);
 router.post("/:entity/:id/approve", Auth.isLoggedIn, approve);
 
@@ -235,7 +239,6 @@ function parseQuery(query, body, method, originalEntity){
       sort[sortFields[i]] = sortOrders[i] || 1;
     }
     entity.sort = sort;
-    console.log(sort);
     delete query["sort"];
     delete query["sortOrder"];
   }

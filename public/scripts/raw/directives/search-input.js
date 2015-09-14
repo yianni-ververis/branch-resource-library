@@ -3,7 +3,7 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
     restrict: "E",
     replace: true,
     scope:{
-
+      onlyapproved: "="
     },
     templateUrl: "/views/search/search-input.html",
     link: function(scope){
@@ -34,6 +34,8 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
           DELETE: 46,
           SPACE: 32
       };
+
+      scope.searchText = "";
 
       scope.searchTimeout = 300;
       scope.suggestTimeout = 100;

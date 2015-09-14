@@ -1,6 +1,12 @@
 <div class="container page">
-  <div>
+  <div class="blog">
+    <div class="blog-image" ng-show="blogs[0].image">
+      <img src="{{blogs[0].image}}"/>
+    </div>
     <h1>{{blogs[0].title}}</h1>
+    <div class="" ng-bind-html="getBlogContent(blogs[0].content)">
+
+    </div>
     <div comments entity="'blogs'" entityid="blogId">
 
     </div>

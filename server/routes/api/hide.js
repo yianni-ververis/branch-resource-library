@@ -3,6 +3,7 @@
 //Sets the 'approved' field to false making it invisible to users without 'approve' permissions
 var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
+    Error = require("../../controllers/error"),
     qrs = require("../../../SenseQRS");
 
 module.exports = function(req, res){
@@ -11,7 +12,6 @@ module.exports = function(req, res){
   var entity = req.params.entity;
   var user = req.user;
   var userPermissions = req.user.role.permissions[entity];
-  console.log('hiding item');
   //check that the user has sufficient permissions for this operation
   if(!userPermissions || userPermissions.hide!=true){
     res.json(Error.insufficientPermissions());

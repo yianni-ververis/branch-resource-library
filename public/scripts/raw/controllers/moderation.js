@@ -3,11 +3,16 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
 
   $scope.userManager = userManager;
 
+  $scope.isApproved = function(){
+    return $scope.approved == "True" || $scope.approved == true;
+  };
+
   $scope.flagEntity = function(){
     //Need to implement new flagging functionality
-    Entity.save({entityId: $scope.entityid, function: "flag"}, function(result){
+    var fn = $scope.flagged==true ? "unflag" : "flag";
+    Entity.save({entityId: $scope.entityid, function: fn}, function(result){
       if(resultHandler.process(result)){
-
+        $scope.flagged = !$scope.flagged;
       }
     });
   };
@@ -15,7 +20,7 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
   $scope.hideEntity = function(){
     Entity.save({entityId: $scope.entityid, function: "hide"}, function(result){
       if(resultHandler.process(result)){
-
+        $scope.approved = "False";
       }
     });
   };
@@ -23,14 +28,14 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
   $scope.approveEntity = function(){
     Entity.save({entityId: $scope.entityid, function: "approve"}, function(result){
       if(resultHandler.process(result)){
-
+        $scope.approved = "True";
         //need to remove all flags for the project here
       }
     });
   };
 
   $scope.deleteEntity = function(){
-    $scope.Confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
+    confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
       if(result==0){
         Entity.delete({entityId: $scope.entityid}, function(result){
             if(resultHandler.process(result)){

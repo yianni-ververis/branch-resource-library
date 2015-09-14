@@ -99,7 +99,6 @@ img{
 
 .page{
   min-height: ~"calc(100% - 120px)";
-  margin-top: 20px;
 }
 
 .paging, .sorting{
@@ -128,12 +127,12 @@ img{
 }
 
 .content{
-  background-color: white;
+  background-color: transparent;
   padding: 10px 10px;
 
   margin-top: 10px;
   margin-bottom: 10px;
-  border: 1px solid @content-border;
+
 }
 
 .frosted-cover{
@@ -177,6 +176,30 @@ img{
 .center{
   margin: 0 auto;
   display: block;
+}
+
+.no-results, .please-login{
+  height: 100px;
+  line-height: 100px;
+  color: @content-border;
+  font-size: 16px;
+  text-align: center;
+}
+
+.loading{
+  height: 100px;
+  background: url(/resources/loading.gif) center center no-repeat;
+}
+
+.search-header{
+  position: fixed;
+  top: 100px;
+  background-color: white;
+  z-index: 100;
+}
+
+.results-container{
+  padding-top: 100px;
 }
 
 @import "./icons.less";

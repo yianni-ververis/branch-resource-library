@@ -11,25 +11,18 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $scope.comments = [];
   $scope.pageSize = 10;
 
-  console.log($scope.entityid);
-
-  $scope.$watch("entityid", function(newVal, oldVal){
-    console.log('changed to' + newVal);
-    console.log('changed from' + oldVal);
-  });
-
   $scope.sortOptions = {
     newest: {
       id: "newest",
       name: "Newest",
       order: -1,
-      field: "dateline"
+      field: "createdate"
     },
     oldest: {
       id: "oldest",
       name: "Oldest",
       order: 1,
-      field: "dateline"
+      field: "createdate"
     }
   };
 
@@ -37,21 +30,29 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
     limit: $scope.pageSize //overrides the server side setting
   };
 
+  $scope.applySort = function(sort){
+    $scope.commentQuery.sort = sort.field;
+    $scope.commentQuery.sortOrder = sort.order;
+    $scope.getCommentData($scope.commentQuery);
+  };
+
   $scope.sort = $scope.sortOptions.newest;
+  $scope.commentQuery.sort = $scope.sort.field;
+  $scope.commentQuery.sortOrder = $scope.sort.order;
 
-  if($stateParams.page){
-    $scope.commentQuery.skip = ($stateParams.page-1) * $scope.pageSize;
-  }
-  if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
-    $scope.sort = $scope.sortOptions[$stateParams.sort];
-    $scope.commentQuery.sort = $scope.sort.field;
-    $scope.commentQuery.sortOrder = $scope.sort.order;
-  }
 
-  $scope.getCommentData = function(query){
+
+
+
+  $scope.getCommentData = function(query, append){
     Comment.get(query, function(result){
       if(resultHandler.process(result, null, true)){
-        $scope.comments = result.data;
+        if(append && append==true){
+          $scope.comments = $scope.comments.concat(result.data);
+        }
+        else{
+          $scope.comments = result.data;
+        }
         $scope.commentInfo = result;
         delete $scope.commentInfo["data"];
       }
@@ -89,7 +90,12 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
         });
       }
     })
-  }
+  };
+
+  $scope.more = function(){
+    $scope.commentQuery.skip = $scope.comments.length;
+    $scope.getCommentData($scope.commentQuery, true);
+  };
 
   function bin2String(array) {
     return String.fromCharCode.apply(String, array);

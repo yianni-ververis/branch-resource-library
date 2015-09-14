@@ -7,6 +7,14 @@
       width: 100%;
     }
   }
+
+  h1{
+    color: @green;
+    font-weight: lighter;
+    font-size: 16px;
+    margin: 0;
+  }
+
   .no-image{
     height: 100px;
     padding: 30px;
@@ -19,11 +27,21 @@
     position: relative;
     width: 100%;
     overflow: hidden;
+    border: 1px solid @content-border;
+
     &:before{
       content: "";
       display: block;
-      padding-top: 12%;
+      padding-top: 25%;
     }
+    &.blog-thumbnail{
+      &:before{
+        content: "";
+        display: block;
+        padding-top: 12%;
+      }
+    }
+
     img{
       width: 100%;
       position: absolute;
@@ -31,6 +49,14 @@
       left: 0;
       bottom: 0;
       right: 0;
+    }
+  }
+  .blog-summary{
+    padding: 3px;
+    > a:first-of-type{
+      color: @green;
+      font-size: 16px;
+      display: block;
     }
   }
 }

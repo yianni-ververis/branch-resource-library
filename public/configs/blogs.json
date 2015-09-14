@@ -1,31 +1,31 @@
 {
   "fields":[
     {
-      "name": "blogTitle",
-      "suppressNull": false
-    },
-    {
-      "name": "blogId",
-      "suppressNull": false
-    },
-    {
-      "name": "userid",
+      "dimension": "blogId",
       "suppressNull": true
     },
     {
-      "name": "username",
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "userId",
       "suppressNull": true
     },
     {
-      "name": "createdate",
+      "dimension": "username",
+      "suppressNull": true
+    },
+    {
+      "dimension": "createdate",
       "suppressNull": false
     },
     {
-      "name": "blogApproved",
+      "dimension": "approved",
       "suppressNull": false
     },
     {
-      "name": "blogImage",
+      "dimension": "image",
       "suppressNull": false
     }
   ],
@@ -53,5 +53,7 @@
       "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "createdate"
+  "defaultSort": "createdate",
+  "entity": "blogs",
+  "pagesize" : 20
 }

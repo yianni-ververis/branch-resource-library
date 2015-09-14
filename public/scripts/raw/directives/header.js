@@ -14,8 +14,7 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
         scope.breadcrumbs = [];
         var state = $state.$current;
         if(state.self.name != "home"){
-          while(state.self.name != ""){
-            console.log(state);
+          while(state.self.name != ""){            
             scope.breadcrumbs.push({
               text: state.data.crumb,
               link: state.data.link
@@ -29,6 +28,16 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
       scope.$on('spliceCrumb', function(event, crumb){
         scope.breadcrumbs.splice(-1, 1, crumb);
       });
+      scope.getLoginUrl = function(){
+        var suffix = "";
+        if($state.$current.name!="home"){
+          suffix += "?url=";
+        }
+        if(window.location.hash.indexOf('login')==-1){
+          suffix += window.location.hash.replace("#/","");
+        }
+        return "#loginsignup"+suffix;
+      }
     }
   }
 }]);

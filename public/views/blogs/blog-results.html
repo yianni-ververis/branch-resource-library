@@ -1,18 +1,26 @@
 <ul class="blog-list plainlist blog">
-  <li ng-repeat="blog in items" id="{{blog.blogId}}" ng-if="showItem(blog.blogApproved, 'blogs')">
-    <div class="blog-image" ng-show="blog.blogImage!='-'">
-      <img src="{{blog.blogImage}}"/>
+  <li ng-repeat="blog in items" id="{{blog.blogId}}" ng-hide="isHidden(blog.blogId)">
+    <div class="blog-image blog-thumbnail" ng-show="blog.image!='-'">
+      <img src="{{blog.image}}"/>
     </div>
     <div class="row">
       <div class="col-md-9">
-        <a href="#blogs/{{blog.blogId}}">{{blog.blogTitle}}</a>
+        <div class="blog-summary">
+          <h1><a href="#blogs/{{blog.blogId}}">{{blog.title}}</a></h1>
+          <span>Posted {{blog.createdate_num | date : 'dd MMM y at H:mm'}} by <a href="#user/{{blog.userId}}">{{blog.username}}</a></span>
+        </div>
       </div>
       <div class="col-md-2">
         <ul class="stats plainlist">
-          <li>Created: <i>{{blog.createdate}}</i></li>
+          <li class="rating">
+            <span ng-show="blog.rating=='-'">Not yet rated</span>
+            <span class="star" ng-repeat="star in stars track by $index" ng-if="blog.rating > $index">★</span>
+          </li>
+          <li><i>{{blog.views}}</i> Views</li>
+          <li><i>{{blog.replycount}}</i> Comments</li>
         </ul>
       </div>
-      <div class="col-md-1" moderation entity="'blogs'" entityid="blog.blogId" approved="blog.blogApproved">
+      <div class="col-md-1" moderation entity="'blogs'" entityid="blog.blogId" approved="blog.approved">
 
       </div>
     </div>

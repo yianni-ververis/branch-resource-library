@@ -25,7 +25,7 @@ var blogSchema = new Schema({
   },
   approved:{
     type: Boolean,
-    default: true
+    default: false
   },
   flagged:{
     type: Boolean,

@@ -91,7 +91,7 @@
           font-size: 16px;
         }
         display: block;
-        color: @blue;
+        color: @green;
       }
     }
   }
@@ -223,6 +223,11 @@
   overflow: hidden;
   max-height: 200px;
 
+  border-bottom: 1px solid @content-border;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  box-sizing: content-box;
+
   .picklist{
     vertical-align: top;
     border: none;
@@ -236,5 +241,33 @@
   .content{
     margin-top: 0;
     padding-top: 0;
+  }
+}
+
+.comment-list{
+  li{
+    &.author-comment{
+      background-color: @green3;
+    }
+  }
+  .thumb-container, .comment-content{
+    display: inline-block;
+  }
+  .thumb-container{
+    width: 80px;
+    overflow: hidden;
+    img{
+      max-width: 80px;
+    }
+  }
+  .comment-content{
+    padding: 5px;
+    vertical-align: top;
+    width: ~"calc(100% - 85px)";
+  }
+  .comment-header{
+    span:last-of-type{
+      float: right;
+    }
   }
 }

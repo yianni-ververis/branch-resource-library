@@ -1,8 +1,21 @@
 {
   "fields":[
-    "username",
-    "email",
-    "role"
+    {
+      "dimension" : "userId",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "username",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "email",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "role",
+      "suppressNull": true
+    }
   ],
   "template": "/views/admin/user-results.html",
   "sortingx":{
@@ -40,5 +53,7 @@
       "senseType": "qSortByAcsii"
     }
   },
-  "defaultSort": "title"
+  "defaultSort": "title",
+  "entity": "users",
+  "pagesize" : 20
 }

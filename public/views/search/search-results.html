@@ -1,29 +1,37 @@
 <div class="results-container content">
-  <div class="result-header">
-    Showing {{pageTop+1}} - {{pageBottom}} of {{total}} results
-    <div class="paging">
-      <label>Page {{currentPage}} of {{pages.length}}</label>
-      <ul class="page-list plainlist">
-        <li ng-hide="currentPage==1">
-          <a ng-click="setPage(0)" class="icon first"></a>
-        </li>
-        <li ng-hide="currentPage==1">
-          <a ng-click="changePage(-1)" class="icon prev"></a>
-        </li>
-        <li ng-repeat="page in pages" ng-click="setPage(page-1)" ng-show="pageInRange(page)" ng-class="{active: page==currentPage}">
-          <a>{{page}}</a>
-        </li>
-        <li ng-show="currentPage < pages.length - 1">
-          <a ng-click="changePage(1)" class="icon next"></a>
-        </li>
-        <li ng-show="currentPage < pages.length - 1">
-          <a ng-click="setPage(pages.length-1)" class="icon last"></a>
-        </li>
-      </ul>
+  <div class="" ng-if="items.length>0">
+    <div class="result-header">
+      Showing {{pageTop+1}} - {{pageBottom}} of {{total}} results
+      <div class="paging">
+        <label>Page {{currentPage}} of {{pages.length}}</label>
+        <ul class="page-list plainlist">
+          <li ng-hide="currentPage==1">
+            <a ng-click="setPage(0)" class="icon first"></a>
+          </li>
+          <li ng-hide="currentPage==1">
+            <a ng-click="changePage(-1)" class="icon prev"></a>
+          </li>
+          <li ng-repeat="page in pages" ng-click="setPage(page-1)" ng-show="pageInRange(page)" ng-class="{active: page==currentPage}">
+            <a>{{page}}</a>
+          </li>
+          <li ng-show="currentPage < pages.length - 1">
+            <a ng-click="changePage(1)" class="icon next"></a>
+          </li>
+          <li ng-show="currentPage < pages.length - 1">
+            <a ng-click="setPage(pages.length-1)" class="icon last"></a>
+          </li>
+        </ul>
+      </div>
+      <div class="sorting">
+        <label>Sort by: </label><select class="form-control" ng-change="applySort(sort)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+      </div>
     </div>
-    <div class="sorting">
-      <label>Sort by: </label><select class="form-control" ng-change="applySort()" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+    <ng-include src="template"></ng-include>
+  </div>
+  <div class="no-results" ng-if="items.length==0">
+    <span ng-show="!loading">No Results</span>
+    <div class="loading" ng-show="loading">
+
     </div>
   </div>
-  <ng-include src="template"></ng-include>
 </div>

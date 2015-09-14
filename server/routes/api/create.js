@@ -26,26 +26,6 @@ var MasterController = require("../../controllers/master"),
 GitHub.authenticate({type: "token", token: GitCredentials.token });
 
 module.exports = {
-  createx: function(req, res){
-    //This route is for creating a new record on the specified entity and returning the new record
-    //Requires "create" permission on the specified entity
-    var entity = req.params.entity;
-    var user = req.user;
-    var userPermissions = req.user.role.permissions[entity];
-    var data = req.body;
-    if(!userPermissions || userPermissions.create!=true){
-      res.json(Error.insufficientPermissions());
-    }
-    else{
-      data.createuser = user._id;
-      data.userid = user._id;
-      //data.dateline = Date.now;
-      console.log(data);
-      MasterController.save(null, data, entities[entity], function(result){
-        res.json(result);
-      });
-    }
-  },
   create: function(req, res){
     //This route is for creating a new record on the 'Project' entity and returning the new record
     //Requires "create" permission on the 'Project' entity

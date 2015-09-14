@@ -1,23 +1,29 @@
 <div class="container page">
   <div class="row">
+
+    <div class="search-header">
+      <div class="container">
+        <ul class="tabs horizontal">
+          <li ng-click="search()" ng-class="{active: searching==true}">
+            Search
+          </li>
+          <li ng-click="browse()" ng-class="{active: searching==false}">
+            Browse
+          </li>
+        </ul>
+        <div ng-show="searching">
+          <search-input></search-input>
+        </div>
+        <div ng-show="!searching" class="plainlist browse-list">
+          <search-filter id="productLB" class="picklist content" data-field="product" data-title="Product"></search-filter>
+          <search-filter id="categoryLB" class="picklist content" data-field="category" data-title="Category"></search-filter>
+          <search-filter id="approvedLB" class="picklist content" data-field="approved" data-title="Approved"></search-filter>
+          <button class="btn-clear" ng-click="clear()">Clear All</button>
+        </div>
+      </div>
+    </div>
     <div class="col-md-12">
-      <ul class="tabs horizontal">
-        <li ng-click="search()" ng-class="{active: searching==true}">
-          Search
-        </li>
-        <li ng-click="browse()" ng-class="{active: searching==false}">
-          Browse
-        </li>
-      </ul>
-      <div ng-show="searching">
-        <search-input></search-input>
-      </div>
-      <div ng-show="!searching" class="plainlist browse-list">
-        <search-filter class="picklist content" data-field="product" data-title="Product"></search-filter>
-        <search-filter class="picklist content" data-field="category" data-title="Category"></search-filter>
-        <button class="btn-clear" ng-click="clear()">Clear All</button>
-      </div>
-      <search-results data-config="projects" pagesize="pageSize"></search-results>
+      <search-results id="projectResultList" ng-class="{'browse-padding':!searching}" data-config="projects"></search-results>
     </div>
   </div>
 </div>

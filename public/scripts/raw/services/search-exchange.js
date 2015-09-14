@@ -1,4 +1,4 @@
-app.service('searchExchange', ["$rootScope", function($rootScope){
+app.service('searchExchange', ["$rootScope", "userManager", function($rootScope, userManager){
   var that = this;
   var config = {
     host: "10.211.55.3:8080/anon",
@@ -12,6 +12,7 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
   this.objects = {};
   this.online = false;
 
+  this.priority;
   this.queue = [];
 
   var senseApp;
@@ -34,10 +35,7 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
     });
   });
   $rootScope.$on("senseready", function(params){
-    //execute any queued up items
-    for (var i=0;i<that.queue.length;i++){
-      that.queue[i].call();
-    }
+    that.executePriority();
     console.log('connected to sense app');
     that.online = true;
   });
@@ -46,11 +44,60 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
     that.online = false;
   });
 
-  this.clear = function(){
+  this.init = function(defaultSelection){
+    if(defaultSelection){
+      that.addFilter({field: defaultSelection.field}, function(result){
+        //result.object.getLayout().then(function(layout){
+            //result.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
+              result.object.selectListObjectValues("/qListObjectDef", defaultSelection.values, true).then(function(){
+                if(defaultSelection.lock==true){
+                  result.object.lock("/qListObjectDef").then(function(){
+                    that.executeQueue();
+                  });
+                }
+                else{
+                  that.executeQueue();
+                }
+              });
+            //});
+        //});
+      }, true);
+    }
+    else{
+        that.executeQueue();
+    }
+  };
+
+  this.executeQueue = function(){
+    for (var i=0;i<that.queue.length;i++){
+      that.queue[i].call();
+    }
+    $rootScope.$broadcast("update");
+  };
+
+  this.executePriority = function(){
+    if(that.priority){
+      that.priority.call(null);
+    }
+    else{
+      that.executeQueue();
+    }
+  };
+
+  this.clear = function(unlock){
     if(senseApp){
-      senseApp.clearAll().then(function(){
-          $rootScope.$broadcast("cleared");
-      });
+      if(unlock && unlock==true){
+        senseApp.unlockAll().then(function(){
+          senseApp.clearAll().then(function(){
+              $rootScope.$broadcast("cleared");
+          });
+        });
+      }
+      else{
+        senseApp.clearAll().then(function(){
+            $rootScope.$broadcast("cleared");
+        });
+      }
     }
     else{
       $rootScope.$broadcast("cleared");
@@ -65,6 +112,7 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
   }
 
   this.search = function(searchText){
+    $rootScope.$broadcast("searching");
     that.terms = searchText.split(" ");
     senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
       $rootScope.$broadcast('searchResults', results);
@@ -78,58 +126,76 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
     });
   };
 
-  this.addFilter = function(field, title, callbackFn){
-    var lbDef = {
-      qInfo:{
-        qType: "ListObject"
-      },
-      qListObjectDef:{
-        qStateName: "$",
-        qDef:{
-          qFieldDefs:[field]
-        },
-        qAutoSortByState: {
-          qDisplayNumberOfRows: 8
-        }
+  this.addFilter = function(options, callbackFn, priority){
+    var fn;
+    if(that.objects[options.id]){
+      fn = function(){
+        callbackFn.call(null, {object:that.objects[options.id]});
       }
-    };
-    var fn = function(){
-      senseApp.createSessionObject(lbDef).then(function(response){
-        callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
-      });
+    }
+    else{
+      fn = function(){
+        var lbDef = {
+          qInfo:{
+            qType: "ListObject"
+          },
+          qListObjectDef:{
+            qStateName: "$",
+            qDef:{
+              qFieldDefs:[options.field]
+            },
+            qAutoSortByState: {
+              qDisplayNumberOfRows: 8
+            }
+          }
+        };
+        senseApp.createSessionObject(lbDef).then(function(response){
+          //callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
+          callbackFn.call(null, {object: response});
+        });
+      };
     }
     if(that.online){
       fn.call();
     }
     else{
-      that.queue.push(fn);
+      if(priority){
+        that.priority = fn;
+      }
+      else{
+        that.queue.push(fn);
+      }
     }
   };
 
-  this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn){
-    var hDef = {
-      "qInfo" : {
-          "qType" : "table"
-      },
-      "qHyperCubeDef": {
-        "qInitialDataFetch": [
-          {
-            "qHeight" : pageSize,
-            "qWidth" : fields.length
-          }
-        ],
-        //"qInitialDataFetch": [],
-        "qDimensions" : buildFieldDefs(fields, sorting),
-        "qMeasures": [],
-      	"qSuppressZero": false,
-      	"qSuppressMissing": false,
-      	"qInterColumnSortOrder": defaultSort
+  //this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn, priority){
+  this.addResults = function(options, callbackFn, priority){
+    var fn;
+    if(that.objects[options.id]){
+      fn = function(){
+        callbackFn.call(null, {object:that.objects[options.id]});
       }
     }
-    var fn = function(){
-      senseApp.createSessionObject(hDef).then(function(response){
-        callbackFn.call(null, {handle: response.handle, object: response});
-      });
+    else{
+      //create a new session object
+      fn = function(){
+        var hDef = {
+          "qInfo" : {
+              "qType" : "table"
+          },
+          "qHyperCubeDef": {
+            "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
+            "qMeasures": buildMeasureDefs(options.fields),
+          	"qSuppressZero": false,
+          	"qSuppressMissing": false,
+          	"qInterColumnSortOrder": options.defaultSort
+          }
+        }
+        senseApp.createSessionObject(hDef).then(function(response){
+          that.objects[options.id] = response;
+          callbackFn.call(null, {object:response});
+        });
+      }
     }
     if(that.online){
       fn.call();
@@ -140,23 +206,44 @@ app.service('searchExchange', ["$rootScope", function($rootScope){
   }
 
   function buildFieldDefs(fields, sorting){
-    return fields.map(function(f){
-      var def = {
-  			"qDef": {
-  				"qFieldDefs": [f.name]
-        },
-        qNullSuppression: f.suppressNull
-  		}
-      if(sorting[f.name]){
-        var sort = {
-          //"autoSort": false
-          //"qSortByLoadOrder" : 1
-        };
-        sort[sorting[f.name].senseType] = sorting[f.name].order;
-        def["qDef"]["qSortCriterias"] = [sort];
+    var defs = [];
+    for (var i=0;i<fields.length;i++){
+      if(fields[i].dimension){
+        var def = {
+    			"qDef": {
+    				"qFieldDefs": [fields[i].dimension]
+          },
+          qNullSuppression: fields[i].suppressNull
+    		}
+        if(sorting[fields[i].dimension]){
+          var sort = {
+            //"autoSort": false
+            //"qSortByLoadOrder" : 1
+          };
+          sort[sorting[fields[i].dimension].senseType] = sorting[fields[i].dimension].order;
+          def["qDef"]["qSortCriterias"] = [sort];
+        }
+        defs.push(def);
       }
-      return def;
-    });
+    }
+    return defs;
+  }
+
+  function buildMeasureDefs(fields){
+    var defs = [];
+    for (var i=0;i<fields.length;i++){
+      if(fields[i].measure){
+        var def = {
+          "qDef": {
+  					"qLabel": fields[i].label,
+  					"qDescription": "",
+  					"qDef": fields[i].measure
+  				}
+        }
+        defs.push(def);
+      }
+    };
+    return defs;
   }
 
 }])

@@ -10,6 +10,7 @@ var projectSchema = new Schema({
   overview: String,
   createdate: Date,
   last_updated: Date,
+  last_updated_num: Number,
   last_git_check: Date,
   project_site: String,
   git_clone_url: String,
@@ -29,7 +30,7 @@ var projectSchema = new Schema({
   }],
   approved: {
     type: Boolean,
-    default: true
+    default: false
   },
   flagged: {
     type: Boolean,
