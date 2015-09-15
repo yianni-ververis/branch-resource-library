@@ -14,6 +14,17 @@
   }
 }
 
+.icon{
+  cursor: pointer;
+  color: @disabled;
+}
+.flag:hover, .remove:hover, .delete:hover, .flag.flagged, .remove.hidden{
+  color: @red;
+}
+.approve:hover, .edit:hover, .download:hover{
+  color: @green;
+}
+
 .first{
   &::before{
     content: "\E80B";
@@ -59,5 +70,24 @@
 .flag{
   &::before{
     content: "\E815";
+  }
+  &::after{
+    content: attr(data-flagcount);
+    font-size: 12px;
+    position: absolute;
+    top: 0px;
+    left: 40px;
+  }
+}
+
+.edit{
+  &::before{
+    content: "\E816";
+  }
+}
+
+.download{
+  &::before{
+    content: "\E812";
   }
 }

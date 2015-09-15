@@ -67,7 +67,7 @@ function buildMenu(user){
     if(user.role.permissions && user.role.permissions.projects && user.role.permissions.projects.create==true){
       basicMenu.splice(0,0,{
         label: "Create Project",
-        href: "#projects/new"
+        href: "#projects/new/edit"
       });
     }
     basicMenu.splice(0,0, {

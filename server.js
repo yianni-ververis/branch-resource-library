@@ -21,6 +21,8 @@ require('./server/models/user.js');
 require('./server/models/userrole.js');
 require('./server/models/feature.js');
 require('./server/models/product.js');
+require('./server/models/picklist.js');
+require('./server/models/picklistitem.js');
 
 var Error = require('./server/controllers/error');
 

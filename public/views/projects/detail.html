@@ -1,148 +1,54 @@
 <div class="container page">
-  <div ng-hide="{{projectId=='new'}}">
-    <div class="row project-detail-summary content">
-      <div class="col-md-4">
-        <h1>{{projects[0].title}}</h1>
-        by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
-        <img src="{{projects[0].thumbnail}}" />
-      </div>
-      <div class="col-md-5">
-        <ul class="plainlist">
-          <li>
-            <label>Project Website:</label>
-            <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
-          </li>
-          <li>
-            <label>Updated at:</label>
-            {{projects[0].last_updated | date:'dd MMM yy HH:mm'}}
-          </li>
-          <li>
-            <label>Git Clone Url:</label>
-            {{projects[0].git_clone_url}}
-          </li>
-          <li>
-            <label>Project State:</label>
-            {{projects[0].open}}
-          </li>
-          <li>
-            <label>Release version:</label>
-            TBD
-          </li>
-          <li>
-            <label>Branch Contributors:</label>
-            TBD
-          </li>
-          <li>
-            <label>Tags:</label>
-            {{getBuffer(projects[0].taglist.data)}}
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-3 align-left">
-        <moderation entity="'projects'" entityid="projects[0]._id" approved="projects[0].approved" size="'large'"></moderation>
-        <button class="ghost-button grey">Download</button>
-      </div>
+  <div class="row project-detail-summary content">
+    <div class="col-md-4">
+      <h1>{{projects[0].title}}</h1>
+      by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
+      <img src="{{projects[0].thumbnail}}" />
     </div>
-    <div class="row content">
-      <div class="col-md-12">
-        <h2>Details</h2>
-      </div>
-      <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
-      </div>
+    <div class="col-md-5">
+      <ul class="plainlist">
+        <li>
+          <label>Project Website:</label>
+          <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
+        </li>
+        <li>
+          <label>Updated at:</label>
+          {{projects[0].last_updated | date:'dd MMM yy HH:mm'}}
+        </li>
+        <li>
+          <label>Git Clone Url:</label>
+          {{projects[0].git_clone_url}}
+        </li>
+        <li>
+          <label>Project State:</label>
+          {{projects[0].open}}
+        </li>
+        <li>
+          <label>Release version:</label>
+          TBD
+        </li>
+        <li>
+          <label>Branch Contributors:</label>
+          TBD
+        </li>
+        <li>
+          <label>Tags:</label>
+          {{getBuffer(projects[0].taglist.data)}}
+        </li>
+      </ul>
     </div>
-    <div comments entity="'projects'" entityid="projectId" parent="projects[0]">
-
+    <div class="col-md-3 align-left">
+      <moderation entity="'projects'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>      
     </div>
   </div>
-  <div ng-show="{{projectId=='new'}}">
-    <div class="row content">
-      <h1>Summary</h1>
-      <div class="row">
-        <div class="col-md-6">
-          <label>Name:</label>
-          <input class="form-control" type="text" ng-model="newProjectName" placeholder="" />
-          <label>Short Description:</label>
-          <input class="form-control" type="text" ng-model="newProjectDescription" placeholder="" />
-          <label>Project Type:</label>
-          <select class="form-control" type="text" ng-model="newProjectCategory" ng-options="item.name for item in projectCategories track by item._id">
-            <option value=""></option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label>Thumbnail:</label>
-          <!-- <form enctype="multipart/form-data" id="newScreenshotForm"> -->
-          <span class="btn btn-default btn-file">
-            Choose
-            <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="thumbnail"/>
-          </span>
-          <!-- </form> -->
-          <img src="{{newProjectThumbnail}}" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          <label>Status:</label>
-          <select class="form-control" ng-model="newProjectStatus" ng-options="item.name for item in projectStatuses track by item._id">
-            <option value=""></option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label>Qlik Software:</label>
-          <select class="form-control" ng-model="newProjectProduct" ng-change="getProductVersions(newProjectProduct)" ng-options="item.name for item in projectProducts track by item._id">
-            <option value=""></option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label>Version:</label>
-          <ul ng-if="newProjectProduct!=null">
-            <li ng-repeat="version in productVersions">
-              <input class="product-version" type="checkbox" /> {{version.name}}
-            </li>
-          </ul>
-          <div class="">
-            <span ng-if="newProjectProduct==null">Please specify the software</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <label>Tags</label>
-          <input class="form-control" type="text" name="name" value="" placeholder="">
-        </div>
-      </div>
+  <div class="row content">
+    <div class="col-md-12">
+      <h2>Details</h2>
     </div>
-    <div class="row content">
-      <h1>Details</h1>
-      <div class="col-md-12">
-        <input type="radio" name="usegit" ng-model="usegit" value="true" checked>Link to GitHub project
-        <input type="radio" name="usegit" ng-model="usegit" value="false">Enter details manually
-      </div>
-      <div class="" ng-show="usegit=='true'">
-        <div class="" ng-if="gitProjects.length==0">
-          Log in to GitHub
-          <form ng-submit="getGitProjects(gituser, gitpassword)">
-            <label>Username: </label>
-            <input type="text" ng-model="gituser" class="form-control" />
-            <label>Password: </label>
-            <input type="password" ng-model="gitpassword" class="form-control" />
-            <button type="submit" name="button">Login</button>
-          </form>
-        </div>
-        <div class="" ng-if="gitProjects.length>0">
-          <ul class="plainlist">
-            <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)">
-              {{project.name}}
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="" ng-show="usegit=='false'">
-        <h3>Content</h3>
-        <div id="newProjectContent" class="" ng-model="newProjectContent">
+    <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
+    </div>
+  </div>
+  <div comments entity="'projects'" entityid="projectId" parent="projects[0]">
 
-        </div>
-      </div>
-      <button type="button" name="button" ng-click="validateNewProjectData()">Create</button>
-    </div>
   </div>
 </div>

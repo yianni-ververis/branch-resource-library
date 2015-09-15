@@ -12,8 +12,20 @@ app.service('userManager', ['$resource', function($resource){
   this.canRead = function(entity){
     return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].read && this.userInfo.role.permissions[entity].read==true;
   }
-  this.canUpdate = function(entity){
-    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true;
+  this.canUpdate = function(entity, owner){
+    if (this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true){
+      if(!this.userInfo.role.permissions[entity].allOwners || this.userInfo.role.permissions[entity].allOwners==false){
+        if(this.userInfo._id==owner){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+      else{
+        return true
+      }
+    }
   }
   this.canApprove = function(entity){
     return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].approve && this.userInfo.role.permissions[entity].approve==true;

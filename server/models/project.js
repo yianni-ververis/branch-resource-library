@@ -18,6 +18,7 @@ var projectSchema = new Schema({
   git_user: String,
   threadid: String,
   taglist: Buffer,
+  tags: String,
   votenum: Number,
   votetotal: Number,
   views:{
@@ -54,11 +55,19 @@ var projectSchema = new Schema({
   },
   category: {
     type: Schema.ObjectId,
-    ref: 'picklistitems'
+    ref: 'picklistitem'
   },
   product: {
     type: Schema.ObjectId,
-    ref: 'picklistitems'
+    ref: 'picklistitem'
+  },
+  productversion: [{
+    type: Schema.ObjectId,
+    ref: 'picklistitem'
+  }],
+  status: {
+    type: Schema.ObjectId,
+    ref: 'picklistitem'
   }
 });
 

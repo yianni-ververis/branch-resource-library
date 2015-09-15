@@ -15,7 +15,7 @@
     }
 
     &.highlight{
-      border: 2px solid @green;
+      border: 2px solid @green2;
     }
 
   }
@@ -176,16 +176,7 @@
 }
 
 .moderation-list{
-  .icon{
-    cursor: pointer;
-  }
-  color: @disabled;
-  .flag:hover, .remove:hover, .delete:hover, .flag.flagged, .remove.hidden{
-    color: @red;
-  }
-  .approve:hover{
-    color: @green;
-  }
+
 
   .large{
     position: relative;
@@ -269,5 +260,12 @@
     span:last-of-type{
       float: right;
     }
+  }
+}
+
+.version-list{
+  li{
+    display: inline-block;
+    margin: 0 4px;
   }
 }

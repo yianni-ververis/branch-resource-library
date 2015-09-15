@@ -34,6 +34,10 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
     });
   };
 
+  $scope.editEntity = function(){
+    window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
+  };
+
   $scope.deleteEntity = function(){
     confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
       if(result==0){

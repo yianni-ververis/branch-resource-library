@@ -17,8 +17,15 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "comments",
     "blogs",
     "picklists",
-    "picklistitems"
+    "picklistitems",
+    "flags"
   ];
+
+  var defaultSelection;
+
+  $scope.$on("cleared", function(){
+    searchExchange.init(defaultSelection);
+  })
 
   $scope.pageSize = 20;
 

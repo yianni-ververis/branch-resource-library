@@ -15,6 +15,16 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
         $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
         var Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
 
+        //add additional sorting for moderators and admins
+        if(userManager.canApprove($scope.config.entity)){
+          $scope.sortOptions["flagged"] = {
+            "id": "flagged",
+            "name": "Flagged",
+            "order": -1,
+            "field": "flagcount",
+            "sortType": "qSortByNumeric"
+          };
+        }
 
         $scope.loading = true;
 
@@ -207,6 +217,14 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
         function getFieldIndex(field, asString){
           for (var i=0;i<$scope.fields.length;i++){
             if($scope.fields[i].dimension && $scope.fields[i].dimension==field){
+              if(asString!=undefined && asString==false){
+                return [i];
+              }
+              else {
+                return "["+i+"]";
+              }
+            }
+            else if ($scope.fields[i].label && $scope.fields[i].label==field) {
               if(asString!=undefined && asString==false){
                 return [i];
               }

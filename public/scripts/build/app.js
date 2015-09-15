@@ -70,6 +70,20 @@
         link: "projects/new"
       }
     })
+    //used to navigate to a given project detail page
+    .state("projects.addedit", {
+      url: "/:projectId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/projects/addedit.html",
+          controller: "projectController",
+        }
+      },
+      data:{
+        crumb: "New Project",
+        link: "projects/new"
+      }
+    })
     //used to navigate to the blog list page
     .state("blogs", {
       url: "/blogs",
@@ -91,7 +105,7 @@
       },
       data:{
         crumb: "New Blog",
-        link: "blogs/new"
+        link: "blogs/detail"
       }
     })
     //used to navigate to a the blog add/edit page
@@ -319,9 +333,14 @@
   			scope:{
           entity: "=",
           entityid: "=",
+  				owner: "=",
   				approved: "=",
   				flagged: "=",
-  				size: "="
+  				flagcount: "=",
+  				editable: "=",
+  				download: "=",
+  				size: "=",
+  				orientation: "="
   			},
         templateUrl: "/views/moderation.html",
         link: function(scope){
@@ -644,6 +663,16 @@
           $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
           var Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
 
+          //add additional sorting for moderators and admins
+          if(userManager.canApprove($scope.config.entity)){
+            $scope.sortOptions["flagged"] = {
+              "id": "flagged",
+              "name": "Flagged",
+              "order": -1,
+              "field": "flagcount",
+              "sortType": "qSortByNumeric"
+            };
+          }
 
           $scope.loading = true;
 
@@ -843,6 +872,14 @@
                   return "["+i+"]";
                 }
               }
+              else if ($scope.fields[i].label && $scope.fields[i].label==field) {
+                if(asString!=undefined && asString==false){
+                  return [i];
+                }
+                else {
+                  return "["+i+"]";
+                }
+              }
             }
             return 0;
           }
@@ -885,8 +922,20 @@
     this.canRead = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].read && this.userInfo.role.permissions[entity].read==true;
     }
-    this.canUpdate = function(entity){
-      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true;
+    this.canUpdate = function(entity, owner){
+      if (this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true){
+        if(!this.userInfo.role.permissions[entity].allOwners || this.userInfo.role.permissions[entity].allOwners==false){
+          if(this.userInfo._id==owner){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+        else{
+          return true
+        }
+      }
     }
     this.canApprove = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].approve && this.userInfo.role.permissions[entity].approve==true;
@@ -1166,7 +1215,7 @@
               //"autoSort": false
               //"qSortByLoadOrder" : 1
             };
-            sort[sorting[fields[i].dimension].senseType] = sorting[fields[i].dimension].order;
+            sort[sorting[fields[i].dimension].sortType] = sorting[fields[i].dimension].order;
             def["qDef"]["qSortCriterias"] = [sort];
           }
           defs.push(def);
@@ -1185,6 +1234,10 @@
     					"qDescription": "",
     					"qDef": fields[i].measure
     				}
+          }
+          if(fields[i].sortType){
+            def["qSortBy"] = {};
+            def["qSortBy"][fields[i].sortType] = fields[i].order;
           }
           defs.push(def);
         }
@@ -1234,8 +1287,15 @@
       "comments",
       "blogs",
       "picklists",
-      "picklistitems"
+      "picklistitems",
+      "flags"
     ];
+
+    var defaultSelection;
+
+    $scope.$on("cleared", function(){
+      searchExchange.init(defaultSelection);
+    })
 
     $scope.pageSize = 20;
 
@@ -1575,6 +1635,7 @@
 
     $scope.getPicklistItems("Product", "projectProducts", true);
     $scope.getPicklistItems("Category", "projectCategories", true);
+    $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
     $scope.getProductVersions = function(product){
       $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -1598,18 +1659,11 @@
           }
           $scope.projectInfo = result;
           delete $scope.projectInfo["data"];
-          console.log($scope.projectInfo);
+          $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
+          $scope.getProductVersions($scope.projects[0].product);
+          //$scope.tags = $scope.projects[0].tags.join(",");
         }
       });
-    };  
-
-    $scope.getMore = function(){
-      var query = $scope.projectInfo.query;
-      query.limit = $scope.projectInfo.limit;
-      query.skip = $scope.projectInfo.skip;
-      query.sort = $scope.sort.field;
-      query.sortOrder = $scope.sort.order;
-      $scope.getProjectData(query, true);
     };
 
     $scope.getRating = function(total, count){
@@ -1663,7 +1717,6 @@
         repo: project.name,
         owner: project.owner.login
       };
-      console.log(project);
     };
 
     $scope.previewThumbnail = function(){
@@ -1713,17 +1766,17 @@
       //We're validating client side so that we don't keep passing image data back and forth
       var errors = [];
       //Verify the project has a name
-      if(!$scope.newProjectName || $scope.newProjectName==""){
+      if(!$scope.projects[0].title || $scope.projects[0].title==""){
         //add to validation error list
         errors.push({});
       }
       //Make sure the product has been set
-      if(!$scope.newProjectProduct){
+      if(!$scope.projects[0].product){
         //add to validation error list
         errors.push({});
       }
       //Make sure at least one version has been set
-      if($scope.newProjectProduct && $(".product-version").length==0){
+      if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
         //add to validation error list
         errors.push({});
       }
@@ -1748,13 +1801,18 @@
     };
 
     $scope.saveNewProject = function(){
+      var versions = [];
+      $(".product-version:checkbox:checked").each(function(val, index){
+        versions.push($(this).attr("data-versionid"));
+        if(index==$(".product-version:checkbox:checked").length){
+          $scope.projects[0].productversions = versions;
+        }
+      });
+      if(!$scope.usegit || $scope.usegit=='false'){
+        $scope.projects[0].content = $("#newProjectContent").code();
+      }
       var data = {
-        standard:{  //data that we can just assign to the project
-          title: $scope.newProjectName,
-          short_description: $scope.newProjectDescription,
-          product: $scope.newProjectProduct,
-          category: $scope.newProjectCategory
-        },
+        standard: $scope.projects[0],  //data that we can just assign to the project
         special:{ //that will be used to set additional properties
           image: $scope.image,
           thumbnail: $scope.thumbnail,
@@ -1787,12 +1845,13 @@
 
 
     //only load the project if we have a valid projectId or we are in list view
-    if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+    if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
       $scope.getProjectData($scope.query); //get initial data set
     }
     else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
       $("#newProjectContent").summernote();
       $scope.usegit = 'true';
+      $scope.projects = [{}]; //add en empty object
     }
 
     function canvasToBlob(canvas, type){
@@ -1978,6 +2037,35 @@
       }
     };
 
+    $scope.getFlagged = function(){
+      Comment.get({commentId: "flagged", entityId: $scope.entityid}, {
+        limit: 100  //if we have more than 100 flagged items we have some housekeeping to do
+      }, function(result){
+        if(resultHandler.process(result)){
+          //$scope.flagged = result.data;
+          if(result.data){
+            for(var i=0;i<result.data.length;i++){
+              $scope.flagged[result.data[i].entityId] = true;
+            }
+          }
+        }
+      });
+    };
+
+    $scope.getFlagged();
+
+    $scope.isFlagged = function(id){
+      if($scope.flagged){
+        for(var i=0;i<$scope.flagged.length;i++){
+          if($scope.flagged[i].entityId == id){
+            return true;
+          }
+        }
+        return false;
+      }
+      return false;
+    };
+
     $scope.commentQuery = {
       limit: $scope.pageSize //overrides the server side setting
     };
@@ -2035,11 +2123,8 @@
       }, function(result){
         if(resultHandler.process(result)){
           $("#summernote").code("");
-          $scope.comments.push(result);
-          //update comment count on entity
-          Entity.save({path:"updatecommentcount"}, {value: 1}, function(result){
-            resultHandler.process(result);
-          });
+          //fetch the comments again to resolve any sorting/countnig issues
+          $scope.getCommentData($scope.commentQuery);
         }
       })
     };
@@ -2137,6 +2222,10 @@
           //need to remove all flags for the project here
         }
       });
+    };
+
+    $scope.editEntity = function(){
+      window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
     };
 
     $scope.deleteEntity = function(){

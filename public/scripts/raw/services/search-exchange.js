@@ -220,7 +220,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
             //"autoSort": false
             //"qSortByLoadOrder" : 1
           };
-          sort[sorting[fields[i].dimension].senseType] = sorting[fields[i].dimension].order;
+          sort[sorting[fields[i].dimension].sortType] = sorting[fields[i].dimension].order;
           def["qDef"]["qSortCriterias"] = [sort];
         }
         defs.push(def);
@@ -239,6 +239,10 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   					"qDescription": "",
   					"qDef": fields[i].measure
   				}
+        }
+        if(fields[i].sortType){
+          def["qSortBy"] = {};
+          def["qSortBy"][fields[i].sortType] = fields[i].order;
         }
         defs.push(def);
       }

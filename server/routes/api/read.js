@@ -21,10 +21,13 @@ module.exports = {
       if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
           || (!user)){
         query["approved"]=false;
+        MasterController.getIds(req.query, query, entity, function(results){
+          res.json(results);
+        });
       }
-      MasterController.getIds(req.query, query, entity, function(results){
-        res.json(results);
-      });
+      else{
+        res.json({data:[]});
+      }
     }
   },
   getFlagged: function(req, res){

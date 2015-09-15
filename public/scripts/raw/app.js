@@ -70,6 +70,20 @@
         link: "projects/new"
       }
     })
+    //used to navigate to a given project detail page
+    .state("projects.addedit", {
+      url: "/:projectId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/projects/addedit.html",
+          controller: "projectController",
+        }
+      },
+      data:{
+        crumb: "New Project",
+        link: "projects/new"
+      }
+    })
     //used to navigate to the blog list page
     .state("blogs", {
       url: "/blogs",
@@ -91,7 +105,7 @@
       },
       data:{
         crumb: "New Blog",
-        link: "blogs/new"
+        link: "blogs/detail"
       }
     })
     //used to navigate to a the blog add/edit page

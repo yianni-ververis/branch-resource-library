@@ -21,6 +21,8 @@
           <div class="comment-content" ng-bind-html="getCommentText(comment.content)">
 
           </div>
+          <moderation orientation="horizontal" entity="'comments'" entityid="comment._id" approved="comment.approved" size="'medium'" flagged="flagged[comment._id]" editable="false"></moderation>
+
         </li>
       </ul>
     </div>

@@ -31,9 +31,14 @@
 			scope:{
         entity: "=",
         entityid: "=",
+				owner: "=",
 				approved: "=",
 				flagged: "=",
-				size: "="
+				flagcount: "=",
+				editable: "=",
+				download: "=",
+				size: "=",
+				orientation: "="
 			},
       templateUrl: "/views/moderation.html",
       link: function(scope){

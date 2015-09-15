@@ -62,6 +62,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.getPicklistItems("Product", "projectProducts", true);
   $scope.getPicklistItems("Category", "projectCategories", true);
+  $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
   $scope.getProductVersions = function(product){
     $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -85,18 +86,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
-        console.log($scope.projectInfo);
+        $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
+        $scope.getProductVersions($scope.projects[0].product);
+        //$scope.tags = $scope.projects[0].tags.join(",");
       }
     });
-  };  
-
-  $scope.getMore = function(){
-    var query = $scope.projectInfo.query;
-    query.limit = $scope.projectInfo.limit;
-    query.skip = $scope.projectInfo.skip;
-    query.sort = $scope.sort.field;
-    query.sortOrder = $scope.sort.order;
-    $scope.getProjectData(query, true);
   };
 
   $scope.getRating = function(total, count){
@@ -150,7 +144,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       repo: project.name,
       owner: project.owner.login
     };
-    console.log(project);
   };
 
   $scope.previewThumbnail = function(){
@@ -200,17 +193,17 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     //We're validating client side so that we don't keep passing image data back and forth
     var errors = [];
     //Verify the project has a name
-    if(!$scope.newProjectName || $scope.newProjectName==""){
+    if(!$scope.projects[0].title || $scope.projects[0].title==""){
       //add to validation error list
       errors.push({});
     }
     //Make sure the product has been set
-    if(!$scope.newProjectProduct){
+    if(!$scope.projects[0].product){
       //add to validation error list
       errors.push({});
     }
     //Make sure at least one version has been set
-    if($scope.newProjectProduct && $(".product-version").length==0){
+    if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
       //add to validation error list
       errors.push({});
     }
@@ -235,13 +228,18 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.saveNewProject = function(){
+    var versions = [];
+    $(".product-version:checkbox:checked").each(function(val, index){
+      versions.push($(this).attr("data-versionid"));
+      if(index==$(".product-version:checkbox:checked").length){
+        $scope.projects[0].productversions = versions;
+      }
+    });
+    if(!$scope.usegit || $scope.usegit=='false'){
+      $scope.projects[0].content = $("#newProjectContent").code();
+    }
     var data = {
-      standard:{  //data that we can just assign to the project
-        title: $scope.newProjectName,
-        short_description: $scope.newProjectDescription,
-        product: $scope.newProjectProduct,
-        category: $scope.newProjectCategory
-      },
+      standard: $scope.projects[0],  //data that we can just assign to the project
       special:{ //that will be used to set additional properties
         image: $scope.image,
         thumbnail: $scope.thumbnail,
@@ -274,12 +272,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
 
   //only load the project if we have a valid projectId or we are in list view
-  if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+  if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
     $scope.getProjectData($scope.query); //get initial data set
   }
   else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
     $("#newProjectContent").summernote();
     $scope.usegit = 'true';
+    $scope.projects = [{}]; //add en empty object
   }
 
   function canvasToBlob(canvas, type){
