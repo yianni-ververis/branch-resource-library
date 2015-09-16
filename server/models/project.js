@@ -58,7 +58,8 @@ var projectSchema = new Schema({
   product: {
     type: Schema.ObjectId,
     ref: 'picklistitems'
-  }
+  },
+  viewsinfo: []
 });
 
 module.exports = mongoose.model('project', projectSchema)

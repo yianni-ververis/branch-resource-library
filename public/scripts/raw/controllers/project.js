@@ -13,7 +13,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.gitProjects = [];
   $scope.url = "projects";
 
-  $scope.stars = new Array(5);
+  //$scope.stars = new Array(5);
 
   //console.log('params - ',$stateParams);
 
@@ -158,6 +158,14 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             });
           }
         }
+
+        $scope.projects.forEach(function(item, index) {
+          if (item.votenum > 0) {
+            var length = Math.round(item.votetotal/item.votenum)
+            $scope.projects[index].stars = new Array(length)
+          }
+        })
+
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
       }
@@ -189,14 +197,14 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.getProjectData(query, true);
   };
 
-  $scope.getRating = function(total, count){
+  /*$scope.getRating = function(total, count){
     if(count && count > 0){
       return Math.round(parseInt(total) / parseInt(count));
     }
     else{
       return 0;
     }
-  }
+  }*/
 
   $scope.getBuffer = function(binary){
     return _arrayBufferToBase64(binary);

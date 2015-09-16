@@ -46,7 +46,7 @@
                 <li class="rating">
                   <span ng-show="!project.votenum || project.votenum==0">Not yet rated</span>
                   {{(Math.round(project.votetotal / project.votenum))}}
-                  <span class="star" ng-repeat="star in stars track by $index" ng-if="getRating(project.votetotal, project.votenum)">★</span>
+                  <span class="star" ng-repeat="star in project.stars track by $index" ng-show="project.votenum > 0">★</span>
                 </li>
                 <li><i>{{project.views}}</i> Views</li>
                 <li><i>{{project.replycount}}</i> Comments</li>

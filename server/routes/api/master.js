@@ -1,4 +1,5 @@
-var express = require("express"),
+var async = require('async'),
+    express = require("express"),
     router = express.Router(),
     Auth = require("../../controllers/auth"),
     Error = require("../../controllers/error"),
@@ -119,6 +120,45 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
       query["createuser"]=user._id;
     }
     MasterController.get(req.query, query, entity, function(results){
+      var shared = {}
+
+      async.series([
+        function(next) {
+          async.eachSeries(results.data[0].viewsinfo, function(item, next) {
+            if (item.ip.indexOf(req.connection.remoteAddress) !== -1) {
+              shared.viewcheck = true
+            }
+            next()
+          }, next)
+        },
+
+        function(next) {
+          if (!shared.viewcheck) {
+            var params = {
+              ip: req.connection.remoteAddress, 
+              date: new Date()
+            }
+
+            var length = results.data[0].viewsinfo.length
+            results.data[0].viewsinfo[length] = params
+            
+            var data = {
+              views: results.data[0].views + 1,
+              viewsinfo: results.data[0].viewsinfo
+            }
+
+            MasterController.save(query, data, entity, function(project){
+            
+            });
+          }
+          next()
+        }
+      ], function(err) {
+        if(err) {
+          res.json(Error.custom(err.message));
+        }
+      })
+
       if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check < (new Date() - (1 / 24)))||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
