@@ -59,7 +59,12 @@ var projectSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'picklistitems'
   },
-  viewsinfo: []
+  viewsinfo: [],
+  similar: [{
+    type: Schema.ObjectId,
+    ref: 'projects'
+  }],
+  tags: []
 });
 
 module.exports = mongoose.model('project', projectSchema)
