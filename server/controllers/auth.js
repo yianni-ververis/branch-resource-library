@@ -4,7 +4,7 @@ var entities = require("../routes/entityConfig");
 
 module.exports = {
   isLoggedIn: function(req, res, next){
-    if(req.method=="GET" && (entities[req.params.entity].requiresAuthentication!=undefined && entities[req.params.entity].requiresAuthentication==false)){
+    if(!req.headers.authorization && req.method=="GET" && (entities[req.params.entity].requiresAuthentication!=undefined && entities[req.params.entity].requiresAuthentication==false)){
       next();
     }
     else if(req.isAuthenticated()){

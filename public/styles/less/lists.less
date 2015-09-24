@@ -15,7 +15,7 @@
     }
 
     &.highlight{
-      border: 2px solid @green;
+      border: 2px solid @green2;
     }
 
   }
@@ -68,15 +68,7 @@
   }
 }
 
-.project-list{
-  @media screen and (min-width: @tablet-width) {
-     > li{
-       height: 100px;
-     }
-  }
-  @media screen and (max-width: @tablet-width) {
-    height: 150px;
-  }
+.project-list, .blog-list{
   > li{
     position: relative;
     padding: 5px 0;
@@ -85,12 +77,6 @@
     margin: 5px 0;
     &:last-of-type{
       border-bottom: none;
-    }
-    img{
-      width: auto;
-      max-height: 75px;
-      display: inline-block;
-      vertical-align: top;
     }
     .project-summary{
       position: absolute;
@@ -105,7 +91,7 @@
           font-size: 16px;
         }
         display: block;
-        color: @blue;
+        color: @green;
       }
     }
   }
@@ -121,6 +107,38 @@
       .star{
         font-size: 14px;
       }
+    }
+  }
+}
+
+.project-list{
+  @media screen and (min-width: @tablet-width) {
+     > li{
+       height: 100px;
+     }
+  }
+  @media screen and (max-width: @tablet-width) {
+    > li{
+      height: 150px;
+    }
+  }
+  img{
+    width: auto;
+    max-height: 75px;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+.blog-list{
+  @media screen and (min-width: @tablet-width) {
+     > li{
+       min-height: 100px;
+     }
+  }
+  @media screen and (max-width: @tablet-width) {
+    > li{
+      height: 150px;
     }
   }
 }
@@ -158,16 +176,7 @@
 }
 
 .moderation-list{
-  .icon{
-    cursor: pointer;
-  }
-  color: @disabled;
-  .flag:hover, .remove:hover, .delete:hover, .flag.flagged, .remove.hidden{
-    color: @red;
-  }
-  .approve:hover{
-    color: @green;
-  }
+
 
   .large{
     position: relative;
@@ -205,6 +214,11 @@
   overflow: hidden;
   max-height: 200px;
 
+  border-bottom: 1px solid @content-border;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  box-sizing: content-box;
+
   .picklist{
     vertical-align: top;
     border: none;
@@ -218,5 +232,40 @@
   .content{
     margin-top: 0;
     padding-top: 0;
+  }
+}
+
+.comment-list{
+  li{
+    &.author-comment{
+      background-color: @green3;
+    }
+  }
+  .thumb-container, .comment-content{
+    display: inline-block;
+  }
+  .thumb-container{
+    width: 80px;
+    overflow: hidden;
+    img{
+      max-width: 80px;
+    }
+  }
+  .comment-content{
+    padding: 5px;
+    vertical-align: top;
+    width: ~"calc(100% - 85px)";
+  }
+  .comment-header{
+    span:last-of-type{
+      float: right;
+    }
+  }
+}
+
+.version-list{
+  li{
+    display: inline-block;
+    margin: 0 4px;
   }
 }

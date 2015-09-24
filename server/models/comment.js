@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-console.log(Schema);
-
 var commentSchema = new Schema({
   content: Buffer,
   pagetext: Buffer,

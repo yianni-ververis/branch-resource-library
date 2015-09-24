@@ -26,10 +26,19 @@
 
   module.directive('moderation', ['moderationConfig', '$timeout', function (confirmConfig, $timeout) {
     return {
-			restrict: "A",
+			restrict: "E",
+			replace: true,
 			scope:{
         entity: "=",
-        entityid: "="
+        entityid: "=",
+				owner: "=",
+				approved: "=",
+				flagged: "=",
+				flagcount: "=",
+				editable: "=",
+				download: "=",
+				size: "=",
+				orientation: "="
 			},
       templateUrl: "/views/moderation.html",
       link: function(scope){

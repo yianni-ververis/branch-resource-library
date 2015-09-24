@@ -3,17 +3,26 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    qrs = require('./SenseQRS');
+
+qrs.config = {
+  host: "10.211.55.3",
+  app: "bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1"
+};
 
 mongoose.connect('mongodb://localhost:27017/branch');
 
 //load the models
 require('./server/models/project.js');
+require('./server/models/blog.js');
 require('./server/models/projectcategory.js');
 require('./server/models/user.js');
 require('./server/models/userrole.js');
 require('./server/models/feature.js');
 require('./server/models/product.js');
+require('./server/models/picklist.js');
+require('./server/models/picklistitem.js');
 
 var Error = require('./server/controllers/error');
 
@@ -39,8 +48,8 @@ app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(bodyParser.json({limit: '5mb'}));
-app.use(bodyParser.urlencoded({limit: '5mb'}));
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb'}));
 
 app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});

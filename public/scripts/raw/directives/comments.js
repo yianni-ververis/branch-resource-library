@@ -29,7 +29,8 @@
 			restrict: "A",
 			scope:{
         entity: "=",
-        entityid: "="
+        entityid: "=",
+				parent: "="
 			},
       templateUrl: "/views/comments.html",
       link: function(scope){

@@ -20,7 +20,7 @@
     })
     //login and signup page
     .state("loginsignup", {
-      url: "/loginsignup",
+      url: "/loginsignup?url",
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {
@@ -70,6 +70,58 @@
         link: "projects/new"
       }
     })
+    //used to navigate to a given project detail page
+    .state("projects.addedit", {
+      url: "/:projectId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/projects/addedit.html",
+          controller: "projectController",
+        }
+      },
+      data:{
+        crumb: "New Project",
+        link: "projects/new"
+      }
+    })
+    //used to navigate to the blog list page
+    .state("blogs", {
+      url: "/blogs",
+      templateUrl: "/views/blogs/index.html",
+      controller: "blogController",
+      data: {
+        crumb: "Blogs",
+        link: "#blogs"
+      }
+    })
+    //used to navigate to a given blog detail page
+    .state("blogs.detail", {
+      url: "/:blogId",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/detail.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/detail"
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("blogs.addedit", {
+      url: "/:blogId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/addedit.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/new"
+      }
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",
@@ -108,8 +160,7 @@
           scope.breadcrumbs = [];
           var state = $state.$current;
           if(state.self.name != "home"){
-            while(state.self.name != ""){
-              console.log(state);
+            while(state.self.name != ""){            
               scope.breadcrumbs.push({
                 text: state.data.crumb,
                 link: state.data.link
@@ -123,6 +174,16 @@
         scope.$on('spliceCrumb', function(event, crumb){
           scope.breadcrumbs.splice(-1, 1, crumb);
         });
+        scope.getLoginUrl = function(){
+          var suffix = "";
+          if($state.$current.name!="home"){
+            suffix += "?url=";
+          }
+          if(window.location.hash.indexOf('login')==-1){
+            suffix += window.location.hash.replace("#/","");
+          }
+          return "#loginsignup"+suffix;
+        }
       }
     }
   }]);
@@ -225,7 +286,8 @@
   			restrict: "A",
   			scope:{
           entity: "=",
-          entityid: "="
+          entityid: "=",
+  				parent: "="
   			},
         templateUrl: "/views/comments.html",
         link: function(scope){
@@ -266,10 +328,19 @@
 
     module.directive('moderation', ['moderationConfig', '$timeout', function (confirmConfig, $timeout) {
       return {
-  			restrict: "A",
+  			restrict: "E",
+  			replace: true,
   			scope:{
           entity: "=",
-          entityid: "="
+          entityid: "=",
+  				owner: "=",
+  				approved: "=",
+  				flagged: "=",
+  				flagcount: "=",
+  				editable: "=",
+  				download: "=",
+  				size: "=",
+  				orientation: "="
   			},
         templateUrl: "/views/moderation.html",
         link: function(scope){
@@ -287,7 +358,7 @@
       restrict: "E",
       replace: true,
       scope:{
-
+        onlyapproved: "="
       },
       templateUrl: "/views/search/search-input.html",
       link: function(scope){
@@ -318,6 +389,8 @@
             DELETE: 46,
             SPACE: 32
         };
+
+        scope.searchText = "";
 
         scope.searchTimeout = 300;
         scope.suggestTimeout = 100;
@@ -506,20 +579,40 @@
           $scope.$parent.toggleSelect(attr.field, elemNum);
         }
         $scope.$on('searchResults', function(){
-          $scope.render();
+          if($scope.info){
+            $scope.render();
+          }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
         });
         $scope.$on("update", function(params){
-          $scope.render();
+          if($scope.info){
+            $scope.render();
+          }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
         });
         $scope.$on('cleared', function(){
-          $scope.render();
+          if($scope.info){
+            $scope.render();
+          }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
         });
 
         $scope.render = function(){
           $scope.info.object.getLayout().then(function(layout){
             $scope.info.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
-              $scope.$apply(function(){
-                console.log(data[0].qMatrix);
+              $scope.$apply(function(){              
                 $scope.info.items = data[0].qMatrix;
               });
             });
@@ -532,10 +625,19 @@
           });
         };
 
-        searchExchange.addFilter(attr.field, attr.title, function(result){
+        searchExchange.addFilter({
+            id: $(element).attr("id"),
+            field: attr.field
+          }, function(result){
           $scope.$apply(function(){
             $scope.info = result;
-            $scope.render();
+            if($scope.postponed){
+              $scope.postponed.call(null);
+            }
+            else{
+              $scope.render();
+            }
+
           });
         });
 
@@ -544,45 +646,147 @@
     }
   }])
 
-  app.directive("searchResults", ["searchExchange", function(searchExchange){
+  app.directive("searchResults", ["$resource", "searchExchange", "userManager", "resultHandler", function($resource, searchExchange, userManager, resultHandler){
     return {
       restrict: "E",
       replace: true,
       scope: {
-        pagesize: "="
+
       },
       link: function($scope, element, attr){
         $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+attr.config+'.json', success: function(json){
           $scope.config = JSON.parse(json);
           $scope.template = $scope.config.template;
           $scope.fields = $scope.config.fields;
+          $scope.qFields;
           $scope.sortOptions = $scope.config.sorting;
           $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
+          var Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
+
+          //add additional sorting for moderators and admins
+          if(userManager.canApprove($scope.config.entity)){
+            $scope.sortOptions["flagged"] = {
+              "id": "flagged",
+              "name": "Flagged",
+              "order": -1,
+              "field": "flagcount",
+              "sortType": "qSortByNumeric"
+            };
+          }
+
+          $scope.loading = true;
 
           $scope.items = [];
 
+          $scope.hidden = [];
+
+          $scope.flagged = {};
+
+          $scope.stars = new Array(5);
+
+          $scope.postponed;
+
           $scope.pageTop = 0;
-          $scope.pageBottom = $scope.pagesize;
+          $scope.pageBottom = $scope.config.pagesize;
           $scope.currentPage = 1;
           $scope.pages = [];
 
+          $scope.getHidden = function(){
+            Entity.get({id: "hidden"}, {
+              limit: 100  //if we have more than 100 hidden items we have some housekeeping to do
+            }, function(result){
+              if(resultHandler.process(result)){
+                $scope.hidden = result.data;
+              }
+            });
+          };
+
+          $scope.getFlagged = function(){
+            Entity.get({id: "flagged"}, {
+              limit: 100  //if we have more than 100 flagged items we have some housekeeping to do
+            }, function(result){
+              if(resultHandler.process(result)){
+                //$scope.flagged = result.data;
+                if(result.data){
+                  for(var i=0;i<result.data.length;i++){
+                    $scope.flagged[result.data[i].entityId] = true;
+                  }
+                }
+              }
+            });
+          };
+
+          $scope.getHidden();
+          $scope.getFlagged();
+
+          $scope.isHidden = function(id){
+            for(var i=0;i<$scope.hidden.length;i++){
+              if($scope.hidden[i]._id == id){
+                return true;
+              }
+            }
+            return false;
+          };
+
+          $scope.isFlagged = function(id){
+            if($scope.flagged){
+              for(var i=0;i<$scope.flagged.length;i++){
+                if($scope.flagged[i].entityId == id){
+                  return true;
+                }
+              }
+              return false;
+            }
+            return false;
+          };
+
           $scope.$on('searchResults', function(){
-            $scope.render();
-          });
-          $scope.$on("update", function(params){
-            $scope.render();
-          });
-          $scope.$on('cleared', function(){
-            $scope.render();
+            if($scope.info){
+              $scope.render();
+            }
+            else{
+              $scope.postponed = function(){
+                $scope.render();
+              }
+            }
           });
 
+          $scope.$on('searching', function(){
+            $scope.loading = true;
+          });
+
+          $scope.$on("update", function(params){
+            if($scope.info){
+              $scope.render();
+            }
+            else{
+              $scope.postponed = function(){
+                $scope.render();
+              }
+            }
+          });
+          $scope.$on('cleared', function(){
+            if($scope.info){
+              $scope.render();
+            }
+            else{
+              $scope.postponed = function(){
+                $scope.render();
+              }
+            }
+          });
+
+          $scope.showItem = function(approved, entity){
+            return approved=='True' || userManager.canApprove(entity);
+          };
+
           $scope.changePage = function(direction){
-            $scope.pageTop += ($scope.pagesize * direction);
+            $scope.pageTop += ($scope.config.pagesize * direction);
             $scope.render();
           };
 
           $scope.setPage = function(pageNumber){
-            $scope.pageTop = ($scope.pagesize * pageNumber);
+            $scope.pageTop = ($scope.config.pagesize * pageNumber);
             $scope.render();
           }
 
@@ -608,33 +812,51 @@
 
           $scope.render = function(){
             $scope.info.object.getLayout().then(function(layout){
-              $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+              $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
+              $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
                 $scope.$apply(function(){
+                  $scope.loading = false;
                   $scope.pageTop = data[0].qArea.qTop;
                   $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
-                  $scope.currentPage = Math.floor($scope.pageBottom / $scope.pagesize);
+                  $scope.currentPage = Math.ceil($scope.pageBottom / $scope.config.pagesize);
                   $scope.total = layout.qHyperCube.qSize.qcy;
                   $scope.pages = [];
-                  for(var i=1;i<(Math.ceil($scope.total/$scope.pagesize)+1);i++){
+                  for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
                     $scope.pages.push(i);
                   }
                   $scope.items = data[0].qMatrix.map(function(row){
                     var item = {}
                     for (var i=0; i < row.length; i++){
-                      item[layout.qHyperCube.qDimensionInfo[i].qFallbackTitle] = row[i].qText;
+                      item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
                     }
                     return item;
                   });
+                  if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
+                    $scope.pageWidth();
+                  }
                 });
               });
             });
           };
 
-          $scope.applySort = function(){
+          $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)
+            $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:10, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+              $scope.$apply(function(){
+                data[0].qMatrix.map(function(row, index){
+                  var item = $scope.items[index];
+                  for (var i=0; i < row.length; i++){
+                    item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
+                  }
+                });
+              });
+            });
+          };
+
+          $scope.applySort = function(sort){
             $scope.info.object.applyPatches([{
               qPath: "/qHyperCubeDef/qInterColumnSortOrder",
               qOp: "replace",
-              qValue: getFieldIndex($scope.sort.field)
+              qValue: getFieldIndex(sort.field)
             }], true).then(function(result){
               $scope.render();
             });
@@ -642,7 +864,15 @@
 
           function getFieldIndex(field, asString){
             for (var i=0;i<$scope.fields.length;i++){
-              if($scope.fields[i].name==field){
+              if($scope.fields[i].dimension && $scope.fields[i].dimension==field){
+                if(asString!=undefined && asString==false){
+                  return [i];
+                }
+                else {
+                  return "["+i+"]";
+                }
+              }
+              else if ($scope.fields[i].label && $scope.fields[i].label==field) {
                 if(asString!=undefined && asString==false){
                   return [i];
                 }
@@ -654,10 +884,20 @@
             return 0;
           }
 
-          searchExchange.addResults($scope.fields, $scope.pagesize, $scope.sortOptions, getFieldIndex($scope.sort.field, false), function(result){
+          searchExchange.addResults({
+              id: $(element).attr("id"),
+              fields: $scope.fields,
+              sortOptions: $scope.sortOptions,
+              defaultSort: getFieldIndex($scope.sort.field, false)
+            }, function(result){
             $scope.$apply(function(){
               $scope.info = result;
-              $scope.render();
+              if($scope.postponed){
+                $scope.postponed.call(null);
+              }
+              else{
+                $scope.render();
+              }
             });
           });
 
@@ -682,8 +922,20 @@
     this.canRead = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].read && this.userInfo.role.permissions[entity].read==true;
     }
-    this.canUpdate = function(entity){
-      return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true;
+    this.canUpdate = function(entity, owner){
+      if (this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].update && this.userInfo.role.permissions[entity].update==true){
+        if(!this.userInfo.role.permissions[entity].allOwners || this.userInfo.role.permissions[entity].allOwners==false){
+          if(this.userInfo._id==owner){
+            return true;
+          }
+          else{
+            return false;
+          }
+        }
+        else{
+          return true
+        }
+      }
     }
     this.canApprove = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].approve && this.userInfo.role.permissions[entity].approve==true;
@@ -696,6 +948,9 @@
     }
     this.canDelete = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true;
+    }
+    this.hasUser = function(){
+      return !$.isEmptyObject(that.userInfo);
     }
     this.refresh = function(){
       System.get({path:'userInfo'}, function(result){
@@ -738,7 +993,7 @@
     }
   }]);
 
-  app.service('searchExchange', ["$rootScope", function($rootScope){
+  app.service('searchExchange', ["$rootScope", "userManager", function($rootScope, userManager){
     var that = this;
     var config = {
       host: "10.211.55.3:8080/anon",
@@ -752,6 +1007,7 @@
     this.objects = {};
     this.online = false;
 
+    this.priority;
     this.queue = [];
 
     var senseApp;
@@ -774,10 +1030,7 @@
       });
     });
     $rootScope.$on("senseready", function(params){
-      //execute any queued up items
-      for (var i=0;i<that.queue.length;i++){
-        that.queue[i].call();
-      }
+      that.executePriority();
       console.log('connected to sense app');
       that.online = true;
     });
@@ -786,11 +1039,60 @@
       that.online = false;
     });
 
-    this.clear = function(){
+    this.init = function(defaultSelection){
+      if(defaultSelection){
+        that.addFilter({field: defaultSelection.field}, function(result){
+          //result.object.getLayout().then(function(layout){
+              //result.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
+                result.object.selectListObjectValues("/qListObjectDef", defaultSelection.values, true).then(function(){
+                  if(defaultSelection.lock==true){
+                    result.object.lock("/qListObjectDef").then(function(){
+                      that.executeQueue();
+                    });
+                  }
+                  else{
+                    that.executeQueue();
+                  }
+                });
+              //});
+          //});
+        }, true);
+      }
+      else{
+          that.executeQueue();
+      }
+    };
+
+    this.executeQueue = function(){
+      for (var i=0;i<that.queue.length;i++){
+        that.queue[i].call();
+      }
+      $rootScope.$broadcast("update");
+    };
+
+    this.executePriority = function(){
+      if(that.priority){
+        that.priority.call(null);
+      }
+      else{
+        that.executeQueue();
+      }
+    };
+
+    this.clear = function(unlock){
       if(senseApp){
-        senseApp.clearAll().then(function(){
-            $rootScope.$broadcast("cleared");
-        });
+        if(unlock && unlock==true){
+          senseApp.unlockAll().then(function(){
+            senseApp.clearAll().then(function(){
+                $rootScope.$broadcast("cleared");
+            });
+          });
+        }
+        else{
+          senseApp.clearAll().then(function(){
+              $rootScope.$broadcast("cleared");
+          });
+        }
       }
       else{
         $rootScope.$broadcast("cleared");
@@ -805,6 +1107,7 @@
     }
 
     this.search = function(searchText){
+      $rootScope.$broadcast("searching");
       that.terms = searchText.split(" ");
       senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
         $rootScope.$broadcast('searchResults', results);
@@ -818,58 +1121,76 @@
       });
     };
 
-    this.addFilter = function(field, title, callbackFn){
-      var lbDef = {
-        qInfo:{
-          qType: "ListObject"
-        },
-        qListObjectDef:{
-          qStateName: "$",
-          qDef:{
-            qFieldDefs:[field]
-          },
-          qAutoSortByState: {
-            qDisplayNumberOfRows: 8
-          }
+    this.addFilter = function(options, callbackFn, priority){
+      var fn;
+      if(that.objects[options.id]){
+        fn = function(){
+          callbackFn.call(null, {object:that.objects[options.id]});
         }
-      };
-      var fn = function(){
-        senseApp.createSessionObject(lbDef).then(function(response){
-          callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
-        });
+      }
+      else{
+        fn = function(){
+          var lbDef = {
+            qInfo:{
+              qType: "ListObject"
+            },
+            qListObjectDef:{
+              qStateName: "$",
+              qDef:{
+                qFieldDefs:[options.field]
+              },
+              qAutoSortByState: {
+                qDisplayNumberOfRows: 8
+              }
+            }
+          };
+          senseApp.createSessionObject(lbDef).then(function(response){
+            //callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
+            callbackFn.call(null, {object: response});
+          });
+        };
       }
       if(that.online){
         fn.call();
       }
       else{
-        that.queue.push(fn);
+        if(priority){
+          that.priority = fn;
+        }
+        else{
+          that.queue.push(fn);
+        }
       }
     };
 
-    this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn){
-      var hDef = {
-        "qInfo" : {
-            "qType" : "table"
-        },
-        "qHyperCubeDef": {
-          "qInitialDataFetch": [
-            {
-              "qHeight" : pageSize,
-              "qWidth" : fields.length
-            }
-          ],
-          //"qInitialDataFetch": [],
-          "qDimensions" : buildFieldDefs(fields, sorting),
-          "qMeasures": [],
-        	"qSuppressZero": false,
-        	"qSuppressMissing": false,
-        	"qInterColumnSortOrder": defaultSort
+    //this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn, priority){
+    this.addResults = function(options, callbackFn, priority){
+      var fn;
+      if(that.objects[options.id]){
+        fn = function(){
+          callbackFn.call(null, {object:that.objects[options.id]});
         }
       }
-      var fn = function(){
-        senseApp.createSessionObject(hDef).then(function(response){
-          callbackFn.call(null, {handle: response.handle, object: response});
-        });
+      else{
+        //create a new session object
+        fn = function(){
+          var hDef = {
+            "qInfo" : {
+                "qType" : "table"
+            },
+            "qHyperCubeDef": {
+              "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
+              "qMeasures": buildMeasureDefs(options.fields),
+            	"qSuppressZero": false,
+            	"qSuppressMissing": false,
+            	"qInterColumnSortOrder": options.defaultSort
+            }
+          }
+          senseApp.createSessionObject(hDef).then(function(response){
+            that.objects[options.id] = response;
+            callbackFn.call(null, {object:response});
+          });
+        }
       }
       if(that.online){
         fn.call();
@@ -880,26 +1201,71 @@
     }
 
     function buildFieldDefs(fields, sorting){
-      return fields.map(function(f){
-        var def = {
-    			"qDef": {
-    				"qFieldDefs": [f.name]
-          },
-          qNullSuppression: f.suppressNull
-    		}
-        if(sorting[f.name]){
-          var sort = {
-            //"autoSort": false
-            //"qSortByLoadOrder" : 1
-          };
-          sort[sorting[f.name].senseType] = sorting[f.name].order;
-          def["qDef"]["qSortCriterias"] = [sort];
+      var defs = [];
+      for (var i=0;i<fields.length;i++){
+        if(fields[i].dimension){
+          var def = {
+      			"qDef": {
+      				"qFieldDefs": [fields[i].dimension]
+            },
+            qNullSuppression: fields[i].suppressNull
+      		}
+          if(sorting[fields[i].dimension]){
+            var sort = {
+              //"autoSort": false
+              //"qSortByLoadOrder" : 1
+            };
+            sort[sorting[fields[i].dimension].sortType] = sorting[fields[i].dimension].order;
+            def["qDef"]["qSortCriterias"] = [sort];
+          }
+          defs.push(def);
         }
-        return def;
-      });
+      }
+      return defs;
+    }
+
+    function buildMeasureDefs(fields){
+      var defs = [];
+      for (var i=0;i<fields.length;i++){
+        if(fields[i].measure){
+          var def = {
+            "qDef": {
+    					"qLabel": fields[i].label,
+    					"qDescription": "",
+    					"qDef": fields[i].measure
+    				}
+          }
+          if(fields[i].sortType){
+            def["qSortBy"] = {};
+            def["qSortBy"][fields[i].sortType] = fields[i].order;
+          }
+          defs.push(def);
+        }
+      };
+      return defs;
     }
 
   }])
+
+  app.service('picklistService', ['$resource', 'resultHandler', function($resource, resultHandler){
+    var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
+    var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+
+    this.getPicklistItems = function(picklistName, callbackFn){
+      Picklist.get({name: picklistName}, function(result){
+        if(resultHandler.process(result)){
+          if(result.data && result.data[0]){
+            PicklistItem.get({picklistId: result.data[0]._id}, function(result){
+              if(resultHandler.process(result)){
+                callbackFn.call(null, result.data);
+              }
+            });
+          }
+        }
+      });
+    };
+
+  }]);
 
   //controllers
   app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange){
@@ -921,8 +1287,15 @@
       "comments",
       "blogs",
       "picklists",
-      "picklistitems"
+      "picklistitems",
+      "flags"
     ];
+
+    var defaultSelection;
+
+    $scope.$on("cleared", function(){
+      searchExchange.init(defaultSelection);
+    })
 
     $scope.pageSize = 20;
 
@@ -1207,8 +1580,22 @@
     $scope.$on('searchResults', function(){
       $scope.senseOnline = true;
     });
+    var defaultSelection;
+
+    if(!userManager.canApprove('projects')){
+      defaultSelection = {
+        field: "approved",
+        values: [0],
+        lock: true
+      }
+    }
+    $scope.$on("cleared", function(){
+      searchExchange.init(defaultSelection);
+    })
 
     $scope.pageSize = 20;
+
+    $scope.onlyApproved = !userManager.canApprove('projects');
 
     $scope.userManager = userManager;
     $scope.Confirm = confirm;
@@ -1219,41 +1606,6 @@
 
     $scope.searching = true;
 
-    $scope.stars = new Array(5);
-
-    console.log('params - ',$stateParams);
-
-    $scope.sortOptions = {
-      createdate: {
-        id: "createdate",
-        name: "Last Updated",
-        order: -1,
-        field: "createdate"
-      },
-      rating:{
-        id: "rating",
-        name: "Highest Rated",
-        order: [-1,-1],
-        field:["votenum", "votetotal"]
-      },
-      lastpost: {
-        id: "lastpost",
-        name: "Most recent comments",
-        order: -1,
-        field: "lastpost"
-      },
-      title: {
-        id: "title",
-        name: "A-Z",
-        order: 1,
-        field: "title"
-      }
-    };
-
-    $scope.sort = $scope.sortOptions.createdate;
-    $scope.categoryId = "";
-    $scope.productId = "";
-
     $scope.query = {
       limit: $scope.pageSize
     };
@@ -1261,19 +1613,10 @@
     if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
       $scope.sort = $scope.sortOptions[$stateParams.sort];
     }
-    $scope.query.sort = $scope.sort.field;
-    $scope.query.sortOrder = $scope.sort.order;
+
     if($stateParams.projectId){
       $scope.query.projectId = $stateParams.projectId;
       $scope.projectId = $stateParams.projectId;
-    }
-    if($stateParams.product){
-      $scope.productId = $stateParams.product;
-      $scope.query.product = $stateParams.product;
-    }
-    if($stateParams.category){
-      $scope.categoryId = $stateParams.category;
-      $scope.query.category = $stateParams.category;
     }
 
     $scope.getPicklistItems = function(picklistName, out){
@@ -1292,6 +1635,7 @@
 
     $scope.getPicklistItems("Product", "projectProducts", true);
     $scope.getPicklistItems("Category", "projectCategories", true);
+    $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
     $scope.getProductVersions = function(product){
       $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -1315,18 +1659,11 @@
           }
           $scope.projectInfo = result;
           delete $scope.projectInfo["data"];
-          console.log($scope.projectInfo);
+          $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
+          $scope.getProductVersions($scope.projects[0].product);
+          //$scope.tags = $scope.projects[0].tags.join(",");
         }
       });
-    };
-
-    $scope.getMore = function(){
-      var query = $scope.projectInfo.query;
-      query.limit = $scope.projectInfo.limit;
-      query.skip = $scope.projectInfo.skip;
-      query.sort = $scope.sort.field;
-      query.sortOrder = $scope.sort.order;
-      $scope.getProjectData(query, true);
     };
 
     $scope.getRating = function(total, count){
@@ -1336,7 +1673,7 @@
       else{
         return 0;
       }
-    }
+    };
 
     $scope.getBuffer = function(binary){
       return _arrayBufferToBase64(binary);
@@ -1363,48 +1700,6 @@
       window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
 
-    $scope.flagProject = function(project){
-      Project.save({projectId:project._id, function: "flag"}, function(result){
-        if(resultHandler.process(result)){
-          project.flagged = true;
-        }
-      });
-    };
-
-    $scope.hideProject = function(project){
-      Project.save({projectId:project._id, function: "hide"}, function(result){
-        if(resultHandler.process(result)){
-          project.approved = false;
-        }
-      });
-    };
-
-    $scope.approveProject = function(project){
-      Project.save({projectId:project._id, function: "approve"}, function(result){
-        if(resultHandler.process(result)){
-          project.approved = true;
-          project.flagged = false;
-        }
-      });
-    };
-
-    $scope.deleteProject = function(project, index){
-      $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
-        if(result==0){
-          if($stateParams.projectId){
-            window.location = "#projects";
-          }
-          else {
-            Project.delete({projectId: project._id}, function(result){
-                if(resultHandler.process(result)){
-                  $scope.projects.splice(index, 1);
-                }
-            });
-          }
-        }
-      });
-    };
-
     $scope.getGitProjects = function(gituser, gitpassword){
       var creds = {
         user: gituser,
@@ -1422,7 +1717,6 @@
         repo: project.name,
         owner: project.owner.login
       };
-      console.log(project);
     };
 
     $scope.previewThumbnail = function(){
@@ -1472,17 +1766,17 @@
       //We're validating client side so that we don't keep passing image data back and forth
       var errors = [];
       //Verify the project has a name
-      if(!$scope.newProjectName || $scope.newProjectName==""){
+      if(!$scope.projects[0].title || $scope.projects[0].title==""){
         //add to validation error list
         errors.push({});
       }
       //Make sure the product has been set
-      if(!$scope.newProjectProduct){
+      if(!$scope.projects[0].product){
         //add to validation error list
         errors.push({});
       }
       //Make sure at least one version has been set
-      if($scope.newProjectProduct && $(".product-version").length==0){
+      if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
         //add to validation error list
         errors.push({});
       }
@@ -1507,13 +1801,18 @@
     };
 
     $scope.saveNewProject = function(){
+      var versions = [];
+      $(".product-version:checkbox:checked").each(function(val, index){
+        versions.push($(this).attr("data-versionid"));
+        if(index==$(".product-version:checkbox:checked").length){
+          $scope.projects[0].productversions = versions;
+        }
+      });
+      if(!$scope.usegit || $scope.usegit=='false'){
+        $scope.projects[0].content = $("#newProjectContent").code();
+      }
       var data = {
-        standard:{  //data that we can just assign to the project
-          title: $scope.newProjectName,
-          short_description: $scope.newProjectDescription,
-          product: $scope.newProjectProduct,
-          category: $scope.newProjectCategory
-        },
+        standard: $scope.projects[0],  //data that we can just assign to the project
         special:{ //that will be used to set additional properties
           image: $scope.image,
           thumbnail: $scope.thumbnail,
@@ -1542,16 +1841,17 @@
     };
 
 
-    searchExchange.clear();
+
 
 
     //only load the project if we have a valid projectId or we are in list view
-    if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+    if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
       $scope.getProjectData($scope.query); //get initial data set
     }
     else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
       $("#newProjectContent").summernote();
       $scope.usegit = 'true';
+      $scope.projects = [{}]; //add en empty object
     }
 
     function canvasToBlob(canvas, type){
@@ -1568,6 +1868,145 @@
           type: type
       });
     }
+
+    //this effectively initiates the results
+    searchExchange.clear(true);
+
+  }]);
+
+  app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, picklistService){
+    var Blog = $resource("api/blogs/:blogId", {blogId: "@blogId"});
+    $scope.pageSize = 20;
+    $scope.query = {};
+
+    var defaultSelection;
+
+    if(!userManager.canApprove('blogs')){
+      defaultSelection = {
+        field: "approved",
+        values: [0],
+        lock: true
+      }
+    }
+    $scope.$on("cleared", function(){
+      searchExchange.init(defaultSelection);
+    })
+
+    searchExchange.clear(true);
+
+    $scope.blogTypes;
+
+    if($stateParams.blogId){
+      $scope.query.blogId = $stateParams.blogId;
+      $scope.blogId = $stateParams.blogId;
+    }
+
+    picklistService.getPicklistItems("Blog Type", function(items){
+      $scope.blogTypes = items;
+      $scope.newBlogType = items[0];
+    });
+
+    $scope.getBlogData = function(query, append){
+      Blog.get(query, function(result){
+        if(resultHandler.process(result)){
+          if(append && append==true){
+            $scope.blogs = $scope.blogs.concat(result.data);
+          }
+          else{
+            $scope.blogs = result.data;
+            //if this is the detail view we'll update the breadcrumbs
+            if($state.current.name == "blogs.detail"){
+              $scope.$root.$broadcast('spliceCrumb', {
+                text: $scope.blogs[0].title,
+                link: "/blogs/"+$scope.blogs[0]._id
+              });
+            }
+          }
+          $scope.blogInfo = result;
+          delete $scope.blogInfo["data"];
+        }
+      });
+    };
+
+    if($scope.blogId == 'new'){
+      $("#blogContent").summernote({
+        height: 600
+      });
+    }
+    else{
+      $scope.getBlogData($scope.query);
+    }
+
+    $scope.previewThumbnail = function(){
+      var file = $("#blogImage")[0].files[0];
+      var imageName = file.name;
+      var imageType = file.type;
+      var r = new FileReader();
+      r.onloadend = function(event){
+        var imageCanvas = document.createElement('canvas');
+        var imageContext = imageCanvas.getContext('2d');
+        var thumbnail = new Image();
+        thumbnail.onload = function() {
+          var width = thumbnail.width;
+          var height = thumbnail.height;
+          imageCanvas.width = width;
+          imageCanvas.height = Math.round(width / 4);
+
+
+          //draw the image and save the blob
+          imageContext.drawImage(thumbnail, 0, 0, imageCanvas.width, imageCanvas.height);
+          $scope.image = {
+            type: imageType,
+            name: imageName,
+            data: imageCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
+          }
+          $scope.$apply(function(){
+            $scope.newBlogImage = imageCanvas.toDataURL();
+          });
+        };
+        thumbnail.src = r.result;
+      }
+      r.readAsDataURL(file);
+    };
+
+    $scope.validateNewBlogData = function(){
+      $scope.saveBlog();
+    };
+
+    $scope.saveBlog = function(){
+      var data = {
+        standard:{
+          title: $scope.newBlogTitle,
+          content: $("#blogContent").code()
+        },
+        special:{
+          image: $scope.image
+        }
+      };
+      Blog.save({}, data, function(result){
+
+      });
+    };
+
+    $scope.getBlogContent = function(text){
+      if(text && text.data){
+        var buffer = _arrayBufferToBase64(text.data);
+        return marked(buffer);
+      }
+      else{
+        return "";
+      }
+    };
+
+    function _arrayBufferToBase64( buffer ) {
+      var binary = '';
+      var bytes = new Uint8Array( buffer );
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+          binary += String.fromCharCode( bytes[ i ] );
+      }
+      return binary ;
+    }
   }]);
 
   app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
@@ -1583,47 +2022,77 @@
     $scope.comments = [];
     $scope.pageSize = 10;
 
-    console.log($scope.entityid);
-
-    $scope.$watch("entityid", function(newVal, oldVal){
-      console.log('changed to' + newVal);
-      console.log('changed from' + oldVal);
-    });
-
     $scope.sortOptions = {
       newest: {
         id: "newest",
         name: "Newest",
         order: -1,
-        field: "dateline"
+        field: "createdate"
       },
       oldest: {
         id: "oldest",
         name: "Oldest",
         order: 1,
-        field: "dateline"
+        field: "createdate"
       }
+    };
+
+    $scope.getFlagged = function(){
+      Comment.get({commentId: "flagged", entityId: $scope.entityid}, {
+        limit: 100  //if we have more than 100 flagged items we have some housekeeping to do
+      }, function(result){
+        if(resultHandler.process(result)){
+          //$scope.flagged = result.data;
+          if(result.data){
+            for(var i=0;i<result.data.length;i++){
+              $scope.flagged[result.data[i].entityId] = true;
+            }
+          }
+        }
+      });
+    };
+
+    $scope.getFlagged();
+
+    $scope.isFlagged = function(id){
+      if($scope.flagged){
+        for(var i=0;i<$scope.flagged.length;i++){
+          if($scope.flagged[i].entityId == id){
+            return true;
+          }
+        }
+        return false;
+      }
+      return false;
     };
 
     $scope.commentQuery = {
       limit: $scope.pageSize //overrides the server side setting
     };
 
+    $scope.applySort = function(sort){
+      $scope.commentQuery.sort = sort.field;
+      $scope.commentQuery.sortOrder = sort.order;
+      $scope.getCommentData($scope.commentQuery);
+    };
+
     $scope.sort = $scope.sortOptions.newest;
+    $scope.commentQuery.sort = $scope.sort.field;
+    $scope.commentQuery.sortOrder = $scope.sort.order;
 
-    if($stateParams.page){
-      $scope.commentQuery.skip = ($stateParams.page-1) * $scope.pageSize;
-    }
-    if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
-      $scope.sort = $scope.sortOptions[$stateParams.sort];
-      $scope.commentQuery.sort = $scope.sort.field;
-      $scope.commentQuery.sortOrder = $scope.sort.order;
-    }
 
-    $scope.getCommentData = function(query){
+
+
+
+    $scope.getCommentData = function(query, append){
       Comment.get(query, function(result){
         if(resultHandler.process(result, null, true)){
-          $scope.comments = result.data;
+          if(append && append==true){
+            $scope.comments = $scope.comments.concat(result.data);
+          }
+          else{
+            $scope.comments = result.data;
+          }
           $scope.commentInfo = result;
           delete $scope.commentInfo["data"];
         }
@@ -1654,14 +2123,16 @@
       }, function(result){
         if(resultHandler.process(result)){
           $("#summernote").code("");
-          $scope.comments.push(result);
-          //update comment count on entity
-          Entity.save({path:"updatecommentcount"}, {value: 1}, function(result){
-            resultHandler.process(result);
-          });
+          //fetch the comments again to resolve any sorting/countnig issues
+          $scope.getCommentData($scope.commentQuery);
         }
       })
-    }
+    };
+
+    $scope.more = function(){
+      $scope.commentQuery.skip = $scope.comments.length;
+      $scope.getCommentData($scope.commentQuery, true);
+    };
 
     function bin2String(array) {
       return String.fromCharCode.apply(String, array);
@@ -1718,33 +2189,56 @@
   }]);
 
   app.controller("moderationController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
-    $scope.userManager = userManager;
-  }]);
+    var Entity = $resource("/api/"+$scope.entity+"/:entityId/:function", {entityId: "@entityId", function: "@function"});
 
-  app.controller("senseController", ["$scope", "$resource", "$state", "$stateParams", function($scope, $resource, $state, $stateParams){
-    var config = {
-      host: "52.11.126.107/peportal",
-      isSecure: false
+    $scope.userManager = userManager;
+
+    $scope.isApproved = function(){
+      return $scope.approved == "True" || $scope.approved == true;
     };
 
-    var senseApp;
-
-    qsocks.Connect(config).then(function(global){
-      global.openDoc("0911af14-71f8-4ba7-8bf9-be2f847dc292").then(function(app){
-        senseApp = app;
-        $scope.$broadcast("ready", app);
-      }, function(error) {
-          if (error.code == "1002") { //app already opened on server
-              global.getActiveDoc().then(function(app){
-                senseApp = app;
-                $scope.$broadcast("senseready", app);
-              });
-          } else {
-              console.log(error)
-          }
+    $scope.flagEntity = function(){
+      //Need to implement new flagging functionality
+      var fn = $scope.flagged==true ? "unflag" : "flag";
+      Entity.save({entityId: $scope.entityid, function: fn}, function(result){
+        if(resultHandler.process(result)){
+          $scope.flagged = !$scope.flagged;
+        }
       });
-    });
+    };
 
+    $scope.hideEntity = function(){
+      Entity.save({entityId: $scope.entityid, function: "hide"}, function(result){
+        if(resultHandler.process(result)){
+          $scope.approved = "False";
+        }
+      });
+    };
+
+    $scope.approveEntity = function(){
+      Entity.save({entityId: $scope.entityid, function: "approve"}, function(result){
+        if(resultHandler.process(result)){
+          $scope.approved = "True";
+          //need to remove all flags for the project here
+        }
+      });
+    };
+
+    $scope.editEntity = function(){
+      window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
+    };
+
+    $scope.deleteEntity = function(){
+      confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
+        if(result==0){
+          Entity.delete({entityId: $scope.entityid}, function(result){
+              if(resultHandler.process(result)){
+                window.location = "#"+$scope.entity;
+              }
+          });
+        }
+      });
+    };
   }]);
 
 

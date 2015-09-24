@@ -10,6 +10,7 @@ var projectSchema = new Schema({
   overview: String,
   createdate: Date,
   last_updated: Date,
+  last_updated_num: Number,
   last_git_check: Date,
   project_site: String,
   git_clone_url: String,
@@ -17,6 +18,9 @@ var projectSchema = new Schema({
   git_user: String,
   threadid: String,
   taglist: Buffer,
+  tags: String,
+  votenum: Number,
+  votetotal: Number,
   views:{
     type: Number,
     default: 0
@@ -27,7 +31,7 @@ var projectSchema = new Schema({
   }],
   approved: {
     type: Boolean,
-    default: true
+    default: false
   },
   flagged: {
     type: Boolean,
@@ -51,11 +55,19 @@ var projectSchema = new Schema({
   },
   category: {
     type: Schema.ObjectId,
-    ref: 'picklistitems'
+    ref: 'picklistitem'
   },
   product: {
     type: Schema.ObjectId,
-    ref: 'picklistitems'
+    ref: 'picklistitem'
+  },
+  productversion: [{
+    type: Schema.ObjectId,
+    ref: 'picklistitem'
+  }],
+  status: {
+    type: Schema.ObjectId,
+    ref: 'picklistitem'
   }
 });
 

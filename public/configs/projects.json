@@ -1,57 +1,88 @@
 {
   "fields":[
     {
-      "name": "title",
-      "suppressNull": false
-    },
-    {
-      "name": "id",
-      "suppressNull": false
-    },
-    {
-      "name": "thumbnail",
-      "suppressNull": false
-    },
-    {
-      "name": "userid",
+      "dimension": "projectId",
       "suppressNull": true
     },
     {
-      "name": "username",
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "thumbnail",
+      "suppressNull": false
+    },
+    {
+      "dimension": "userId",
       "suppressNull": true
     },
     {
-      "name": "short_description",
+      "dimension": "username",
+      "suppressNull": true
+    },
+    {
+      "dimension": "short_description",
       "suppressNull": false
     },
     {
-      "name": "last_updated",
+      "dimension": "last_updated_num",
       "suppressNull": false
+    },
+    {
+      "dimension": "approved",
+      "suppressNull": false
+    },
+    {
+      "dimension": "rating",
+      "suppressNull": false
+    },
+    {
+      "dimension": "views",
+      "suppressNull": false
+    },
+    {
+      "measure": "sum(flagCount)",
+      "label" : "flagcount",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
+    },
+    {
+      "measure" : "count(DISTINCT commentId)",
+      "label" : "commentcount"
     }
   ],
   "template": "/views/projects/project-results.html",
   "sorting":{
-    "last_updated": {
-      "id": "last_updated",
+    "last_updated_num": {
+      "id": "last_updated_num",
       "name": "Last Updated",
       "order": -1,
-      "field": "last_updated",
-      "senseType": "qSortByNumeric"
+      "field": "last_updated_num",
+      "sortType": "qSortByNumeric"
     },
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
       "field": "title",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
     },
     "username": {
       "id": "username",
       "name": "User",
       "order": 1,
       "field": "username",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
+    },
+    "rating": {
+      "id": "rating",
+      "name": "Most Popular",
+      "order": -1,
+      "field": "rating",
+      "sortType": "qSortByNumeric"
     }
   },
-  "defaultSort": "last_updated"
+  "defaultSort": "last_updated_num",
+  "entity": "projects",
+  "pagesize" : 20
 }

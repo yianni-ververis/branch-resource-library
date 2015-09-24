@@ -2,7 +2,9 @@
 //Requires "hide" permissions on the specified entity
 //Sets the 'approved' field to false making it invisible to users without 'approve' permissions
 var MasterController = require("../../controllers/master"),
-    entities = require("../entityConfig");
+    entities = require("../entityConfig"),
+    Error = require("../../controllers/error"),
+    qrs = require("../../../SenseQRS");
 
 module.exports = function(req, res){
   var query = req.query || {};
@@ -10,20 +12,21 @@ module.exports = function(req, res){
   var entity = req.params.entity;
   var user = req.user;
   var userPermissions = req.user.role.permissions[entity];
-
   //check that the user has sufficient permissions for this operation
   if(!userPermissions || userPermissions.hide!=true){
-    res.json(Error.insufficientPermissions);
+    res.json(Error.insufficientPermissions());
   }
   else{
     MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they own (where applicable)
       if(response.data.length > 0){
         MasterController.save(query, {approved: false}, entities[entity], function(result){
+          //we should execute a reload of the app here
+          //qrs.executeTask("Branch_Reload");
           res.json(result);
         });
       }
       else{
-        res.json(Error.noRecord);
+        res.json(Error.noRecord());
       }
     });
   }

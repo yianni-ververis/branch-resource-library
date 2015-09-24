@@ -19,7 +19,9 @@ module.exports = function(req, res){
   else{
     MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they own (where applicable)
       if(response.data.length > 0){
-        MasterController.save(query, {approved: true, flagged: false}, entities[entity], function(result){
+        //first remove all flags
+        MasterController.save(query, {approved: true}, entities[entity], function(result){
+          //we should execute a reload of the app here
           res.json(result);
         });
       }

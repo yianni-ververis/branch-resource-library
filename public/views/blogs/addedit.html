@@ -1,0 +1,31 @@
+<div class="container page">
+  <div class="row content blog addeditBlog">
+    <label>Title:</label>
+    <input class="form-control" type="text" ng-model="newBlogTitle" placeholder="Title" />
+    <label>Type:</label>
+    <select class="form-control" name="" ng-model="newBlogType" ng-options="item.name for item in blogTypes track by item._id">
+    </select>
+    <div class="" ng-show="newBlogType.name!='Tweet'">
+      <div class="image-upload">
+        <label>Image:</label>
+        <span class="btn btn-default btn-file">
+          Choose
+          <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="blogImage"/>
+        </span>
+      </div>
+      <div class="image-preview">
+        <img src="{{newBlogImage}}" ng-show="newBlogImage"/>
+        <div class="no-image" ng-hide="newBlogImage">
+          No Image Selected<br />Optimum ratio for images is 4:1
+        </div>
+      </div>
+    </div>
+    <label>Content:</label>
+    <div class="">
+      <div id="blogContent" class="">
+
+      </div>
+    </div>
+    <button class="btn" type="button" name="button" ng-click="validateNewBlogData()">Submit for Approval</button>
+  </div>
+</div>

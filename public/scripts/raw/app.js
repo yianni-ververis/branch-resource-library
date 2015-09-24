@@ -20,7 +20,7 @@
     })
     //login and signup page
     .state("loginsignup", {
-      url: "/loginsignup",
+      url: "/loginsignup?url",
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {
@@ -70,6 +70,58 @@
         link: "projects/new"
       }
     })
+    //used to navigate to a given project detail page
+    .state("projects.addedit", {
+      url: "/:projectId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/projects/addedit.html",
+          controller: "projectController",
+        }
+      },
+      data:{
+        crumb: "New Project",
+        link: "projects/new"
+      }
+    })
+    //used to navigate to the blog list page
+    .state("blogs", {
+      url: "/blogs",
+      templateUrl: "/views/blogs/index.html",
+      controller: "blogController",
+      data: {
+        crumb: "Blogs",
+        link: "#blogs"
+      }
+    })
+    //used to navigate to a given blog detail page
+    .state("blogs.detail", {
+      url: "/:blogId",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/detail.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/detail"
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("blogs.addedit", {
+      url: "/:blogId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/blogs/addedit.html",
+          controller: "blogController",
+        }
+      },
+      data:{
+        crumb: "New Blog",
+        link: "blogs/new"
+      }
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/users?sort",
@@ -103,14 +155,15 @@
   include "./services/user-manager.js"
   include "./services/result-handler.js"
   include "./services/search-exchange.js"
+  include "./services/picklists.js"
   //controllers
   include "./controllers/admin.js"
   include "./controllers/auth.js"
   include "./controllers/home.js"
   include "./controllers/project.js"
+  include "./controllers/blog.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"
   include "./controllers/moderation.js"
-  include "./controllers/sense-engine.js"
 
 })();

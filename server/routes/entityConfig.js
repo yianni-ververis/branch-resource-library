@@ -14,6 +14,18 @@ module.exports = {
     projects:{
       collection: "projects",
       model: require("../models/project"),
+      populates: "userid category product status",
+      exemptFromOwnership: false,
+      exemptFromApproval: false,
+      sort: {
+        dateline: -1
+      },
+      limit: 20,
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
+    blogs:{
+      collection: "blogs",
+      model: require("../models/blog"),
       populates: "userid",
       exemptFromOwnership: false,
       exemptFromApproval: false,
@@ -112,5 +124,16 @@ module.exports = {
         name: 1
       },
       requiresAuthentication: false
+    },
+    flags: {
+      collection: "flags",
+      model: require("../models/flag"),
+      populates: "",
+      exemptFromOwnership: true,
+      exemptFromApproval: true,
+      sort: {
+        name: 1
+      },
+      requiresAuthentication: true
     }
 };

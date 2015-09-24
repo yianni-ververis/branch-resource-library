@@ -7,8 +7,22 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
   });
+  var defaultSelection;
+
+  if(!userManager.canApprove('projects')){
+    defaultSelection = {
+      field: "approved",
+      values: [0],
+      lock: true
+    }
+  }
+  $scope.$on("cleared", function(){
+    searchExchange.init(defaultSelection);
+  })
 
   $scope.pageSize = 20;
+
+  $scope.onlyApproved = !userManager.canApprove('projects');
 
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
@@ -19,41 +33,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.searching = true;
 
-  $scope.stars = new Array(5);
-
-  console.log('params - ',$stateParams);
-
-  $scope.sortOptions = {
-    createdate: {
-      id: "createdate",
-      name: "Last Updated",
-      order: -1,
-      field: "createdate"
-    },
-    rating:{
-      id: "rating",
-      name: "Highest Rated",
-      order: [-1,-1],
-      field:["votenum", "votetotal"]
-    },
-    lastpost: {
-      id: "lastpost",
-      name: "Most recent comments",
-      order: -1,
-      field: "lastpost"
-    },
-    title: {
-      id: "title",
-      name: "A-Z",
-      order: 1,
-      field: "title"
-    }
-  };
-
-  $scope.sort = $scope.sortOptions.createdate;
-  $scope.categoryId = "";
-  $scope.productId = "";
-
   $scope.query = {
     limit: $scope.pageSize
   };
@@ -61,19 +40,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   if($stateParams.sort && $scope.sortOptions[$stateParams.sort]){
     $scope.sort = $scope.sortOptions[$stateParams.sort];
   }
-  $scope.query.sort = $scope.sort.field;
-  $scope.query.sortOrder = $scope.sort.order;
+
   if($stateParams.projectId){
     $scope.query.projectId = $stateParams.projectId;
     $scope.projectId = $stateParams.projectId;
-  }
-  if($stateParams.product){
-    $scope.productId = $stateParams.product;
-    $scope.query.product = $stateParams.product;
-  }
-  if($stateParams.category){
-    $scope.categoryId = $stateParams.category;
-    $scope.query.category = $stateParams.category;
   }
 
   $scope.getPicklistItems = function(picklistName, out){
@@ -92,6 +62,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.getPicklistItems("Product", "projectProducts", true);
   $scope.getPicklistItems("Category", "projectCategories", true);
+  $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
   $scope.getProductVersions = function(product){
     $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -115,18 +86,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
-        console.log($scope.projectInfo);
+        $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
+        $scope.getProductVersions($scope.projects[0].product);
+        //$scope.tags = $scope.projects[0].tags.join(",");
       }
     });
-  };
-
-  $scope.getMore = function(){
-    var query = $scope.projectInfo.query;
-    query.limit = $scope.projectInfo.limit;
-    query.skip = $scope.projectInfo.skip;
-    query.sort = $scope.sort.field;
-    query.sortOrder = $scope.sort.order;
-    $scope.getProjectData(query, true);
   };
 
   $scope.getRating = function(total, count){
@@ -136,7 +100,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     else{
       return 0;
     }
-  }
+  };
 
   $scope.getBuffer = function(binary){
     return _arrayBufferToBase64(binary);
@@ -163,48 +127,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
-  $scope.flagProject = function(project){
-    Project.save({projectId:project._id, function: "flag"}, function(result){
-      if(resultHandler.process(result)){
-        project.flagged = true;
-      }
-    });
-  };
-
-  $scope.hideProject = function(project){
-    Project.save({projectId:project._id, function: "hide"}, function(result){
-      if(resultHandler.process(result)){
-        project.approved = false;
-      }
-    });
-  };
-
-  $scope.approveProject = function(project){
-    Project.save({projectId:project._id, function: "approve"}, function(result){
-      if(resultHandler.process(result)){
-        project.approved = true;
-        project.flagged = false;
-      }
-    });
-  };
-
-  $scope.deleteProject = function(project, index){
-    $scope.Confirm.prompt("Are you sure you want to delete the project "+project.title, ["Yes", "No"], function(result){
-      if(result==0){
-        if($stateParams.projectId){
-          window.location = "#projects";
-        }
-        else {
-          Project.delete({projectId: project._id}, function(result){
-              if(resultHandler.process(result)){
-                $scope.projects.splice(index, 1);
-              }
-          });
-        }
-      }
-    });
-  };
-
   $scope.getGitProjects = function(gituser, gitpassword){
     var creds = {
       user: gituser,
@@ -222,7 +144,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       repo: project.name,
       owner: project.owner.login
     };
-    console.log(project);
   };
 
   $scope.previewThumbnail = function(){
@@ -272,17 +193,17 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     //We're validating client side so that we don't keep passing image data back and forth
     var errors = [];
     //Verify the project has a name
-    if(!$scope.newProjectName || $scope.newProjectName==""){
+    if(!$scope.projects[0].title || $scope.projects[0].title==""){
       //add to validation error list
       errors.push({});
     }
     //Make sure the product has been set
-    if(!$scope.newProjectProduct){
+    if(!$scope.projects[0].product){
       //add to validation error list
       errors.push({});
     }
     //Make sure at least one version has been set
-    if($scope.newProjectProduct && $(".product-version").length==0){
+    if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
       //add to validation error list
       errors.push({});
     }
@@ -307,13 +228,18 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.saveNewProject = function(){
+    var versions = [];
+    $(".product-version:checkbox:checked").each(function(val, index){
+      versions.push($(this).attr("data-versionid"));
+      if(index==$(".product-version:checkbox:checked").length){
+        $scope.projects[0].productversions = versions;
+      }
+    });
+    if(!$scope.usegit || $scope.usegit=='false'){
+      $scope.projects[0].content = $("#newProjectContent").code();
+    }
     var data = {
-      standard:{  //data that we can just assign to the project
-        title: $scope.newProjectName,
-        short_description: $scope.newProjectDescription,
-        product: $scope.newProjectProduct,
-        category: $scope.newProjectCategory
-      },
+      standard: $scope.projects[0],  //data that we can just assign to the project
       special:{ //that will be used to set additional properties
         image: $scope.image,
         thumbnail: $scope.thumbnail,
@@ -342,16 +268,17 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
 
-  searchExchange.clear();
+
 
 
   //only load the project if we have a valid projectId or we are in list view
-  if(($state.current.name=="projects.detail" && $stateParams.projectId!="new") || $state.current.name=="projects"){
+  if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
     $scope.getProjectData($scope.query); //get initial data set
   }
   else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
     $("#newProjectContent").summernote();
     $scope.usegit = 'true';
+    $scope.projects = [{}]; //add en empty object
   }
 
   function canvasToBlob(canvas, type){
@@ -368,4 +295,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         type: type
     });
   }
+
+  //this effectively initiates the results
+  searchExchange.clear(true);
+
 }]);

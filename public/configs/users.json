@@ -1,44 +1,33 @@
 {
   "fields":[
-    "username",
-    "email",
-    "role"
+    {
+      "dimension" : "userId",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "username",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "email",
+      "suppressNull": true
+    },
+    {
+      "dimension" : "role",
+      "suppressNull": false
+    }
   ],
   "template": "/views/admin/user-results.html",
-  "sortingx":{
-    "createdate": {
-      "id": "createdate",
-      "name": "Last Updated",
-      "order": -1,
-      "field": "createdate"
-    },
-    "rating":{
-      "id": "rating",
-      "name": "Highest Rated",
-      "order": [-1,-1],
-      "field":["votenum", "votetotal"]
-    },
-    "lastpost": {
-      "id": "lastpost",
-      "name": "Most recent comments",
-      "order": -1,
-      "field": "lastpost"
-    },
-    "title": {
-      "id": "title",
-      "name": "A-Z",
-      "order": 1,
-      "field": "title"
-    }
-  },
   "sorting":{
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
       "field": "title",
-      "senseType": "qSortByAcsii"
+      "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "title"
+  "defaultSort": "title",
+  "entity": "users",
+  "pagesize" : 20
 }

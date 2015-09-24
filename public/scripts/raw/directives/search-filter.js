@@ -12,20 +12,40 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
         $scope.$parent.toggleSelect(attr.field, elemNum);
       }
       $scope.$on('searchResults', function(){
-        $scope.render();
+        if($scope.info){
+          $scope.render();
+        }
+        else{
+          $scope.postponed = function(){
+            $scope.render();
+          }
+        }
       });
       $scope.$on("update", function(params){
-        $scope.render();
+        if($scope.info){
+          $scope.render();
+        }
+        else{
+          $scope.postponed = function(){
+            $scope.render();
+          }
+        }
       });
       $scope.$on('cleared', function(){
-        $scope.render();
+        if($scope.info){
+          $scope.render();
+        }
+        else{
+          $scope.postponed = function(){
+            $scope.render();
+          }
+        }
       });
 
       $scope.render = function(){
         $scope.info.object.getLayout().then(function(layout){
           $scope.info.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
-            $scope.$apply(function(){
-              console.log(data[0].qMatrix);
+            $scope.$apply(function(){              
               $scope.info.items = data[0].qMatrix;
             });
           });
@@ -38,10 +58,19 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
         });
       };
 
-      searchExchange.addFilter(attr.field, attr.title, function(result){
+      searchExchange.addFilter({
+          id: $(element).attr("id"),
+          field: attr.field
+        }, function(result){
         $scope.$apply(function(){
           $scope.info = result;
-          $scope.render();
+          if($scope.postponed){
+            $scope.postponed.call(null);
+          }
+          else{
+            $scope.render();
+          }
+
         });
       });
 
