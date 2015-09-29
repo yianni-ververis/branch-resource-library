@@ -1,5 +1,5 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
@@ -53,7 +53,7 @@
       controller: "projectController",
       data: {
         crumb: "Projects",
-        link: "#projects"
+        link: "projects"
       }
     })
     //used to navigate to a given project detail page
@@ -91,7 +91,7 @@
       controller: "blogController",
       data: {
         crumb: "Blogs",
-        link: "#blogs"
+        link: "blogs"
       }
     })
     //used to navigate to a given blog detail page
@@ -1494,6 +1494,7 @@
   app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Login = $resource("auth/login");
     var Signup = $resource("auth/signup");
+    var Reset = $resource("auth/reset")
 
     if($stateParams.url){
       $scope.returnUrl = $stateParams.url;
@@ -1512,7 +1513,25 @@
     };
 
     $scope.signup = function(){
+      Signup.save({
+        username: $scope.username,
+        password: $scope.password,
+        email: $scope.email
+      }, function(result) {
+        if (resultHandler.process(result)) {
 
+        }
+      })
+    };
+
+    $scope.reset = function() {
+      Reset.save({
+        email: $scope.email2
+      }, function(result) {
+        if (resultHandler.process(result)) {
+          
+        }
+      })
     };
 
   }]);
@@ -1576,6 +1595,8 @@
     var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
     var Git = $resource("system/git/:path", {path: "@path"});
+    var Rating = $resource("api/ratings");
+    var MyRating = $resource("api/ratings/rating/my");
 
     $scope.$on('searchResults', function(){
       $scope.senseOnline = true;
@@ -1606,6 +1627,8 @@
 
     $scope.searching = true;
 
+    $scope.rating = {};
+    $scope.getRate = {};
     $scope.query = {
       limit: $scope.pageSize
     };
@@ -1617,6 +1640,44 @@
     if($stateParams.projectId){
       $scope.query.projectId = $stateParams.projectId;
       $scope.projectId = $stateParams.projectId;
+    }
+
+    $scope.ratingClick = function() {
+      //$('#rating').css({'color': 'green', 'border':'0 none'})
+      if($scope.rate && !$scope.isReadonly) {
+        $scope.isReadonly = true;
+        $scope.query.votenum = $scope.projects[0].votenum + 1
+        $scope.query.votetotal = $scope.projects[0].votetotal + $scope.rate
+
+        $scope.updateProjectData($scope.query)
+
+        $scope.rating.id = $scope.projects[0]._id
+        $scope.rating.userid = $stateParams.userId
+        $scope.rating.rate = $scope.rate
+        $scope.rating.date = new Date()
+
+        var ratingquery = {
+          entityId: $scope.rating.id,
+          userid: $scope.rating.userid,
+          createdate: $scope.rating.date,
+          rating: $scope.rating.rate
+        }
+
+        $scope.saveRating(ratingquery)
+      }
+    };
+
+    $scope.getMyRating= function(query) {
+      // MyRating.save(query, function(result){
+      //   if(resultHandler.process(result)) {
+      //     if (result.total > 0 ) {
+      //       $scope.isReadonly = true
+      //       $scope.rate = result.data[0].rating
+      //     } else {
+      //       $scope.isReadonly = false
+      //     }
+      //   }
+      // })
     }
 
     $scope.getPicklistItems = function(picklistName, out){
@@ -1649,6 +1710,10 @@
           }
           else{
             $scope.projects = result.data;
+            $scope.getRate.userid = $scope.userManager.userInfo._id;
+            $scope.getRate.entityId = $scope.projects[0]._id
+
+            $scope.getMyRating($scope.getRate)
             //if this is the detail view we'll update the breadcrumbs
             if($state.current.name == "projects.detail"){
               $scope.$root.$broadcast('spliceCrumb', {
@@ -1657,11 +1722,20 @@
               });
             }
           }
+
+          $scope.projects.forEach(function(item, index) {
+            if (item.votenum > 0) {
+              var length = Math.round(item.votetotal/item.votenum)
+              $scope.projects[index].stars = new Array(length)
+            }
+          })
+
           $scope.projectInfo = result;
           delete $scope.projectInfo["data"];
+
           $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
           $scope.getProductVersions($scope.projects[0].product);
-          //$scope.tags = $scope.projects[0].tags.join(",");
+
         }
       });
     };
@@ -1673,7 +1747,23 @@
       else{
         return 0;
       }
-    };
+      };
+
+    $scope.updateProjectData = function(query) {
+      Project.save(query, function(result){
+        if(resultHandler.process(result)) {
+
+        }
+      })
+    }
+
+    $scope.saveRating = function(rating) {
+      Rating.save(rating, function(result) {
+        if(resultHandler.process(result)) {
+
+        }
+      })
+    }
 
     $scope.getBuffer = function(binary){
       return _arrayBufferToBase64(binary);

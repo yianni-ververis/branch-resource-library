@@ -38,7 +38,8 @@
       </ul>
     </div>
     <div class="col-md-3 align-left">
-      <moderation entity="'projects'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>      
+      <rating ng-model="rate" max="5" readonly="isReadonly" ng-click="ratingClick()" titles="['one', 'two', 'three', 'four', 'five']" id="rating"></rating>
+      <moderation entity="'projects'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
     </div>
   </div>
   <div class="row content">

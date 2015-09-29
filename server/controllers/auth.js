@@ -20,7 +20,6 @@ module.exports = {
           next();
         }
         else {
-          console.log(req.url);
           res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
         }
       });

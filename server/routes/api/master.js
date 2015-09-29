@@ -1,4 +1,6 @@
-var express = require("express"),
+var async = require('async'),
+    express = require("express"),
+    mongoose = require("mongoose"),
     router = express.Router(),
     Auth = require("../../controllers/auth"),
     Error = require("../../controllers/error"),
@@ -29,6 +31,7 @@ var update = require("./update");
 var flag = require("./flag");
 var hide = require("./hide");
 var approve = require("./approve");
+var get = require("./get")
 
 GitHub.authenticate({type: "token", token: GitCredentials.token });
 
@@ -58,6 +61,7 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res, next){
         || (!user && entity.exemptFromApproval!=true)){
       query["approved"]=true;
     }
+
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
     });
@@ -124,7 +128,39 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
       query["approved"]=true;
     }
     MasterController.get(req.query, query, entity, function(results){
-      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < (new Date()).getTime() - (360000))||(!results.data[0].last_git_check)))){
+      if(entity.logViews){
+        console.log('checking views')
+        //check to see if the current user or IP Address has viewed the same item
+        //in the last hour. If not add an item to the views table
+        var anHourAgo = (new Date()).getTime() - (360000);
+        var ip = req.ip.split(":").pop();
+        var viewQuery = {
+          createdate: {
+            $gt: anHourAgo
+          },
+          entityId: req.params.id
+        };
+        if(req.user){
+          viewQuery.userid = req.user._id;
+        }
+        else{
+          viewQuery.ip = ip;
+        }
+        MasterController.get(viewQuery, viewQuery, entities["views"], function(results){
+          console.log(results);
+          if(results.data.length == 0){
+            console.log('saving new view');
+            MasterController.save(null, {
+              userid: req.user ? req.user._id : null,
+              ip: ip,
+              entityId: req.params.id
+            }, entities["views"], function(result){
+              console.log(result);
+            });
+          }
+        });
+      }
+      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
@@ -144,6 +180,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             results.data[0].last_git_check = Date.now();
             GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
               //console.log(atob(readmeresult.content));
+              console.log(readmeresult);
               results.data[0].content = atob(readmeresult.content);
               results.data[0].save();
               res.json(results || {});
@@ -179,6 +216,7 @@ router.post("/:entity/:id/flag", Auth.isLoggedIn, flag.flag);
 router.post("/:entity/:id/unflag", Auth.isLoggedIn, flag.unflag);
 router.post("/:entity/:id/hide", Auth.isLoggedIn, hide);
 router.post("/:entity/:id/approve", Auth.isLoggedIn, approve);
+router.post("/:entity/rating/my", Auth.isLoggedIn, get.getMyRating);
 
 //This route is for deleting a list of records on the specified entity
 //url parameters can be used to add filtering

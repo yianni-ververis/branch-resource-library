@@ -5,6 +5,7 @@ module.exports = {
       populates: "role",
       exemptFromOwnership: false,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         username: 1
       },
@@ -17,6 +18,7 @@ module.exports = {
       populates: "userid category product status",
       exemptFromOwnership: false,
       exemptFromApproval: false,
+      logViews: true,
       sort: {
         dateline: -1
       },
@@ -29,11 +31,30 @@ module.exports = {
       populates: "userid",
       exemptFromOwnership: false,
       exemptFromApproval: false,
+      logViews: true,
       sort: {
         dateline: -1
       },
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
+    ratings: {
+      collection: "ratings",
+      model: require("../models/rating"),
+      populates: "userid",
+      requiresAuthentication: false,
+      exemptFromApproval: true,
+      logViews: false,
+      limit: 10,
+    },
+    views: {
+      collection: "views",
+      model: require("../models/views"),
+      populates: "userid",
+      requiresAuthentication: false,
+      exemptFromApproval: true,
+      logViews: false,
+      limit: 10,
     },
     articles:{
       collection: "articles",
@@ -41,6 +62,7 @@ module.exports = {
       populates: "userid",
       exemptFromOwnership: false,
       exemptFromApproval: false,
+      logViews: true,
       sort: {
         dateline: -1
       },
@@ -53,6 +75,7 @@ module.exports = {
       populates: "userid",
       exemptFromOwnership: false,
       exemptFromApproval: false,
+      logViews: false,
       sort: {
         dateline: -1
       },
@@ -65,6 +88,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -76,6 +100,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -87,6 +112,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -98,6 +124,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -109,6 +136,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -120,6 +148,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },
@@ -131,6 +160,7 @@ module.exports = {
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
+      logViews: false,
       sort: {
         name: 1
       },

@@ -2,7 +2,6 @@ var Error = require('./error');
 
 module.exports = {
   get: function(query, parsedQuery, entity, callbackFn){
-    console.log(entity.sort);
     entity.model.find(parsedQuery).populate(entity.populates).sort(entity.sort).skip(entity.skip).limit(entity.limit).exec(function(err, results){
       if(err){
         console.log(err);
@@ -120,6 +119,7 @@ module.exports = {
     }
     else{ //new
       entity.model.create(data, function(err, result){
+        console.log(data);
         if(err){
           console.log(err);
           callbackFn.call(null, Error.errorSaving(err.errors.status));

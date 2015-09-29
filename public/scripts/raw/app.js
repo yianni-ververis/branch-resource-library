@@ -1,5 +1,5 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
@@ -53,7 +53,7 @@
       controller: "projectController",
       data: {
         crumb: "Projects",
-        link: "#projects"
+        link: "projects"
       }
     })
     //used to navigate to a given project detail page
@@ -91,7 +91,7 @@
       controller: "blogController",
       data: {
         crumb: "Blogs",
-        link: "#blogs"
+        link: "blogs"
       }
     })
     //used to navigate to a given blog detail page
