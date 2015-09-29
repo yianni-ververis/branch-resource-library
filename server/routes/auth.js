@@ -37,4 +37,16 @@ router.post('/signup', function(req, res){
   })(req, res);
 });
 
+router.post('/reset', function(req, res){
+
+  require('../controllers/passport/reset.js')(req, function(err, user) {
+    if(err){
+      res.json(Error.custom(err));
+    }
+    else{
+      res.json(user);
+    }
+  })
+});
+
 module.exports = router;

@@ -50,6 +50,23 @@ module.exports = function(req, res){
     record.createdate = Date.now();
     var imageBuffer;
 
+    if(req.params.entity=="projects"){
+      //build the similar projects query
+      var similarQuery = {
+        category: data.standard.category,
+        $or: []
+      };
+      var tagList = data.standar.tags.split(",");
+      for(var i=0;i<tagList.length;i++){
+        similarQuery.$or.push({
+          tags: {
+            $regex: tagList[i],
+            $options: "gi"
+          }
+        });
+      }
+    }
+
     if(data.special){
       if(!fs.existsSync(attachmentDir+record._id.toString())){
         fs.mkdirSync(attachmentDir+record._id.toString());
@@ -93,8 +110,12 @@ module.exports = function(req, res){
           GitHub.repos.getReadme({user:data.special.gitProject.owner, repo:data.special.gitProject.repo}, function(err, readmeresult){
             console.log('setting readme');
             record.content = atob(readmeresult.content);
-            MasterController.save(query, project, entities['projects'], function(newrecord){
-              res.json(newproject);
+            //check for similar projects
+            MasterController.getIds(similarQuery, similarQuery, entities["projects"], function(results){
+
+              MasterController.save(query, project, entities['projects'], function(newrecord){
+                res.json(newproject);
+              });
             });
           });
         });
@@ -104,6 +125,7 @@ module.exports = function(req, res){
           var newDate = Date.now();
           record.last_updated = newDate;
           record.last_updated_num = epoch.now();
+
         }
         MasterController.save(query, record, entities[req.params.entity], function(newrecord){
           res.json(newrecord);

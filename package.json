@@ -18,10 +18,12 @@
   "homepage": "https://github.com/Qlik-PE/branch-resource-library",
   "dependencies": {
     "MD5": "^1.2.1",
+    "async": "^1.4.2",
     "atob": "^1.1.2",
     "bcryptjs": "^2.2.0",
     "body-parser": "^1.12.0",
     "btoa": "^1.1.2",
+    "config": "^1.16.0",
     "express": "^4.12.0",
     "express-session": "^1.10.3",
     "github": "^0.2.4",
@@ -30,14 +32,19 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-includes": "^0.5.1",
     "jade": "^1.9.2",
+    "known-spam-emails": "^0.0.0",
     "less": "^2.4.0",
     "markdown": "^0.5.0",
     "marked": "^0.3.3",
     "milli-epoch": "0.0.1",
     "mongoose": "^4.1.0",
+    "nodemailer": "^1.4.0",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "qsocks": "0.0.23",
-    "request": "^2.55.0"
+    "request": "^2.55.0",
+    "request": "^2.55.0",
+    "spam-check": "^0.9.9",
+    "underscore": "^1.8.3"
   }
 }

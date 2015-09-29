@@ -3,10 +3,10 @@
     <div class="block">
       <h2>Signup</h2>
       <form ng-submit="signup()">
-        <input class="form-control" ng-model="username" placeholder="Username">
-        <input class="form-control" ng-model="email" placeholder="Email">
-        <input class="form-control" ng-model="password" placeholder="Password" type="password">
-        <input class="form-control" placeholder="Confirm Password" type="password">
+        <input class="form-control" ng-model="username" placeholder="Username" required>
+        <input class="form-control" ng-model="email" placeholder="Email" type="email" required>
+        <input class="form-control" ng-model="password" placeholder="Password" type="password" required>
+        <input class="form-control" placeholder="Confirm Password" type="password" pattern="{{password}}" required>
         <button class="ghost-button green" type="submit">Signup</button>
       </form>
     </div>
@@ -18,8 +18,14 @@
         <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
         <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
         <button class='ghost-button green' type='submit'>Login</button>
-      </form>
-
+      </form>  
+    </div>
+    <div class="form-reset block">
+      <h2>Reset Password</h2>
+      <form ng-submit="reset()">
+        <input class='form-control' ng-model='email2' type="email" placeholder='Email' required>
+        <button class='ghost-button green' type='submit'>Reset</button>
+      </form>  
     </div>
   </div>
 </div>

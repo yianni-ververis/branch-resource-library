@@ -8,7 +8,10 @@ var projectSchema = new Schema({
   thumbnail: String,  //Url to file
   image: String,      //Url to file
   overview: String,
-  createdate: Date,
+  createdate: {
+    type: Date,
+    default: Date.now
+  },
   last_updated: Date,
   last_updated_num: Number,
   last_git_check: Date,
@@ -68,7 +71,12 @@ var projectSchema = new Schema({
   status: {
     type: Schema.ObjectId,
     ref: 'picklistitem'
-  }
+  },
+  viewsinfo: [],
+  similar: [{
+    type: Schema.ObjectId,
+    ref: 'projects'
+  }]
 });
 
 module.exports = mongoose.model('project', projectSchema)

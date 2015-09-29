@@ -11,7 +11,26 @@ qrs.config = {
   app: "bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1"
 };
 
+config = require('config');
+console.log(config);
+_ = require('underscore');
+
+//mongoose.connect('mongodb://admin:admin@192.168.1.10:27017/branch');
 mongoose.connect('mongodb://localhost:27017/branch');
+
+global.$ = {}
+
+$.getRandomString = function(length) {
+  var set = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  return _.shuffle(set.split('')).splice(0, length).join('')
+}
+
+// $.smtp = require('nodemailer').createTransport({
+//   service: config.smtp.service,
+//   auth: config.smtp.auth
+// })
+
+$.smtp = require('nodemailer').createTransport();
 
 //load the models
 require('./server/models/project.js');
@@ -21,6 +40,11 @@ require('./server/models/user.js');
 require('./server/models/userrole.js');
 require('./server/models/feature.js');
 require('./server/models/product.js');
+require('./server/models/rating.js');
+require('./server/models/views.js');
+require('./server/models/article.js');
+require('./server/models/attachment.js');
+require('./server/models/comment.js');
 require('./server/models/picklist.js');
 require('./server/models/picklistitem.js');
 

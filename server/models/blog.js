@@ -4,7 +4,10 @@ var Schema = mongoose.Schema;
 var blogSchema = new Schema({
   title: String,
   content: Buffer,
-  createdate: Date,
+  createdate: {
+    type: Date,
+    default: Date.now
+  },
   image: String,
   thumbnail: String,
   userid: {
