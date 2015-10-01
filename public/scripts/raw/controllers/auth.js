@@ -17,7 +17,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
         window.location = "#" + $scope.returnUrl || "/";
       }
       else{
-        notifications.notify(result);
+        notifications.notify(result.errText, null, {sentiment: 'negative'});
       }
     });
   };

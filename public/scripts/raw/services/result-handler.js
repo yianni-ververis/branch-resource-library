@@ -8,13 +8,12 @@ app.service('resultHandler', ["notifications", function(notifications){
       }
       return false;
     }
-    else if (result.errCode) {
-      console.log(result.errText);
-      notifications.showError({
-        message: result.errText,
-        hideDelay: 3000,
-        hide: true
-      });
+    else if (result.errCode) {      
+      // notifications.showError({
+      //   message: result.errText,
+      //   hideDelay: 3000,
+      //   hide: true
+      // });
       return false;
     }
     else {

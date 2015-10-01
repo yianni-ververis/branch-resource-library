@@ -1,12 +1,8 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
-
-    notificationsConfigProvider.setAutoHide(true);
-
-    notificationsConfigProvider.setHideDelay(1500);
 
     $stateProvider
     //home page
@@ -264,6 +260,66 @@
             scope.callback.call(null, index);
             scope.callback = null;
           };
+        }
+      }
+    }]);
+
+  	return module;
+  }));
+
+  (function (root, factory) {
+  	if (typeof exports === 'object') {
+  		module.exports = factory(root, require('angular'));
+  	} else if (typeof define === 'function' && define.amd) {
+  		define(['angular'], function (angular) {
+  			return (root.ngConfirm = factory(root, angular));
+  		});
+  	} else {
+  		root.ngConfirm = factory(root, root.angular);
+  	}
+  }(this, function (window, angular) {
+  	var module = angular.module('ngNotifications', []);
+    module.provider('notificationConfig', function() {
+      return {
+  			$get: function(){
+  				return {}
+  			}
+  		};
+    });
+
+    module.factory('notifications', ['$rootScope', function ($rootScope) {
+  		return {
+  			notify: function(message, list, options){
+  				$rootScope.$broadcast('notify', {message: message, list: list, options: options});
+  			}
+  		};
+    }]);
+
+
+    module.directive('notificationDialog', ['notificationConfig', '$timeout', function (confirmConfig, $timeout) {
+      return {
+  			restrict: "E",
+  			scope:{
+
+  			},
+        template: function(elem, attr){
+          html = "<div ng-show='showing' class='{{options.sentiment}} col-md-12 notifications'>";
+  				html += "<p>{{message}}</p>";
+  				html += "<ul ng-if='list.length>0'>";
+  				html += "<li ng-repeat='item in list'>";
+  				html += "{{item}}"
+  				html += "<li>";
+  				html += "</ul>";
+  	      html += "</div>";
+  				return html;
+        },
+        link: function(scope){
+  				scope.$on('notify', function(event, data){
+  					scope.showing = true;
+            scope.message = data.message || "";
+  					scope.list = data.list || [];
+  					scope.options = data.options || {};
+          });
         }
       }
     }]);
@@ -1009,13 +1065,12 @@
         }
         return false;
       }
-      else if (result.errCode) {
-        console.log(result.errText);
-        notifications.showError({
-          message: result.errText,
-          hideDelay: 3000,
-          hide: true
-        });
+      else if (result.errCode) {      
+        // notifications.showError({
+        //   message: result.errText,
+        //   hideDelay: 3000,
+        //   hide: true
+        // });
         return false;
       }
       else {
@@ -1538,7 +1593,7 @@
     }
   }]);
 
-  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
     var Login = $resource("auth/login");
     var Signup = $resource("auth/signup");
     var Reset = $resource("auth/reset")
@@ -1555,6 +1610,9 @@
         if(resultHandler.process(result)){
           userManager.refresh();
           window.location = "#" + $scope.returnUrl || "/";
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: 'negative'});
         }
       });
     };

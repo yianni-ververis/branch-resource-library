@@ -34,7 +34,7 @@
 
 			},
       template: function(elem, attr){
-        html = "<div ng-show='showing' ng-class='{\'positive\': options.sentiment==\'positive\', \'negative\': options.sentiment==\'negative\'}' class='notifications'>";
+        html = "<div ng-show='showing' class='{{options.sentiment}} col-md-12 notifications'>";
 				html += "<p>{{message}}</p>";
 				html += "<ul ng-if='list.length>0'>";
 				html += "<li ng-repeat='item in list'>";
