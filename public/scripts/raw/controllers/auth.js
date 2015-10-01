@@ -36,7 +36,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
       email: $scope.email2
     }, function(result) {
       if (resultHandler.process(result)) {
-        
+
       }
     })
   };

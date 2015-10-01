@@ -14,7 +14,7 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
         scope.breadcrumbs = [];
         var state = $state.$current;
         if(state.self.name != "home"){
-          while(state.self.name != ""){            
+          while(state.self.name != ""){
             scope.breadcrumbs.push({
               text: state.data.crumb,
               link: state.data.link
@@ -27,6 +27,9 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
       });
       scope.$on('spliceCrumb', function(event, crumb){
         scope.breadcrumbs.splice(-1, 1, crumb);
+      });
+      scope.$on('addCrumb', function(event, crumb){
+        scope.breadcrumbs.push(crumb);
       });
       scope.getLoginUrl = function(){
         var suffix = "";

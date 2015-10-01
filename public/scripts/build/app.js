@@ -24,7 +24,8 @@
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "loginsignup"
       }
     })
     //login page
@@ -34,7 +35,19 @@
       templateUrl : "/views/login.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "login"
+      }
+    })
+    //password reset page
+    //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
+    .state("reset", {
+      url: "/reset",
+      templateUrl : "/views/reset.html",
+      controller: "authController",
+      data: {
+        crumb: "Login",
+        link: "login"
       }
     })
     //used to navigate to the admin console
@@ -160,7 +173,7 @@
           scope.breadcrumbs = [];
           var state = $state.$current;
           if(state.self.name != "home"){
-            while(state.self.name != ""){            
+            while(state.self.name != ""){
               scope.breadcrumbs.push({
                 text: state.data.crumb,
                 link: state.data.link
@@ -173,6 +186,9 @@
         });
         scope.$on('spliceCrumb', function(event, crumb){
           scope.breadcrumbs.splice(-1, 1, crumb);
+        });
+        scope.$on('addCrumb', function(event, crumb){
+          scope.breadcrumbs.push(crumb);
         });
         scope.getLoginUrl = function(){
           var suffix = "";
@@ -1560,7 +1576,7 @@
         email: $scope.email2
       }, function(result) {
         if (resultHandler.process(result)) {
-          
+
         }
       })
     };

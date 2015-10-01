@@ -24,7 +24,8 @@
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "loginsignup"
       }
     })
     //login page
@@ -34,7 +35,19 @@
       templateUrl : "/views/login.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "login"
+      }
+    })
+    //password reset page
+    //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
+    .state("reset", {
+      url: "/reset",
+      templateUrl : "/views/reset.html",
+      controller: "authController",
+      data: {
+        crumb: "Login",
+        link: "login"
       }
     })
     //used to navigate to the admin console
