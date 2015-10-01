@@ -1,4 +1,16 @@
 <div class="container loginsignup page">
+  <notification-dialog></notification-dialog>
+  <div class="col-md-6">
+    <div class="form-signin block">
+      <h2>Login</h2>
+      <form ng-submit="login()">
+        <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
+        <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
+        <a href="#reset">Forgot your password?</a>
+        <button class='ghost-button green' type='submit'>Login</button>
+      </form>
+    </div>
+  </div>
   <div class="col-md-6">
     <div class="block">
       <h2>Signup</h2>
@@ -9,23 +21,6 @@
         <input class="form-control" placeholder="Confirm Password" type="password" pattern="{{password}}" required>
         <button class="ghost-button green" type="submit">Signup</button>
       </form>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="form-signin block">
-      <h2>Login</h2>
-      <form ng-submit="login()">
-        <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
-        <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
-        <button class='ghost-button green' type='submit'>Login</button>
-      </form>  
-    </div>
-    <div class="form-reset block">
-      <h2>Reset Password</h2>
-      <form ng-submit="reset()">
-        <input class='form-control' ng-model='email2' type="email" placeholder='Email' required>
-        <button class='ghost-button green' type='submit'>Reset</button>
-      </form>  
     </div>
   </div>
 </div>

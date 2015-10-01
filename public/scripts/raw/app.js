@@ -1,12 +1,8 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
-
-    notificationsConfigProvider.setAutoHide(true);
-
-    notificationsConfigProvider.setHideDelay(1500);
 
     $stateProvider
     //home page
@@ -24,7 +20,8 @@
       templateUrl : "/views/loginsignup.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "loginsignup"
       }
     })
     //login page
@@ -34,7 +31,19 @@
       templateUrl : "/views/login.html",
       controller: "authController",
       data: {
-        crumb: "Login"
+        crumb: "Login",
+        link: "login"
+      }
+    })
+    //password reset page
+    //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
+    .state("reset", {
+      url: "/reset",
+      templateUrl : "/views/reset.html",
+      controller: "authController",
+      data: {
+        crumb: "Login",
+        link: "login"
       }
     })
     //used to navigate to the admin console
@@ -146,6 +155,7 @@
   //include "./directives/paging.js"
   include "./directives/header.js"
   include "./directives/confirm-dialog.js"
+  include "./directives/notification-dialog.js"
   include "./directives/comments.js"
   include "./directives/moderation.js"
   include "./directives/search-input.js"

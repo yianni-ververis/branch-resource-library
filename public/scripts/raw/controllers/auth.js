@@ -1,4 +1,4 @@
-app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
   var Login = $resource("auth/login");
   var Signup = $resource("auth/signup");
   var Reset = $resource("auth/reset")
@@ -15,6 +15,9 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
       if(resultHandler.process(result)){
         userManager.refresh();
         window.location = "#" + $scope.returnUrl || "/";
+      }
+      else{
+        notifications.notify(result.errText, null, {sentiment: 'negative'});
       }
     });
   };
@@ -36,7 +39,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
       email: $scope.email2
     }, function(result) {
       if (resultHandler.process(result)) {
-        
+
       }
     })
   };
