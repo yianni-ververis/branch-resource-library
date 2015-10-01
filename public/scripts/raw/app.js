@@ -1,7 +1,7 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngNotificationsBar", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "notificationsConfigProvider", "confirmConfigProvider", "notificationsConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
 
     notificationsConfigProvider.setAutoHide(true);
@@ -159,6 +159,7 @@
   //include "./directives/paging.js"
   include "./directives/header.js"
   include "./directives/confirm-dialog.js"
+  include "./directives/notification-dialog.js"
   include "./directives/comments.js"
   include "./directives/moderation.js"
   include "./directives/search-input.js"
