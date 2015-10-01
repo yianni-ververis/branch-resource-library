@@ -1036,7 +1036,7 @@
 
     qsocks.Connect(config).then(function(global){
       //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
-      global.openDoc("b8cd05a8-bb43-4670-bda5-1b6ff16640b8").then(function(app){
+      global.openDoc("de02a4e5-5f8e-4f68-b586-ececc89c761c").then(function(app){
         senseApp = app;
         $rootScope.$broadcast("senseready", app);
       }, function(error) {
