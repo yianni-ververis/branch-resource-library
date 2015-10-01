@@ -154,6 +154,10 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
           scope.suggesting = true;
           scope.drawGhost();
         }
+        else{
+          scope.suggesting = false;
+          scope.removeGhost();
+        }
       };
       scope.setAndAccept = function(index){
         scope.activeSuggestion = index;
@@ -170,6 +174,11 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
         scope.ghostPart = getGhostString(scope.searchText, scope.suggestions[scope.activeSuggestion].qValue);
         scope.ghostQuery = scope.searchText + scope.ghostPart;
         scope.ghostDisplay = "<span style='color: transparent;'>"+scope.searchText+"</span>"+scope.ghostPart;
+      }
+      scope.removeGhost = function(){
+        scope.ghostPart = null;
+        scope.ghostQuery = null;
+        scope.ghostDisplay = null;
       }
 
       scope.preSuggest = function(){

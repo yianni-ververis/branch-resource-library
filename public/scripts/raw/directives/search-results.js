@@ -92,14 +92,19 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
           return false;
         };
 
-        $scope.$on('searchResults', function(){
-          if($scope.info){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
+        $scope.$on('searchResults', function(event, hasResults){
+          if(hasResults){
+            if($scope.info){
               $scope.render();
             }
+            else{
+              $scope.postponed = function(){
+                $scope.render();
+              }
+            }
+          }
+          else{
+            $scope.renderEmpty();
           }
         });
 
@@ -189,6 +194,11 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
               });
             });
           });
+        };
+
+        $scope.renderEmpty = function(){
+          $scope.loading = false;
+          $scope.items = [];
         };
 
         $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)

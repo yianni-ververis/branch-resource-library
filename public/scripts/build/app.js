@@ -509,6 +509,10 @@
             scope.suggesting = true;
             scope.drawGhost();
           }
+          else{
+            scope.suggesting = false;
+            scope.removeGhost();
+          }
         };
         scope.setAndAccept = function(index){
           scope.activeSuggestion = index;
@@ -525,6 +529,11 @@
           scope.ghostPart = getGhostString(scope.searchText, scope.suggestions[scope.activeSuggestion].qValue);
           scope.ghostQuery = scope.searchText + scope.ghostPart;
           scope.ghostDisplay = "<span style='color: transparent;'>"+scope.searchText+"</span>"+scope.ghostPart;
+        }
+        scope.removeGhost = function(){
+          scope.ghostPart = null;
+          scope.ghostQuery = null;
+          scope.ghostDisplay = null;
         }
 
         scope.preSuggest = function(){
@@ -740,14 +749,19 @@
             return false;
           };
 
-          $scope.$on('searchResults', function(){
-            if($scope.info){
-              $scope.render();
-            }
-            else{
-              $scope.postponed = function(){
+          $scope.$on('searchResults', function(event, hasResults){
+            if(hasResults){
+              if($scope.info){
                 $scope.render();
               }
+              else{
+                $scope.postponed = function(){
+                  $scope.render();
+                }
+              }
+            }
+            else{
+              $scope.renderEmpty();
             }
           });
 
@@ -837,6 +851,11 @@
                 });
               });
             });
+          };
+
+          $scope.renderEmpty = function(){
+            $scope.loading = false;
+            $scope.items = [];
           };
 
           $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)
@@ -1010,6 +1029,9 @@
     this.priority;
     this.queue = [];
 
+    this.pendingSearch;
+    this.pendingSuggest;
+
     var senseApp;
 
     qsocks.Connect(config).then(function(global){
@@ -1109,8 +1131,17 @@
     this.search = function(searchText){
       $rootScope.$broadcast("searching");
       that.terms = searchText.split(" ");
-      senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
-        $rootScope.$broadcast('searchResults', results);
+
+      senseApp.searchAssociations({qContext: "Cleared"}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
+        console.log(results);
+        if(results.qTotalSearchResults > 0){
+          senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+            $rootScope.$broadcast('searchResults', true);
+          });
+        }
+        else{
+          $rootScope.$broadcast('searchResults', false)
+        }
       });
     };
 
@@ -1181,8 +1212,8 @@
             "qHyperCubeDef": {
               "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
               "qMeasures": buildMeasureDefs(options.fields),
-            	"qSuppressZero": false,
-            	"qSuppressMissing": false,
+            	"qSuppressZero": true,
+            	"qSuppressMissing": true,
             	"qInterColumnSortOrder": options.defaultSort
             }
           }

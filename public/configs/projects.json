@@ -33,12 +33,14 @@
       "suppressNull": false
     },
     {
-      "dimension": "rating",
-      "suppressNull": false
+      "measure": "avg(rating)",
+      "label": "rating",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
     },
     {
-      "dimension": "views",
-      "suppressNull": false
+      "measure": "sum(viewNum)",
+      "label": "views"
     },
     {
       "measure": "sum(flagCount)",

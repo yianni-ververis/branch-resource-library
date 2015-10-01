@@ -13,7 +13,11 @@ var viewSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  ip: String
+  ip: String,
+  viewNum: {
+    type: Number,
+    default: 1
+  }
 });
 
 module.exports = mongoose.model('views', viewSchema);

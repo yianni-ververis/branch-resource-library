@@ -15,6 +15,9 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   this.priority;
   this.queue = [];
 
+  this.pendingSearch;
+  this.pendingSuggest;
+
   var senseApp;
 
   qsocks.Connect(config).then(function(global){
@@ -114,8 +117,17 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   this.search = function(searchText){
     $rootScope.$broadcast("searching");
     that.terms = searchText.split(" ");
-    senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
-      $rootScope.$broadcast('searchResults', results);
+
+    senseApp.searchAssociations({qContext: "Cleared"}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
+      console.log(results);
+      if(results.qTotalSearchResults > 0){
+        senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+          $rootScope.$broadcast('searchResults', true);
+        });
+      }
+      else{
+        $rootScope.$broadcast('searchResults', false)
+      }
     });
   };
 
@@ -186,8 +198,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
           "qHyperCubeDef": {
             "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
             "qMeasures": buildMeasureDefs(options.fields),
-          	"qSuppressZero": false,
-          	"qSuppressMissing": false,
+          	"qSuppressZero": true,
+          	"qSuppressMissing": true,
           	"qInterColumnSortOrder": options.defaultSort
           }
         }
