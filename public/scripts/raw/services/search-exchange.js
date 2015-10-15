@@ -5,7 +5,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   //   isSecure: false
   // };
   var config = {
-    host: "diplomaticpulse.qlik.com",
+    host: "qtdevrelations",
     isSecure: true
   };
 
@@ -21,8 +21,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   var senseApp;
 
   qsocks.Connect(config).then(function(global){
-    //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
-    global.openDoc("de02a4e5-5f8e-4f68-b586-ececc89c761c").then(function(app){
+    // global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+    global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
       senseApp = app;
       $rootScope.$broadcast("senseready", app);
     }, function(error) {
