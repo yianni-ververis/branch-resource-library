@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications){
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -10,6 +10,16 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.senseOnline = true;
   });
   var defaultSelection;
+
+  if($state.current.name=="projects.addedit"){
+    if(!userManager.hasUser()){
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
+          window.location = "#login?url=projects/new/edit"
+        }
+      });
+    }
+  }
 
   if(!userManager.canApprove('projects')){
     defaultSelection = {
@@ -262,35 +272,37 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.validateNewProjectData = function(){
     //We're validating client side so that we don't keep passing image data back and forth
+    //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
     var errors = [];
     //Verify the project has a name
     if(!$scope.projects[0].title || $scope.projects[0].title==""){
       //add to validation error list
-      errors.push({});
+      errors.push("Please specify a Name");
     }
     //Make sure the product has been set
     if(!$scope.projects[0].product){
       //add to validation error list
-      errors.push({});
+      errors.push("Please select a Product");
     }
     //Make sure at least one version has been set
     if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
       //add to validation error list
-      errors.push({});
+      errors.push("Please specify at least one Product Version");
     }
     //If git is being used make sure a project has been selected
     if($scope.usegit=='true' && !$scope.newProjectGitProject){
       //add to validation error list
-      errors.push({});
+      errors.push("Please select a Git project to use");
     }
     //If git is NOT being used make sure some content has been provided
     if($scope.usegit=='false' && !$("#newProjectContent").code()){
       //add to validation error list
-      errors.push({});
+      errors.push("Please add some content to the project (e.g. documentation, installation instructions).");
     }
     //If there are errors we need to notify the user
     if(errors.length > 0){
       //show the errors
+      notifications.notify("The project could not be saved. Please review the following...", errors, {sentiment: "warning"});
     }
     else{
       //Save the record

@@ -3,6 +3,7 @@ app.service('userManager', ['$resource', function($resource){
   this.menu = {};
   this.userInfo = {};
   var that = this;
+  this.refreshing = false;
   this.canUpdateAll = function(entity){
     return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].allOwners && this.userInfo.role.permissions[entity].allOwners==true;
   }
@@ -42,10 +43,14 @@ app.service('userManager', ['$resource', function($resource){
   this.hasUser = function(){
     return !$.isEmptyObject(that.userInfo);
   }
-  this.refresh = function(){
+  this.refresh = function(callbackFn){
+    this.refreshing = true;
     System.get({path:'userInfo'}, function(result){
       that.menu = result.menu;
       that.userInfo = result.user;
+      if(callbackFn){
+        callbackFn.call(null, that.hasUser());
+      }
     });
   }
   this.hasPermissions = function(){

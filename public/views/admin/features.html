@@ -8,6 +8,7 @@
 </div>
 <div class="col-md-9">
   <h2 class="underline">{{features[activeFeature].name}}</h2>
+  <span>Current: {{currentFeature.title}}</span>
   <div class="detail">
     <textarea rows="8" class="form-control" ng-blur="saveFeature()" ng-model="features[activeFeature].comment"></textarea>
   </div>
@@ -24,6 +25,6 @@
   </div>
   <div ng-show="features[activeFeature].name=='project'">
     <search-input></search-input>
-    <search-results data-config="projects" pagesize="pageSize"></search-results>
+    <search-results data-config="admin-projects"></search-results>
   </div>
 </div>

@@ -39,7 +39,7 @@
 				html += "<ul ng-if='list.length>0'>";
 				html += "<li ng-repeat='item in list'>";
 				html += "{{item}}"
-				html += "<li>";
+				html += "</li>";
 				html += "</ul>";
 	      html += "</div>";
 				return html;
