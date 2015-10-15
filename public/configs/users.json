@@ -19,15 +19,15 @@
   ],
   "template": "/views/admin/user-results.html",
   "sorting":{
-    "title": {
-      "id": "title",
+    "username": {
+      "id": "username",
       "name": "A-Z",
       "order": 1,
-      "field": "title",
+      "field": "username",
       "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "title",
+  "defaultSort": "username",
   "entity": "users",
   "pagesize" : 20
 }

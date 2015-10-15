@@ -1,10 +1,11 @@
-var LocalStrategy = require('passport-local').Strategy
-var User = require('../../models/user')
-var bCrypt = require('bcryptjs')
-var md5 = require('MD5')
-var async = require('async')
+var LocalStrategy = require('passport-local').Strategy,
+		User = require('../../models/user'),
+		bCrypt = require('bcryptjs'),
+		md5 = require('MD5'),
+		async = require('async'),
+    Error = require('../../controllers/error');
 
-module.exports = function(req, next){
+module.exports = function(req, res, next){
   var shared = {}
 
   async.series([
@@ -12,22 +13,24 @@ module.exports = function(req, next){
     // check user exists
     function(next) {
       User.findOne({ email: req.body.email }, function(err, user) {
-        if (err) return next(err)
+        if (err){
+					res.json(Error.custom(err));
+				}
 
         if (!user) {
-          console.log('User with email "' + email + '" does not exists"')
-          return done('User with email "' + email + '" does not exists"', false)
+          res.json(Error.custom('User Not Found with email - '+req.body.email));
         }
-
-        shared.user = user
-        next()
+				else{
+	        shared.user = user;
+	        next();
+				}
       })
     },
 
     // create new password
     function(next) {
-      shared.newPassword = $.getRandomString(6)
-      next()
+      shared.newPassword = $.getRandomString(6);
+      next();
     },
 
     function(next) {
@@ -38,10 +41,11 @@ module.exports = function(req, next){
 
       // save the user
       shared.user.save(function(err) {
-        if (err) return next(err)
-
-        console.log('Password reset successful')
-        next()
+        if (err){
+					res.json(Error.custom(err));
+				}
+        console.log('Password reset successful');
+        next();
       })
     },
 

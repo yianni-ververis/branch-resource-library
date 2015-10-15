@@ -14,18 +14,39 @@
 
 .notifications{
   padding: 10px;
-  margin: 10px;
+  margin-bottom: 10px;
   font-size: 14px;
   p{
+    color: @default-text;
     font-size: 14px;
     margin: 0;
+    padding-left: 25px;
+    &::before{
+      font-family: branch-icons;
+      position: absolute;
+      top: 5px;
+      left: 15px;
+      font-size: 25px;
+    }
+  }
+  li{
+    color: @default-text;
   }
   color: @header-grey;
   &.negative{
-    color: @red;
+    p:before{
+      content: "\E817";
+      color: @red;
+    }
+  }
+  &.warning{
+    p:before{
+      content: "\E817";
+      color: @orange;
+    }
   }
   &.positive{
-    color: @green;
   }
-  border: 1px solid;
+  border: 1px solid @content-border;
+  box-shadow: 1px 1px 2px @content-border, -1px -1px 2px @content-border;
 }

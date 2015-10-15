@@ -18,7 +18,7 @@ module.exports = function(passport, User){
                     // Username does not exist, log the error and redirect back
                     if (!user){
                         console.log('User Not Found with username '+username);
-                        return done('User Not Found with username '+username, false);
+                        return done('User Not Found with username - '+username, false);
                         //return done(null, false, req.flash('message', 'User Not found.'));
                     }
                     // User exists but wrong password, log the error

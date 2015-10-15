@@ -32,19 +32,29 @@ router.post('/signup', function(req, res){
       res.json(Error.custom(err));
     }
     else{
-      res.json(user);
+      req.logIn(user, function(err){
+        if(err){
+          res.json(Error.custom(err));
+        }
+        else{
+          res.json({});
+        }
+      })
     }
   })(req, res);
 });
 
 router.post('/reset', function(req, res){
 
-  require('../controllers/passport/reset.js')(req, function(err, user) {
+  require('../controllers/passport/reset.js')(req, res, function(err, user) {
+    console.log('here we are');
+    console.log(err);
+    console.log(user);
     if(err){
       res.json(Error.custom(err));
     }
     else{
-      res.json(user);
+      res.json({});
     }
   })
 });

@@ -44,12 +44,15 @@ module.exports = function(req, res){
   }
   else{
     var record = data.standard || data;
-    record._id = mongoose.Types.ObjectId();
-    record.createuser = user._id;
+    console.log('creating updating, id is ');
+    console.log(record._id);
+    if(!record._id && !req.params.id){
+      record._id = mongoose.Types.ObjectId();
+      record.createuser = user._id;
+      record.createdate = Date.now();
+    }
     record.userid = user._id;
-    record.createdate = Date.now();
     var imageBuffer;
-
     if(req.params.entity=="projects"){
       //build the similar projects query
       var similarQuery = {
@@ -113,7 +116,7 @@ module.exports = function(req, res){
             //check for similar projects
             MasterController.getIds(similarQuery, similarQuery, entities["projects"], function(results){
 
-              MasterController.save(query, project, entities['projects'], function(newrecord){
+              MasterController.save(query, record, entities['projects'], function(newrecord){
                 res.json(newproject);
               });
             });
@@ -133,6 +136,8 @@ module.exports = function(req, res){
       }
     }
     else{
+      console.log('saving non project entity with query');
+      console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
         res.json(newrecord);
       });

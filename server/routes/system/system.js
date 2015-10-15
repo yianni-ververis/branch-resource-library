@@ -58,6 +58,10 @@ function buildMenu(user){
     }
   ];
   if(user){
+    basicMenu.splice(0,0,{
+      label: "Change Password",
+      href: "#users/changepassword"
+    });
     if(user.role.permissions && user.role.permissions.blogs && user.role.permissions.blogs.create==true){
       basicMenu.splice(0,0,{
         label: "Create Blog",

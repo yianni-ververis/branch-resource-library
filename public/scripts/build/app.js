@@ -308,7 +308,7 @@
   				html += "<ul ng-if='list.length>0'>";
   				html += "<li ng-repeat='item in list'>";
   				html += "{{item}}"
-  				html += "<li>";
+  				html += "</li>";
   				html += "</ul>";
   	      html += "</div>";
   				return html;
@@ -772,6 +772,10 @@
           $scope.currentPage = 1;
           $scope.pages = [];
 
+          $scope.broadcast = function(fnName, params){
+            $scope.$root.$broadcast(fnName, params);
+          };
+
           $scope.getHidden = function(){
             Entity.get({id: "hidden"}, {
               limit: 100  //if we have more than 100 hidden items we have some housekeeping to do
@@ -839,6 +843,7 @@
 
           $scope.$on('searching', function(){
             $scope.loading = true;
+            $scope.pageTop = 0;
           });
 
           $scope.$on("update", function(params){
@@ -1004,6 +1009,7 @@
     this.menu = {};
     this.userInfo = {};
     var that = this;
+    this.refreshing = false;
     this.canUpdateAll = function(entity){
       return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].allOwners && this.userInfo.role.permissions[entity].allOwners==true;
     }
@@ -1043,10 +1049,14 @@
     this.hasUser = function(){
       return !$.isEmptyObject(that.userInfo);
     }
-    this.refresh = function(){
+    this.refresh = function(callbackFn){
+      this.refreshing = true;
       System.get({path:'userInfo'}, function(result){
         that.menu = result.menu;
         that.userInfo = result.user;
+        if(callbackFn){
+          callbackFn.call(null, that.hasUser());
+        }
       });
     }
     this.hasPermissions = function(){
@@ -1447,29 +1457,6 @@
     $scope.setTab = function(index){
       $scope.activeTab = index;
       searchExchange.clear();
-      if(index==2){
-        //if the feature entities haven't been loaded get the first page of data
-        //PROJECTS
-        if(!$scope.projects || $scope.projects.length==0){
-          Project.get({}, function(result){
-            if(resultHandler.process(result)){
-              $scope.projects = result.data;
-              $scope.projectInfo = result;
-              delete $scope.projectInfo["data"];
-            }
-          })
-        }
-        //ARTICLES
-        if(!$scope.articles || $scope.articles.length==0){
-          Article.get({}, function(result){
-            if(resultHandler.process(result)){
-              $scope.articles = result.data;
-              $scope.articleInfo = result;
-              delete $scope.articleInfo["data"];
-            }
-          })
-        }
-      }
     };
 
     $scope.setRole = function(index){
@@ -1485,6 +1472,15 @@
 
     $scope.setActiveFeature = function(index){
       $scope.activeFeature = index;
+      if($scope.features[$scope.activeFeature].name=="project"){
+        Project.get({projectId: $scope.features[$scope.activeFeature].entityId}, function(result){
+          if(resultHandler.process(result)){
+            if(result.data.length > 0){
+              $scope.currentFeature = result.data[0];  
+            }
+          }
+        })
+      }
     };
 
     $scope.saveRole = function(){
@@ -1571,12 +1567,20 @@
       });
     };
 
+    $scope.$on('setFeature', function(event, args){
+      $scope.setFeature(args[0]);
+    });
+
     $scope.setFeature = function(id){
-      if($scope.features[$scope.activeFeature].name=="project"){
+      //if($scope.features[$scope.activeFeature].name=="project"){
+        $scope.features[$scope.activeFeature].entityId = id;
         Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, {entityId: id}, function(result){
-          resultHandler.process(result);
+          if(resultHandler.process(result)){
+            $scope.setActiveFeature($scope.activeFeature);
+          }
+
         });
-      }
+      //}
     };
 
     $scope.saveFeature = function(){
@@ -1599,7 +1603,7 @@
     var Reset = $resource("auth/reset")
 
     if($stateParams.url){
-      $scope.returnUrl = $stateParams.url;
+      $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');
     }
 
     $scope.login = function(){
@@ -1623,8 +1627,12 @@
         password: $scope.password,
         email: $scope.email
       }, function(result) {
-        if (resultHandler.process(result)) {
-
+        if(resultHandler.process(result)){
+          userManager.refresh();
+          window.location = "#" + $scope.returnUrl || "/";
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: 'negative'});
         }
       })
     };
@@ -1633,8 +1641,12 @@
       Reset.save({
         email: $scope.email2
       }, function(result) {
-        if (resultHandler.process(result)) {
-
+        if(resultHandler.process(result)){
+          userManager.refresh();
+          window.location = "#" + $scope.returnUrl || "/";
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: 'negative'});
         }
       })
     };
@@ -1695,7 +1707,7 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange){
+  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications){
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
     var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -1707,6 +1719,16 @@
       $scope.senseOnline = true;
     });
     var defaultSelection;
+
+    if($state.current.name=="projects.addedit"){
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=projects/new/edit"
+          }
+        });
+      }
+    }
 
     if(!userManager.canApprove('projects')){
       defaultSelection = {
@@ -1959,35 +1981,37 @@
 
     $scope.validateNewProjectData = function(){
       //We're validating client side so that we don't keep passing image data back and forth
+      //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
       var errors = [];
       //Verify the project has a name
       if(!$scope.projects[0].title || $scope.projects[0].title==""){
         //add to validation error list
-        errors.push({});
+        errors.push("Please specify a Name");
       }
       //Make sure the product has been set
       if(!$scope.projects[0].product){
         //add to validation error list
-        errors.push({});
+        errors.push("Please select a Product");
       }
       //Make sure at least one version has been set
       if($scope.projects[0].product && $(".product-version:checkbox:checked").length==0){
         //add to validation error list
-        errors.push({});
+        errors.push("Please specify at least one Product Version");
       }
       //If git is being used make sure a project has been selected
       if($scope.usegit=='true' && !$scope.newProjectGitProject){
         //add to validation error list
-        errors.push({});
+        errors.push("Please select a Git project to use");
       }
       //If git is NOT being used make sure some content has been provided
       if($scope.usegit=='false' && !$("#newProjectContent").code()){
         //add to validation error list
-        errors.push({});
+        errors.push("Please add some content to the project (e.g. documentation, installation instructions).");
       }
       //If there are errors we need to notify the user
       if(errors.length > 0){
         //show the errors
+        notifications.notify("The project could not be saved. Please review the following...", errors, {sentiment: "warning"});
       }
       else{
         //Save the record

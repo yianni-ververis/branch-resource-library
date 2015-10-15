@@ -43,6 +43,10 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
         $scope.currentPage = 1;
         $scope.pages = [];
 
+        $scope.broadcast = function(fnName, params){
+          $scope.$root.$broadcast(fnName, params);
+        };
+
         $scope.getHidden = function(){
           Entity.get({id: "hidden"}, {
             limit: 100  //if we have more than 100 hidden items we have some housekeeping to do
@@ -110,6 +114,7 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
 
         $scope.$on('searching', function(){
           $scope.loading = true;
+          $scope.pageTop = 0;
         });
 
         $scope.$on("update", function(params){

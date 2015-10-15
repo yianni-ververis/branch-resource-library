@@ -37,8 +37,16 @@ module.exports = function(passport, User){
             if (err) return next(err)
 
             if (user) {
-              console.log('User already exists with username "' + username + '" or with email "' + req.body.email + '"')
-              return done('User already exists with username "' + username + '" or with email "' + req.body.email + '"', false)
+							if(user.username == username){
+              	return done('User already exists with username "' + username + '"', false)
+							}
+							else if (user.email == req.body.email) {
+								return done('User already exists with email "' + req.body.email + '"', false)
+							}
+							else{
+								//both the username & emails are in use (rare)
+								return done('User already exists with username "' + username + '" and email "' + req.body.email + '"', false)
+							}
             }
 
             next()
