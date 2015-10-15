@@ -6,6 +6,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   // };
   var config = {
     host: "qtdevrelations",
+    rejectUnauthorized: false,
     isSecure: true
   };
 

@@ -1101,6 +1101,7 @@
     // };
     var config = {
       host: "qtdevrelations",
+      rejectUnauthorized: false,
       isSecure: true
     };
 
