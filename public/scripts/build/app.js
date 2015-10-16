@@ -1101,6 +1101,7 @@
     // };
     var config = {
       host: "qtdevrelations",
+      prefix: "/anon",
       isSecure: true
     };
 

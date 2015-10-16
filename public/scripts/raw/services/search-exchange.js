@@ -6,6 +6,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   // };
   var config = {
     host: "qtdevrelations",
+    prefix: "/anon",
     isSecure: true
   };
 
