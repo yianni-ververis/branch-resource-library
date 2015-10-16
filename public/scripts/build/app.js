@@ -1241,6 +1241,7 @@
     var config = {
       host: "qtdevrelations",
       rejectUnauthorized: false,
+      prefix: '/anon',
       isSecure: true
     };
 
