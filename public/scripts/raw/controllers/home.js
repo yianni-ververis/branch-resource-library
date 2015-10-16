@@ -2,7 +2,7 @@ app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams
   var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
-
+    
   $scope.featuredProject = {};
   $scope.featuredArticle = {};
 
@@ -49,5 +49,8 @@ app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams
       $scope.latestArticles = result.data;
     }
   });
+  
+  $scope.introText = ["innovation", 'creation', 'collaboration', 'Branch']
+  $scope.firstTime = true;
 
 }]);

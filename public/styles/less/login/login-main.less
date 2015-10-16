@@ -4,8 +4,12 @@
 }
 
 .loginsignup{
-  h2{
+  h1{
     color: @green;
+  }
+  p {
+    margin-bottom: 20px;
+    font-size: 16px;
   }
   padding: 20px 0;
   input.form-control{
@@ -21,16 +25,20 @@
       border-bottom: 1px solid #ccc;
     }
   }
+
   .block{
-    width: 300px;
-    margin: 0 auto;
+    padding: 0 20px;
+
     input{
       text-align: left;
+      max-width: 300px;
     }
     button{
-      margin: 10px auto;
       display: block;
-
+      margin-top: 20px;
+    }
+    a.reset {
+      margin: 10px 0;
     }
   }
 }

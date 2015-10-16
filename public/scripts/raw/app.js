@@ -1,5 +1,14 @@
 (function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap' ]);
+  var app = angular.module("branch", [
+    "ui.router", 
+    "ngResource", 
+    "ngConfirm", 
+    "ngNotifications", 
+    "ngComments", 
+    "ngModeration", 
+    "ngSanitize", 
+    'ui.bootstrap' 
+    ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
     $urlRouterProvider.otherwise("/");
@@ -161,6 +170,7 @@
   include "./directives/search-input.js"
   include "./directives/search-filter.js"
   include "./directives/search-results.js"
+  include "./directives/typewriter.js"
   //services
   include "./services/user-manager.js"
   include "./services/result-handler.js"
