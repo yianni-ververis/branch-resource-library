@@ -43,8 +43,8 @@
     "passport-local": "^1.0.0",
     "qsocks": "0.0.23",
     "request": "^2.55.0",
-    "request": "^2.55.0",
     "spam-check": "^0.9.9",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "visualcaptcha": "^0.1.1"
   }
 }
