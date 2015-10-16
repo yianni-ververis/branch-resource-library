@@ -57,6 +57,7 @@ require('./server/controllers/passport/passport.js')(passport);
 var apiRoutes = require(__dirname+'/server/routes/api/api');
 var authRoutes = require(__dirname+'/server/routes/auth');
 var systemRoutes = require(__dirname+'/server/routes/system/system');
+var vcRoutes = require(__dirname+'/server/routes/visualCaptcha');
 
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
@@ -84,5 +85,6 @@ var Project = require('./server/models/project.js');
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);
+app.use('/visualcaptcha', vcRoutes);
 
 app.listen(3001);
