@@ -1878,9 +1878,6 @@
       });
     };
 
-    $scope.getPicklistItems("Product", "projectProducts", true);
-    $scope.getPicklistItems("Category", "projectCategories", true);
-    $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
     $scope.getProductVersions = function(product){
       $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -2177,6 +2174,9 @@
       $scope.getProjectData($scope.query); //get initial data set
     }
     else if($state.current.name=="projects.addedit"){
+      $scope.getPicklistItems("Product", "projectProducts", true);
+      $scope.getPicklistItems("Category", "projectCategories", true);
+      $scope.getPicklistItems("Project Status", "projectStatuses", true);
       if(!userManager.hasUser()){
         userManager.refresh(function(hasUser){
           if(!hasUser){

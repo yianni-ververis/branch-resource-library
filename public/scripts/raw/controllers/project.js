@@ -107,9 +107,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     });
   };
 
-  $scope.getPicklistItems("Product", "projectProducts", true);
-  $scope.getPicklistItems("Category", "projectCategories", true);
-  $scope.getPicklistItems("Project Status", "projectStatuses", true);
 
   $scope.getProductVersions = function(product){
     $scope.getPicklistItems(product.name + " Version", "productVersions");
@@ -406,6 +403,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.getProjectData($scope.query); //get initial data set
   }
   else if($state.current.name=="projects.addedit"){
+    $scope.getPicklistItems("Product", "projectProducts", true);
+    $scope.getPicklistItems("Category", "projectCategories", true);
+    $scope.getPicklistItems("Project Status", "projectStatuses", true);
     if(!userManager.hasUser()){
       userManager.refresh(function(hasUser){
         if(!hasUser){

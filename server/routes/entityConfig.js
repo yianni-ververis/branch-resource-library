@@ -52,6 +52,7 @@ module.exports = {
       model: require("../models/views"),
       populates: "userid",
       requiresAuthentication: false,
+      exemptFromOwnership: true,
       exemptFromApproval: true,
       logViews: false,
       limit: 10,
