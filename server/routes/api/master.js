@@ -150,17 +150,19 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           console.log(results);
           if(results.data.length == 0){
             console.log('saving new view');
-            MasterController.save(null, {
-              userid: req.user ? req.user._id : null,
-              ip: ip,
-              entityId: req.params.id
-            }, entities["views"], function(result){
+            var viewData = {};
+            if(req.user){
+              viewData.userid = req.user._id;
+            }
+            viewData.ip = ip;
+            viewData.entityId = req.params.id;
+            MasterController.save(null, viewData, entities["views"], function(result){
               console.log(result);
             });
           }
         });
       }
-      if(req.params.entity=="projects"&&(results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
+      if(req.params.entity=="projects"&&(results.data && results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
