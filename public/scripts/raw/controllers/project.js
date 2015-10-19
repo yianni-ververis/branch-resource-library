@@ -11,16 +11,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   });
   var defaultSelection;
 
-  if($state.current.name=="projects.addedit"){
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=projects/new/edit"
-        }
-      });
-    }
-  }
-
   if(!userManager.canApprove('projects')){
     defaultSelection = {
       field: "approved",
@@ -39,11 +29,16 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
 
+  $scope.isNew = $stateParams.projectId=="new";
+
   $scope.projects = [];
   $scope.gitProjects = [];
   $scope.url = "projects";
 
   $scope.searching = true;
+
+  $scope.projectLoading = !$scope.isNew;
+  $scope.gitLoading = false;
 
   $scope.rating = {};
   $scope.getRate = {};
@@ -123,6 +118,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.getProjectData = function(query, append){
     Project.get(query, function(result){
       if(resultHandler.process(result)){
+        $scope.projectLoading = false;
         if(append && append==true){
           $scope.projects = $scope.projects.concat(result.data);
         }
@@ -139,8 +135,26 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
               link: "/projects/"+$scope.projects[0]._id
             });
           }
+          if($state.current.name == "projects.addedit" && $stateParams.projectId!="new"){
+            $scope.$root.$broadcast('spliceCrumb', {
+              text: $scope.projects[0].title,
+              link: "/projects/"+$scope.projects[0]._id
+            });
+            $scope.$root.$broadcast('addCrumb', {
+              text: "Edit",
+              link: "/projects/"+$scope.projects[0]._id+"/edit"
+            });
+          }
         }
-
+        if($stateParams.status){
+          if($stateParams.status=='created'){
+            notifications.notify("Your project has been successfully submitted for approval.", null, {sentiment:"positive"});
+          }
+          else if ($stateParams.status=='updated') {
+            notifications.notify("Your project has been successfully updated. It may take up to 5 minutes for the project listing page to reflect these changes.", null, {sentiment:"positive"});
+          }
+        }
+        //need to check this!
         $scope.projects.forEach(function(item, index) {
           if (item.votenum > 0) {
             var length = Math.round(item.votetotal/item.votenum)
@@ -209,22 +223,36 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.getGitProjects = function(gituser, gitpassword){
+    $scope.gitLoading = true;
     var creds = {
       user: gituser,
       password: gitpassword
     };
     Git.save({path:"projects"}, creds, function(result){
       if(resultHandler.process(result)){
+        $scope.gitLoading = false;
         $scope.gitProjects = result.repos;
       }
     });
   };
 
   $scope.selectGitProject = function(project){
-    $scope.newProjectGitProject = {
-      repo: project.name,
-      owner: project.owner.login
-    };
+    $scope.projects[0].project_site = project.html_url;
+    $scope.projects[0].git_clone_url = project.clone_url;
+    $scope.projects[0].git_repo = project.name;
+    $scope.projects[0].git_user = project.owner.login;
+  };
+
+  $scope.checkIfVersionChecked = function(version){
+    console.log($scope.projects[0].productversions);
+    console.log(version);
+    console.log($scope.projects[0].productversions.indexOf(version));
+    if($scope.projects[0].productversions){
+      return $scope.projects[0].productversions.indexOf(version)!=-1;
+    }
+    else {
+      return false;
+    }
   };
 
   $scope.previewThumbnail = function(){
@@ -262,7 +290,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
           data: thumbnailCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
         }
         $scope.$apply(function(){
-          $scope.newProjectThumbnail = thumbnailCanvas.toDataURL();
+          $scope.projects[0].thumbnail = thumbnailCanvas.toDataURL();
         });
       };
       thumbnail.src = r.result;
@@ -279,6 +307,20 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       //add to validation error list
       errors.push("Please specify a Name");
     }
+    if(!$scope.projects[0].short_description || $scope.projects[0].short_description==""){
+      //add to validation error list
+      errors.push("Please add a Short Description");
+    }
+    //Make sure the Project type has been set
+    if(!$scope.projects[0].category){
+      //add to validation error list
+      errors.push("Please select a Project Type");
+    }
+    //Make sure the Project status has been set
+    if(!$scope.projects[0].status){
+      //add to validation error list
+      errors.push("Please select a Project Status");
+    }
     //Make sure the product has been set
     if(!$scope.projects[0].product){
       //add to validation error list
@@ -290,7 +332,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       errors.push("Please specify at least one Product Version");
     }
     //If git is being used make sure a project has been selected
-    if($scope.usegit=='true' && !$scope.newProjectGitProject){
+    if($scope.isNew && !$scope.projects[0].git_repo){
       //add to validation error list
       errors.push("Please select a Git project to use");
     }
@@ -303,6 +345,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     if(errors.length > 0){
       //show the errors
       notifications.notify("The project could not be saved. Please review the following...", errors, {sentiment: "warning"});
+      window.scrollTo(100,0);
     }
     else{
       //Save the record
@@ -312,26 +355,30 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.saveNewProject = function(){
     var versions = [];
-    $(".product-version:checkbox:checked").each(function(val, index){
+    $(".product-version:checkbox:checked").each(function(index, val){
       versions.push($(this).attr("data-versionid"));
-      if(index==$(".product-version:checkbox:checked").length){
+      if(index==$(".product-version:checkbox:checked").length - 1){
         $scope.projects[0].productversions = versions;
       }
     });
-    if(!$scope.usegit || $scope.usegit=='false'){
-      $scope.projects[0].content = $("#newProjectContent").code();
-    }
     var data = {
       standard: $scope.projects[0],  //data that we can just assign to the project
       special:{ //that will be used to set additional properties
         image: $scope.image,
-        thumbnail: $scope.thumbnail,
-        gitProject: $scope.newProjectGitProject
+        thumbnail: $scope.thumbnail
       }
     }
-    Project.save({}, data, function(result){
+    var query = {};
+    if($scope.projects[0]._id){
+      query.projectId = $scope.projects[0]._id;
+    }
+    Project.save(query, data, function(result){
       if(resultHandler.process(result)){
-
+        var status = $scope.isNew ? "created" : "updated";
+        window.location = "#projects/"+result._id+"?status="+status;
+      }
+      else{
+        notifications.notify(result.errText, null, {sentiment: "negative"});
       }
     });
   };
@@ -355,8 +402,22 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
 
   //only load the project if we have a valid projectId or we are in list view
-  if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
+  if($state.current.name=="projects.detail"){
     $scope.getProjectData($scope.query); //get initial data set
+  }
+  else if($state.current.name=="projects.addedit"){
+    if(!userManager.hasUser()){
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
+          window.location = "#login?url=projects/"+$stateParams.projectId+"/edit"
+        }
+        else{
+          if($stateParams.projectId!="new"){
+            $scope.getProjectData($scope.query); //get initial data set
+          }
+        }
+      });
+    }
   }
   else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
     $("#newProjectContent").summernote();

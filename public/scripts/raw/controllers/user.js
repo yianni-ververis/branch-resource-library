@@ -1,6 +1,7 @@
-app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
   var User = $resource("api/users/:userId", {userId: "@userId"});
   var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+  var ChangePassword = $resource("auth/change");
 
   $scope.query = {};
   $scope.projectCount = 0;
@@ -14,6 +15,23 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     });
 
   }
+
+  $scope.changePassword = function(){
+    ChangePassword.save({
+      oldPassword: $scope.oldpassword,
+      password: $scope.password
+    }, function(result){
+      if(resultHandler.process(result)){
+        $scope.oldpassword = "";
+        $scope.password = "";
+        $scope.confirm = "";
+        notifications.notify("Your password was successfully changed. ", null, {sentiment: 'positive'});
+      }
+      else{
+        notifications.notify(result.errText, null, {sentiment: 'negative'});
+      }
+    });
+  };
 
 
   $scope.getUserData = function(query, append){

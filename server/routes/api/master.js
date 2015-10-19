@@ -180,6 +180,9 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             results.data[0].last_git_check = Date.now();
             GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
               //console.log(atob(readmeresult.content));
+              if(err){
+                console.log(err);
+              }
               console.log(readmeresult);
               results.data[0].content = atob(readmeresult.content);
               results.data[0].save();

@@ -1,5 +1,6 @@
 <div class="container page">
   <div class="row project-detail-summary content">
+    <notification-dialog></notification-dialog>
     <div class="col-md-4">
       <h1>{{projects[0].title}}</h1>
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
@@ -33,7 +34,7 @@
         </li>
         <li>
           <label>Tags:</label>
-          {{getBuffer(projects[0].taglist.data)}}
+          {{projects[0].tags}}
         </li>
       </ul>
     </div>

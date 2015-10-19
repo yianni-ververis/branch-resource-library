@@ -43,6 +43,9 @@ module.exports = function(req, res){
     res.json(Error.insufficientPermissions());
   }
   else{
+    if(userPermissions.allOwners!=true){
+      query["createuser"]=user._id;
+    }
     var record = data.standard || data;
     console.log('creating updating, id is ');
     console.log(record._id);
@@ -59,11 +62,11 @@ module.exports = function(req, res){
         category: data.standard.category,
         $or: []
       };
-      var tagList = data.standar.tags.split(",");
+      var tagList = data.standard.tags.split(",");
       for(var i=0;i<tagList.length;i++){
         similarQuery.$or.push({
           tags: {
-            $regex: tagList[i],
+            $regex: tagList[i].trim(),
             $options: "gi"
           }
         });
@@ -100,40 +103,10 @@ module.exports = function(req, res){
       else{
         record.thumbnail = "/attachments/default/"+req.params.entity+".png";
       }
-      if(data.special.gitProject){
-        console.log('need to get git project');
-        GitHub.repos.get({user:data.special.gitProject.owner, repo:data.special.gitProject.repo}, function(err, gitresult){
-          console.log('got project');
-          record.last_updated = new Date(gitresult.updated_at);
-          record.last_git_check = epoch.now();
-          record.git_repo = data.special.gitProject.repo;
-          record.git_user = data.special.gitProject.owner;
-          record.project_site = gitresult.url;
-          record.git_clone_url = gitresult.clone_url;
-          GitHub.repos.getReadme({user:data.special.gitProject.owner, repo:data.special.gitProject.repo}, function(err, readmeresult){
-            console.log('setting readme');
-            record.content = atob(readmeresult.content);
-            //check for similar projects
-            MasterController.getIds(similarQuery, similarQuery, entities["projects"], function(results){
-
-              MasterController.save(query, record, entities['projects'], function(newrecord){
-                res.json(newproject);
-              });
-            });
-          });
-        });
-      }
-      else{
-        if(req.params.entity=="projects"){
-          var newDate = Date.now();
-          record.last_updated = newDate;
-          record.last_updated_num = epoch.now();
-
-        }
-        MasterController.save(query, record, entities[req.params.entity], function(newrecord){
-          res.json(newrecord);
-        });
-      }
+      console.log(query);
+      MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+        res.json(newrecord);
+      });
     }
     else{
       console.log('saving non project entity with query');

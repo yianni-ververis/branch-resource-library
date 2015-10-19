@@ -1,22 +1,33 @@
-<div class="user-header">
-  <div class="frosted-cover white-bk">
-    <div class="container">
-      <ul class="plainlist stat-list">
-        <li>
-          <h1>Projects</h1>
-          <span><a href="#">{{projectCount}}</a></span>
-        </li>
-      </ul>
+<div class="container page">
+  <div class="row">
+    <div class="col-md-9">
+      <span class='user-name'>{{users[0].fullname || users[0].username}}</span>
+      <span class='user-user' ng-if="!users[0].fullname">{{users[0].username}}</span>
+      <p>
+        {{users[0].bio}}
+      </p>
+    </div>
+    <div class="col-md-3">
+      <img src="users[0].thumbnail" />
     </div>
   </div>
-  <div class="container">
-    <div class="img">
-      <img src="api/users/{{users[0]._id}}/thumbnail" onError="this.src='resources/bagavatar.jpeg'"/>
-    </div>
-  </div>
-</div>
-<div class="user-body">
-  <div class="container content">
-    {{users[0].username}}
+  <div class="row">
+    <ul class="tabs horizontal">
+      <li ng-class="{active:activeTab===0}">
+        <a ng-click="setTab(0)">Projects</a>
+      </li>
+      <li ng-class="{active:activeTab===1}">
+        <a ng-click="setTab(1)">Contributions</a>
+      </li>
+      <li ng-class="{active:activeTab===2}">
+        <a ng-click="setTab(2)">Articles</a>
+      </li>
+      <li class="break">
+        |
+      </li>
+      <li ng-class="{active:activeTab===3}">
+        <a ng-click="setTab(3)">All Activity</a>
+      </li>
+    </ul>
   </div>
 </div>

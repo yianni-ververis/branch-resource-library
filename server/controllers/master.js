@@ -107,6 +107,7 @@ module.exports = {
   },
   save: function(query, data, entity, callbackFn){
     if(query){ //update
+      console.log('updating record');
       entity.model.findOneAndUpdate(query, data, function(err, result){
         if(err){
           console.log(err);
@@ -118,6 +119,7 @@ module.exports = {
       });
     }
     else{ //new
+      console.log('creating record');
       entity.model.create(data, function(err, result){
         console.log(data);
         if(err){

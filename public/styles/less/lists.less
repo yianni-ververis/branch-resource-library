@@ -15,7 +15,7 @@
     }
 
     &.highlight{
-      border: 2px solid @green2;
+      border: 2px solid @green;
     }
 
   }
@@ -267,5 +267,20 @@
   li{
     display: inline-block;
     margin: 0 4px;
+  }
+}
+
+.gitlist{
+  li{
+    cursor: pointer;
+    height: 30px;
+    line-height: 30px;
+    &:hover{
+      border-bottom: 1px solid @green;
+    }
+    &.highlight{
+      border-bottom: 2px solid @green;
+      color: @green;
+    }
   }
 }

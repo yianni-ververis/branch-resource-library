@@ -50,22 +50,30 @@ h1{
   color: @dark-grey;
   font-size: 25px;
   margin: 5px 0;
+  font-weight: lighter;
 }
 
 h2{
   color: @dark-grey;
   font-size: 16px;
-  margin: 5px 0;
+  margin: 3px 0;
+  font-weight: lighter;
 }
 
 h3{
   color: @orange;
-  font-size: 18px;
-  margin: 5px 0;
+  font-size: 14px;
+  margin: 2px 0;
+  font-weight: lighter;
 }
 
 textarea{
   resize: none;
+}
+
+label{
+  margin-top: 8px;
+  font-weight: lighter;
 }
 
 p{
@@ -127,7 +135,6 @@ img{
 
 .content{
   background-color: transparent;
-  padding: 10px 10px;
 
   margin-top: 10px;
   margin-bottom: 10px;
@@ -185,6 +192,18 @@ img{
 .loading{
   height: 100px;
   background: url(/resources/loading.gif) center center no-repeat;
+}
+
+.loading-smoke{
+  background-color: rgba(255,255,255,0.7);
+  background-image: url(/resources/loading.gif);
+  background-position: center center;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
 }
 
 .search-header{

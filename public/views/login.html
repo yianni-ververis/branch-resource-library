@@ -6,9 +6,10 @@
       <form ng-submit="login()">
         <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
         <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
-        <button class='ghost-button green' type='submit'>Login</button>
+        <button class='branch-button' type='submit'>Login</button>
       </form>
 
     </div>
   </div>
+  <div class="loading-smoke" ng-show="authLoading"></div>
 </div>
