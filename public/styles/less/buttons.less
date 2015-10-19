@@ -25,6 +25,7 @@
   -moz-border-radius: 7px;
   border-radius: 7px;
   padding: 10px;
+  margin: 3px 0;
   text-align: center;
   font-size: 18px;
   font-weight: 100;
@@ -33,6 +34,15 @@
   font-size: 14px;
   border: none;
   width: 100%;
+
+  &[ng-disabled=true]{
+    background-color: @light-grey !important;
+    cursor: not-allowed;
+  }
+
+  &.orange{
+    background-color: @orange;
+  }
 }
 
 .btn-file {

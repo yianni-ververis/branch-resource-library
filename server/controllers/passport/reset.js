@@ -53,11 +53,12 @@ module.exports = function(req, res, next){
 
       // setup email data
       var mailOptions = {
-        from: 'Qlik Branch <branchqliktest@gmail.com>',
+        from: 'Qlik Branch <branchadmin@qlik.com>',
         to: shared.user.email,
         subject: 'Password reset',
-        text: '',
-        html: 'New password for Qlik Branch is <b>' + shared.newPassword + '</b>'
+        html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +
+         '<p>Please use the following temporary password to access your account - <b>' + shared.newPassword + '</b></p>' +
+         '<p>Once logged in we recommend that you update your password as soon as possible.</p>'
       }
 
       // send email with new password
@@ -66,14 +67,15 @@ module.exports = function(req, res, next){
           return console.log(error)
         }
         console.log('Message sent: ' + info.response)
-        next()
+			  res.json({});
       })
     }
 
-  ], function(err) {
-    if (err) return next(err.message, false)
-    next(null, shared.user)
-  })
+  ])
+	// , function(err) {
+  //   if (err) return next(err.message, false)
+  //   next(null, shared.user)
+  // })
 }
 
 

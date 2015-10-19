@@ -1,26 +1,26 @@
 <div class="container page project-edit">
-  <div class="row content">
+  <div class="content">
     <notification-dialog></notification-dialog>
     <h1>Summary</h1>
     <div class="row">
       <div class="col-md-6">
         <label>Name:</label>
-        <input class="form-control" type="text" ng-model="projects[0].title" placeholder="" />
+        <input class="form-control" type="text" ng-model="projects[0].title" placeholder="The name of your project" />
         <label>Short Description:</label>
-        <input class="form-control" type="text" ng-model="projects[0].short_description" placeholder="" />
+        <input class="form-control" type="text" ng-model="projects[0].short_description" placeholder="A brief description" />
         <label>Project Type:</label>
         <select class="form-control" type="text" ng-model="projects[0].category" ng-options="item.name for item in projectCategories track by item._id">
-          <option value=""></option>
+          <option value="">Please specify a Project Type</option>
         </select>
       </div>
       <div class="col-md-6">
         <label>Thumbnail:</label>
-        <!-- <form enctype="multipart/form-data" id="newScreenshotForm"> -->
-        <span class="btn btn-default btn-file">
-          Choose
-          <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="thumbnail"/>
-        </span>
-        <!-- </form> -->
+        <form enctype="multipart/form-data" id="newScreenshotForm">
+          <span class="btn btn-default btn-file">
+            Choose
+            <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="thumbnail"/>
+          </span>
+        </form>
         <img src="{{projects[0].thumbnail}}" />
       </div>
     </div>
@@ -28,20 +28,20 @@
       <div class="col-md-4">
         <label>Status:</label>
         <select class="form-control" ng-model="projects[0].status" ng-options="item.name for item in projectStatuses track by item._id">
-          <option value=""></option>
+          <option value="">Please specify a Project Status</option>
         </select>
       </div>
       <div class="col-md-4">
         <label>Qlik Software:</label>
         <select class="form-control" ng-model="projects[0].product" ng-change="getProductVersions(projects[0].product)" ng-options="item.name for item in projectProducts track by item._id">
-          <option value=""></option>
+          <option value="">Please specify a Qlik Product</option>
         </select>
       </div>
       <div class="col-md-4">
         <label>Version:</label>
         <ul class="plainlist version-list" ng-if="projects[0].product!=null">
           <li ng-repeat="version in productVersions">
-            <input class="product-version" type="checkbox" data-versionid="{{version._id}}"/> {{version.name}}
+            <input class="product-version" type="checkbox" data-versionid="{{version._id}}" ng-checked="{{checkIfVersionChecked(version._id)}}"/> {{version.name}}
           </li>
         </ul>
         <div class="">
@@ -51,45 +51,43 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <label>Tags</label>
-        <input class="form-control" type="text" ng-model="projects[0].tags" name="name" value="" placeholder="">
+        <label>Tags:</label>
+        <input class="form-control" type="text" ng-model="projects[0].tags" name="name" value="" placeholder="Assign some tags to your product. e.g. Visualization, Sense">
       </div>
     </div>
   </div>
-  <div class="row content">
+  <div class="content">
     <h1>Details</h1>
-    <div class="col-md-12">
-      <input type="radio" name="usegit" ng-model="usegit" value="true" checked>Link to GitHub project
-      <input type="radio" name="usegit" ng-model="usegit" value="false">Enter details manually
-    </div>
-    <div class="col-md-6 underline" ng-show="usegit=='true'">
-      <div class="" ng-if="gitProjects.length==0">
-        <h3>Log in to GitHub</h3>
-        <form ng-submit="getGitProjects(gituser, gitpassword)">
-          <label>Username: </label>
-          <input type="text" ng-model="gituser" class="form-control" />
-          <label>Password: </label>
-          <input type="password" ng-model="gitpassword" class="form-control" />
-          <button class="ghost-button green small" type="submit" name="button">Login</button>
-        </form>
+    <div class="row">
+      <div class="col-md-4 underline" ng-show="projects[0].git_clone_url || isNew">
+        <div ng-if="isNew">
+          <div class="" ng-if="gitProjects.length==0">
+            <form ng-submit="getGitProjects(gituser, gitpassword)" class="loginsignup">
+              <h3>Log in to GitHub</h3>
+              <input type="text" ng-model="gituser" class="form-control" placeholder="GitHub Username"/>
+              <input type="password" ng-model="gitpassword" class="form-control" placeholder="GitHub Password"/>
+              <button class="branch-button orange" type="submit" name="button">Login</button>
+            </form>
+            <div class="loading-smoke" ng-show="gitLoading"></div>
+          </div>
+          <div class="" ng-if="gitProjects.length>0">
+            <h3>Select a Project</h3>
+            <ul class="plainlist gitlist">
+              <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)" ng-class="{'highlight' : projects[0].git_repo==project.name}">
+                {{project.name}}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div ng-if="!isNew">
+          <h3>Project linked to GitHub</h3>
+          <a href="projects[0].project_site">{{projects[0].project_site}}</a>
+        </div>
       </div>
-      <div class="" ng-if="gitProjects.length>0">
-        <h3>Select a Project</h3>
-        <ul class="plainlist list">
-          <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)" ng-class="{'highlight' : newProjectGitProject.repo==project.name}">
-            {{project.name}}
-          </li>
-        </ul>
+      <div class="col-md-12">
+        <button class="branch-button" type="button" name="button" ng-click="validateNewProjectData()">{{projects[0]._id ? 'Save' : 'Submit for approval'}}</button>
       </div>
-    </div>
-    <div class="col-md-12" ng-show="usegit=='false'">
-      <h3>Content</h3>
-      <div id="newProjectContent" class="" ng-model="newProjectContent">
-
-      </div>
-    </div>
-    <div class="col-md-12">
-      <button class="ghost-button green" type="button" name="button" ng-click="validateNewProjectData()">{{projects[0]._id ? 'Save' : 'Submit for approval'}}</button>
     </div>
   </div>
+  <div class="loading-smoke" ng-show="projectLoading"></div>
 </div>

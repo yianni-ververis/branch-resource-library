@@ -40,11 +40,9 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   });
   $rootScope.$on("senseready", function(params){
     that.executePriority();
-    console.log('connected to sense app');
     that.online = true;
   });
   $rootScope.$on("senseoffline", function(params){
-    console.log('could not connected to sense app. using mongo instead.');
     that.online = false;
   });
 
@@ -199,7 +197,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
           "qHyperCubeDef": {
             "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
             "qMeasures": buildMeasureDefs(options.fields),
-          	"qSuppressZero": true,
+          	"qSuppressZero": false,
           	"qSuppressMissing": true,
           	"qInterColumnSortOrder": options.defaultSort
           }

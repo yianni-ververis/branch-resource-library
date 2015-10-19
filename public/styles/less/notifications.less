@@ -20,7 +20,7 @@
     color: @default-text;
     font-size: 14px;
     margin: 0;
-    padding-left: 25px;
+    padding-left: 35px;
     &::before{
       font-family: branch-icons;
       position: absolute;
@@ -46,6 +46,10 @@
     }
   }
   &.positive{
+    p:before{
+      content: "\E813";
+      color: @green;
+    }
   }
   border: 1px solid @content-border;
   box-shadow: 1px 1px 2px @content-border, -1px -1px 2px @content-border;

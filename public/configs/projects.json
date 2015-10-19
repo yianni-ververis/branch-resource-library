@@ -18,7 +18,7 @@
     },
     {
       "dimension": "username",
-      "suppressNull": true
+      "suppressNull": false
     },
     {
       "dimension": "short_description",

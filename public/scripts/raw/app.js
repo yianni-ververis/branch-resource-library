@@ -67,7 +67,7 @@
     })
     //used to navigate to a given project detail page
     .state("projects.detail", {
-      url: "/:projectId",
+      url: "/:projectId?status",
       views:{
         "@":{
           templateUrl: "/views/projects/detail.html",
@@ -140,11 +140,28 @@
         crumb: "Users"
       }
     })
-    //used to navigate to a given project detail page
+    //used to allow users to change their password
+    .state("users.changepassword", {
+      url: "/changepassword",
+      views:{
+        "@":{
+          templateUrl: "/views/users/changepassword.html",
+          controller: "userController",
+        }
+      },
+      data: {
+        crumb: "Change Password"
+      }
+    })
+    //used to navigate to a given user detail page
     .state("users.detail", {
       url: "/:userId",
-      templateUrl: "/views/users/detail.html",
-      controller: "userController",
+      views:{
+        "@":{
+          templateUrl: "/views/users/detail.html",
+          controller: "userController",
+        }
+      },
       data: {
         crumb: "Detail"
       }

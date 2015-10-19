@@ -64,7 +64,7 @@ var projectSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'picklistitem'
   },
-  productversion: [{
+  productversions: [{
     type: Schema.ObjectId,
     ref: 'picklistitem'
   }],

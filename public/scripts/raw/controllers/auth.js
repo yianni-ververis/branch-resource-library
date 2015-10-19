@@ -4,6 +4,9 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
   var Reset = $resource("auth/reset");
   var Captcha = $resource("visualcaptcha/try");
 
+  $scope.authLoading = false;
+  $scope.resetting = false;
+
   if($stateParams.url){
     $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');
   }
@@ -21,6 +24,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
             };
 
   $scope.login = function(){
+    $scope.authLoading = true;
     Login.save({
       username: $scope.loginusername,
       password: $scope.loginpassword
@@ -30,6 +34,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
         window.location = "#" + $scope.returnUrl || "/";
       }
       else{
+        $scope.authLoading = false;
         notifications.notify(result.errText, null, {sentiment: 'negative'});
       }
     });
@@ -42,7 +47,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
       var captchaField = $(".imageField")[0];
       var captchaCheck = {};
       captchaCheck[$(captchaField).attr('name')] = $(captchaField).attr('value');
-      console.log(captchaCheck);
+      $scope.authLoading = true;
       Captcha.save(captchaCheck, function(result){
         if(result.status=="valid"){
           Signup.save({
@@ -55,11 +60,13 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
               window.location = "#" + $scope.returnUrl || "/";
             }
             else{
+              $scope.authLoading = false;
               notifications.notify(result.errText, null, {sentiment: 'negative'});
             }
           });
         }
         else{
+          $scope.authLoading = false;
           notifications.notify("Specified captcha is not correct", null, {sentiment: 'negative'});
         }
       });
@@ -67,12 +74,15 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
   };
 
   $scope.reset = function() {
+    $scope.resetting = true;
     Reset.save({
-      email: $scope.email2
+      email: $scope.email
     }, function(result) {
       if(resultHandler.process(result)){
+        $scope.resetting = false;
         userManager.refresh();
-        window.location = "#" + $scope.returnUrl || "/";
+        $scope.email = "";
+        notifications.notify("An email has been sent to the specified address.", null, {sentiment: 'positive'});
       }
       else{
         notifications.notify(result.errText, null, {sentiment: 'negative'});

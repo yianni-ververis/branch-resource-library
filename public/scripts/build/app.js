@@ -67,7 +67,7 @@
     })
     //used to navigate to a given project detail page
     .state("projects.detail", {
-      url: "/:projectId",
+      url: "/:projectId?status",
       views:{
         "@":{
           templateUrl: "/views/projects/detail.html",
@@ -140,11 +140,28 @@
         crumb: "Users"
       }
     })
-    //used to navigate to a given project detail page
+    //used to allow users to change their password
+    .state("users.changepassword", {
+      url: "/changepassword",
+      views:{
+        "@":{
+          templateUrl: "/views/users/changepassword.html",
+          controller: "userController",
+        }
+      },
+      data: {
+        crumb: "Change Password"
+      }
+    })
+    //used to navigate to a given user detail page
     .state("users.detail", {
       url: "/:userId",
-      templateUrl: "/views/users/detail.html",
-      controller: "userController",
+      views:{
+        "@":{
+          templateUrl: "/views/users/detail.html",
+          controller: "userController",
+        }
+      },
       data: {
         crumb: "Detail"
       }
@@ -191,7 +208,7 @@
           if($state.$current.name!="home"){
             suffix += "?url=";
           }
-          if(window.location.hash.indexOf('login')==-1){
+          if(window.location.hash.indexOf('login')==-1 && window.location.hash.indexOf('reset')==-1){
             suffix += window.location.hash.replace("#/","");
           }
           return "#loginsignup"+suffix;
@@ -1135,11 +1152,9 @@
     });
     $rootScope.$on("senseready", function(params){
       that.executePriority();
-      console.log('connected to sense app');
       that.online = true;
     });
     $rootScope.$on("senseoffline", function(params){
-      console.log('could not connected to sense app. using mongo instead.');
       that.online = false;
     });
 
@@ -1294,7 +1309,7 @@
             "qHyperCubeDef": {
               "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
               "qMeasures": buildMeasureDefs(options.fields),
-            	"qSuppressZero": true,
+            	"qSuppressZero": false,
             	"qSuppressMissing": true,
             	"qInterColumnSortOrder": options.defaultSort
             }
@@ -1604,6 +1619,9 @@
     var Reset = $resource("auth/reset");
     var Captcha = $resource("visualcaptcha/try");
 
+    $scope.authLoading = false;
+    $scope.resetting = false;
+
     if($stateParams.url){
       $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');
     }
@@ -1621,6 +1639,7 @@
               };
 
     $scope.login = function(){
+      $scope.authLoading = true;
       Login.save({
         username: $scope.loginusername,
         password: $scope.loginpassword
@@ -1630,6 +1649,7 @@
           window.location = "#" + $scope.returnUrl || "/";
         }
         else{
+          $scope.authLoading = false;
           notifications.notify(result.errText, null, {sentiment: 'negative'});
         }
       });
@@ -1642,7 +1662,7 @@
         var captchaField = $(".imageField")[0];
         var captchaCheck = {};
         captchaCheck[$(captchaField).attr('name')] = $(captchaField).attr('value');
-        console.log(captchaCheck);
+        $scope.authLoading = true;
         Captcha.save(captchaCheck, function(result){
           if(result.status=="valid"){
             Signup.save({
@@ -1655,11 +1675,13 @@
                 window.location = "#" + $scope.returnUrl || "/";
               }
               else{
+                $scope.authLoading = false;
                 notifications.notify(result.errText, null, {sentiment: 'negative'});
               }
             });
           }
           else{
+            $scope.authLoading = false;
             notifications.notify("Specified captcha is not correct", null, {sentiment: 'negative'});
           }
         });
@@ -1667,12 +1689,15 @@
     };
 
     $scope.reset = function() {
+      $scope.resetting = true;
       Reset.save({
-        email: $scope.email2
+        email: $scope.email
       }, function(result) {
         if(resultHandler.process(result)){
+          $scope.resetting = false;
           userManager.refresh();
-          window.location = "#" + $scope.returnUrl || "/";
+          $scope.email = "";
+          notifications.notify("An email has been sent to the specified address.", null, {sentiment: 'positive'});
         }
         else{
           notifications.notify(result.errText, null, {sentiment: 'negative'});
@@ -1757,16 +1782,6 @@
     });
     var defaultSelection;
 
-    if($state.current.name=="projects.addedit"){
-      if(!userManager.hasUser()){
-        userManager.refresh(function(hasUser){
-          if(!hasUser){
-            window.location = "#login?url=projects/new/edit"
-          }
-        });
-      }
-    }
-
     if(!userManager.canApprove('projects')){
       defaultSelection = {
         field: "approved",
@@ -1785,11 +1800,16 @@
     $scope.userManager = userManager;
     $scope.Confirm = confirm;
 
+    $scope.isNew = $stateParams.projectId=="new";
+
     $scope.projects = [];
     $scope.gitProjects = [];
     $scope.url = "projects";
 
     $scope.searching = true;
+
+    $scope.projectLoading = !$scope.isNew;
+    $scope.gitLoading = false;
 
     $scope.rating = {};
     $scope.getRate = {};
@@ -1869,6 +1889,7 @@
     $scope.getProjectData = function(query, append){
       Project.get(query, function(result){
         if(resultHandler.process(result)){
+          $scope.projectLoading = false;
           if(append && append==true){
             $scope.projects = $scope.projects.concat(result.data);
           }
@@ -1885,8 +1906,26 @@
                 link: "/projects/"+$scope.projects[0]._id
               });
             }
+            if($state.current.name == "projects.addedit" && $stateParams.projectId!="new"){
+              $scope.$root.$broadcast('spliceCrumb', {
+                text: $scope.projects[0].title,
+                link: "/projects/"+$scope.projects[0]._id
+              });
+              $scope.$root.$broadcast('addCrumb', {
+                text: "Edit",
+                link: "/projects/"+$scope.projects[0]._id+"/edit"
+              });
+            }
           }
-
+          if($stateParams.status){
+            if($stateParams.status=='created'){
+              notifications.notify("Your project has been successfully submitted for approval.", null, {sentiment:"positive"});
+            }
+            else if ($stateParams.status=='updated') {
+              notifications.notify("Your project has been successfully updated. It may take up to 5 minutes for the project listing page to reflect these changes.", null, {sentiment:"positive"});
+            }
+          }
+          //need to check this!
           $scope.projects.forEach(function(item, index) {
             if (item.votenum > 0) {
               var length = Math.round(item.votetotal/item.votenum)
@@ -1955,22 +1994,36 @@
     };
 
     $scope.getGitProjects = function(gituser, gitpassword){
+      $scope.gitLoading = true;
       var creds = {
         user: gituser,
         password: gitpassword
       };
       Git.save({path:"projects"}, creds, function(result){
         if(resultHandler.process(result)){
+          $scope.gitLoading = false;
           $scope.gitProjects = result.repos;
         }
       });
     };
 
     $scope.selectGitProject = function(project){
-      $scope.newProjectGitProject = {
-        repo: project.name,
-        owner: project.owner.login
-      };
+      $scope.projects[0].project_site = project.html_url;
+      $scope.projects[0].git_clone_url = project.clone_url;
+      $scope.projects[0].git_repo = project.name;
+      $scope.projects[0].git_user = project.owner.login;
+    };
+
+    $scope.checkIfVersionChecked = function(version){
+      console.log($scope.projects[0].productversions);
+      console.log(version);
+      console.log($scope.projects[0].productversions.indexOf(version));
+      if($scope.projects[0].productversions){
+        return $scope.projects[0].productversions.indexOf(version)!=-1;
+      }
+      else {
+        return false;
+      }
     };
 
     $scope.previewThumbnail = function(){
@@ -2008,7 +2061,7 @@
             data: thumbnailCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
           }
           $scope.$apply(function(){
-            $scope.newProjectThumbnail = thumbnailCanvas.toDataURL();
+            $scope.projects[0].thumbnail = thumbnailCanvas.toDataURL();
           });
         };
         thumbnail.src = r.result;
@@ -2025,6 +2078,20 @@
         //add to validation error list
         errors.push("Please specify a Name");
       }
+      if(!$scope.projects[0].short_description || $scope.projects[0].short_description==""){
+        //add to validation error list
+        errors.push("Please add a Short Description");
+      }
+      //Make sure the Project type has been set
+      if(!$scope.projects[0].category){
+        //add to validation error list
+        errors.push("Please select a Project Type");
+      }
+      //Make sure the Project status has been set
+      if(!$scope.projects[0].status){
+        //add to validation error list
+        errors.push("Please select a Project Status");
+      }
       //Make sure the product has been set
       if(!$scope.projects[0].product){
         //add to validation error list
@@ -2036,7 +2103,7 @@
         errors.push("Please specify at least one Product Version");
       }
       //If git is being used make sure a project has been selected
-      if($scope.usegit=='true' && !$scope.newProjectGitProject){
+      if($scope.isNew && !$scope.projects[0].git_repo){
         //add to validation error list
         errors.push("Please select a Git project to use");
       }
@@ -2049,6 +2116,7 @@
       if(errors.length > 0){
         //show the errors
         notifications.notify("The project could not be saved. Please review the following...", errors, {sentiment: "warning"});
+        window.scrollTo(100,0);
       }
       else{
         //Save the record
@@ -2058,26 +2126,30 @@
 
     $scope.saveNewProject = function(){
       var versions = [];
-      $(".product-version:checkbox:checked").each(function(val, index){
+      $(".product-version:checkbox:checked").each(function(index, val){
         versions.push($(this).attr("data-versionid"));
-        if(index==$(".product-version:checkbox:checked").length){
+        if(index==$(".product-version:checkbox:checked").length - 1){
           $scope.projects[0].productversions = versions;
         }
       });
-      if(!$scope.usegit || $scope.usegit=='false'){
-        $scope.projects[0].content = $("#newProjectContent").code();
-      }
       var data = {
         standard: $scope.projects[0],  //data that we can just assign to the project
         special:{ //that will be used to set additional properties
           image: $scope.image,
-          thumbnail: $scope.thumbnail,
-          gitProject: $scope.newProjectGitProject
+          thumbnail: $scope.thumbnail
         }
       }
-      Project.save({}, data, function(result){
+      var query = {};
+      if($scope.projects[0]._id){
+        query.projectId = $scope.projects[0]._id;
+      }
+      Project.save(query, data, function(result){
         if(resultHandler.process(result)){
-
+          var status = $scope.isNew ? "created" : "updated";
+          window.location = "#projects/"+result._id+"?status="+status;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
         }
       });
     };
@@ -2101,8 +2173,22 @@
 
 
     //only load the project if we have a valid projectId or we are in list view
-    if(($state.current.name=="projects.detail" || $state.current.name=="projects.addedit") && $stateParams.projectId!="new"){
+    if($state.current.name=="projects.detail"){
       $scope.getProjectData($scope.query); //get initial data set
+    }
+    else if($state.current.name=="projects.addedit"){
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=projects/"+$stateParams.projectId+"/edit"
+          }
+          else{
+            if($stateParams.projectId!="new"){
+              $scope.getProjectData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
     }
     else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
       $("#newProjectContent").summernote();
@@ -2407,9 +2493,10 @@
 
   }]);
 
-  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
     var User = $resource("api/users/:userId", {userId: "@userId"});
     var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
+    var ChangePassword = $resource("auth/change");
 
     $scope.query = {};
     $scope.projectCount = 0;
@@ -2423,6 +2510,23 @@
       });
 
     }
+
+    $scope.changePassword = function(){
+      ChangePassword.save({
+        oldPassword: $scope.oldpassword,
+        password: $scope.password
+      }, function(result){
+        if(resultHandler.process(result)){
+          $scope.oldpassword = "";
+          $scope.password = "";
+          $scope.confirm = "";
+          notifications.notify("Your password was successfully changed. ", null, {sentiment: 'positive'});
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: 'negative'});
+        }
+      });
+    };
 
 
     $scope.getUserData = function(query, append){
