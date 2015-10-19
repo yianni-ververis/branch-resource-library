@@ -1,6 +1,6 @@
 /config/*.*
-node_modules/
-bower_components/*
-!bower_components/visualcaptcha.angular/
+node_modules/*
+!node_modules/visualcaptcha/
+bower_components/
 data.js
 client.pem
