@@ -1,4 +1,4 @@
-(function() {
+//(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngSanitize", 'ui.bootstrap', "visualCaptcha" ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig) {
@@ -168,29 +168,30 @@
     })
   }]);
 
-  //directives
-  //include "./directives/paging.js"
-  include "./directives/header.js"
-  include "./directives/confirm-dialog.js"
-  include "./directives/notification-dialog.js"
-  include "./directives/comments.js"
-  include "./directives/moderation.js"
-  include "./directives/search-input.js"
-  include "./directives/search-filter.js"
-  include "./directives/search-results.js"
-  //services
-  include "./services/user-manager.js"
-  include "./services/result-handler.js"
-  include "./services/search-exchange.js"
-  include "./services/picklists.js"
-  //controllers
-  include "./controllers/admin.js"
-  include "./controllers/auth.js"
-  include "./controllers/home.js"
-  include "./controllers/project.js"
-  include "./controllers/blog.js"
-  include "./controllers/comment.js"
-  include "./controllers/user.js"
-  include "./controllers/moderation.js"
+  // //directives
+  // include "./directives/header.js"
+  // include "./directives/confirm-dialog.js"
+  // include "./directives/notification-dialog.js"
+  // include "./directives/comments.js"
+  // include "./directives/moderation.js"
+  // include "./directives/search-input.js"
+  // include "./directives/search-filter.js"
+  // include "./directives/search-results.js"
+  // //services
+  // include "./services/user-manager.js"
+  // include "./services/result-handler.js"
+  // include "./services/search-exchange.js"
+  // include "./services/picklists.js"
+  // //controllers
+  // include "./controllers/admin.js"
+  // include "./controllers/auth.js"
+  // include "./controllers/home.js"
+  // include "./controllers/project.js"
+  // include "./controllers/blog.js"
+  // include "./controllers/comment.js"
+  // include "./controllers/user.js"
+  // include "./controllers/moderation.js"
 
-})();
+//  return app
+
+//})();

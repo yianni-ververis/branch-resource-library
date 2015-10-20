@@ -6,6 +6,9 @@ var mongoose = require('mongoose'),
     bodyParser = require('body-parser'),
     qrs = require('./SenseQRS');
 
+//var mode = "release";
+var mode = "debug";
+
 qrs.config = {
   host: "10.211.55.3",
   app: "bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1"
@@ -62,6 +65,7 @@ var vcRoutes = require(__dirname+'/server/routes/visualCaptcha');
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
 app.use('/js', express.static(__dirname + '/public/scripts/build'));
+app.use('/debug', express.static(__dirname + '/public/scripts/raw'));
 app.use('/views', express.static(__dirname + '/public/views'));
 app.use('/css', express.static(__dirname + '/public/styles/css'));
 app.use('/resources', express.static(__dirname + '/public/resources'));
@@ -77,7 +81,7 @@ app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb'}));
 
 app.get('/', function(req, res){
-  res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user});
+  res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user, mode: mode});
 });
 
 var Project = require('./server/models/project.js');

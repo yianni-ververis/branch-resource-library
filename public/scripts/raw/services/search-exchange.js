@@ -117,10 +117,10 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     $rootScope.$broadcast("searching");
     that.terms = searchText.split(" ");
 
-    senseApp.searchAssociations({qContext: "Cleared"}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
+    senseApp.searchAssociations({qContext: "LockedFieldsOnly"}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
       console.log(results);
       if(results.qTotalSearchResults > 0){
-        senseApp.selectAssociations({qContext: "Cleared"}, that.terms, 0 ).then(function(results){
+        senseApp.selectAssociations({qContext: "LockedFieldsOnly"}, that.terms, 0 ).then(function(results){
           $rootScope.$broadcast('searchResults', true);
         });
       }

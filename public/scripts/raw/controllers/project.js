@@ -11,13 +11,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   });
   var defaultSelection;
 
-  if(!userManager.canApprove('projects')){
-    defaultSelection = {
-      field: "approved",
-      values: [0],
-      lock: true
-    }
-  }
   $scope.$on("cleared", function(){
     searchExchange.init(defaultSelection);
   })
@@ -394,10 +387,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.clear();
   };
 
-
-
-
-
   //only load the project if we have a valid projectId or we are in list view
   if($state.current.name=="projects.detail"){
     $scope.getProjectData($scope.query); //get initial data set
@@ -406,7 +395,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.getPicklistItems("Product", "projectProducts", true);
     $scope.getPicklistItems("Category", "projectCategories", true);
     $scope.getPicklistItems("Project Status", "projectStatuses", true);
-    if(!userManager.hasUser()){
+    var hasUser = userManager.hasUser();
+    if(!hasUser){
       userManager.refresh(function(hasUser){
         if(!hasUser){
           window.location = "#login?url=projects/"+$stateParams.projectId+"/edit"
@@ -418,11 +408,48 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
       });
     }
+    else{
+      if($stateParams.projectId!="new"){
+        $scope.getProjectData($scope.query); //get initial data set
+      }
+    }
   }
-  else{ //user needs to be logged in so we redirect to the login page (this is a fail safe as techincally users shouldn't be able to get here without logging in)
-    $("#newProjectContent").summernote();
-    $scope.usegit = 'true';
-    $scope.projects = [{}]; //add en empty object
+  else{ //this should be the list page
+    if(!userManager.hasUser()){
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
+          defaultSelection = {
+            field: "approved",
+            values: [0],
+            lock: true
+          }
+        }
+        else{
+          if(!userManager.canApprove('projects')){
+            defaultSelection = {
+              field: "approved",
+              values: [0],
+              lock: true
+            }
+          }
+        }
+        //this effectively initiates the results
+        searchExchange.clear(true);
+      });
+    }
+    else{
+      if(!userManager.canApprove('projects')){
+        defaultSelection = {
+          field: "approved",
+          values: [0],
+          lock: true
+        }
+      }
+      //this effectively initiates the results
+      searchExchange.clear(true);
+    }
+    //$("#newProjectContent").summernote();
+    //$scope.projects = [{}]; //add en empty object
   }
 
   function canvasToBlob(canvas, type){
@@ -439,8 +466,5 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         type: type
     });
   }
-
-  //this effectively initiates the results
-  searchExchange.clear(true);
 
 }]);

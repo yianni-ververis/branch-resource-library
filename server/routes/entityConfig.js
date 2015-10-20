@@ -10,7 +10,7 @@ module.exports = {
         username: 1
       },
       limit: 10,
-      requiresAuthentication: true    //only applies to GET requests. All other requests MUST be authenticated
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
     projects:{
       collection: "projects",

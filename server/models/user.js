@@ -16,6 +16,10 @@ var userSchema = new Schema({
     required: true,
     unique: true
   },
+  approved: {
+    type: Boolean,
+    default: true
+  },
   role: {
     type: Schema.ObjectId,
     ref: 'userrole',
