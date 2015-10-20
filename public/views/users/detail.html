@@ -1,14 +1,14 @@
 <div class="container page">
-  <div class="row">
+  <div class="row user-header">
     <div class="col-md-9">
-      <span class='user-name'>{{users[0].fullname || users[0].username}}</span>
-      <span class='user-user' ng-if="!users[0].fullname">{{users[0].username}}</span>
+      <h1 class='user-name'>{{users[0].fullname || users[0].username}}</h1>
+      <span class='user-user' ng-if="users[0].fullname">{{users[0].username}}</span>
       <p>
         {{users[0].bio}}
       </p>
     </div>
     <div class="col-md-3">
-      <img src="users[0].thumbnail" />
+      <img src="{{users[0].thumbnail}}" />
     </div>
   </div>
   <div class="row">

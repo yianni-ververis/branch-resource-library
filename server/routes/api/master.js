@@ -120,13 +120,14 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
     res.json(Error.insufficientPermissions("Unable to get "+req.params.entity));
   }
   else{
-    if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
-      query["createuser"]=user._id;
-    }
+    // if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
+    //   query["createuser"]=user._id;
+    // }
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
         || (!user)){
       query["approved"]=true;
     }
+    console.log(query);
     MasterController.get(req.query, query, entity, function(results){
       if(entity.logViews){
         console.log('checking views')
