@@ -17,8 +17,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.pageSize = 20;
 
-  $scope.onlyApproved = !userManager.canApprove('projects');
-
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
 
@@ -114,8 +112,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
         else{
           $scope.projects = result.data;
-          $scope.getRate.userid = $scope.userManager.userInfo._id;
-          $scope.getRate.entityId = $scope.projects[0]._id
 
           $scope.getMyRating($scope.getRate)
           //if this is the detail view we'll update the breadcrumbs
@@ -390,6 +386,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   //only load the project if we have a valid projectId or we are in list view
   if($state.current.name=="projects.detail"){
     $scope.getProjectData($scope.query); //get initial data set
+    userManager.refresh(function(hasUser){
+      $scope.currentuserid = userManager.userInfo._id;
+    });
   }
   else if($state.current.name=="projects.addedit"){
     $scope.getPicklistItems("Product", "projectProducts", true);
@@ -418,19 +417,17 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     if(!userManager.hasUser()){
       userManager.refresh(function(hasUser){
         if(!hasUser){
-          defaultSelection = {
+          defaultSelection = [{
             field: "approved",
-            values: [0],
-            lock: true
-          }
+            values: [{qText: "True"}]
+          }]
         }
         else{
           if(!userManager.canApprove('projects')){
-            defaultSelection = {
+            defaultSelection = [{
               field: "approved",
-              values: [0],
-              lock: true
-            }
+              values: [{qText: "True"}]
+            }]
           }
         }
         //this effectively initiates the results
@@ -439,11 +436,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
     else{
       if(!userManager.canApprove('projects')){
-        defaultSelection = {
+        defaultSelection = [{
           field: "approved",
-          values: [0],
-          lock: true
-        }
+          values: [{qText: "True"}]
+        }]
       }
       //this effectively initiates the results
       searchExchange.clear(true);

@@ -20,6 +20,8 @@ body{
   color: @default-text;
   font-family: sans-serif, arial;
   font-size: 12px;
+  font-weight: lighter;
+  -webkit-font-smoothing: antialiased;
   background-color: transparent;
 }
 
@@ -47,8 +49,8 @@ label{
 }
 
 h1{
-  color: @dark-grey;
-  font-size: 25px;
+  color: @green;
+  font-size: 20px;
   margin: 5px 0;
   font-weight: lighter;
 }
@@ -110,21 +112,17 @@ img{
 }
 
 .paging, .sorting{
-  height: 100%;
-  font-size: 12px;
-  margin-left: 20px;
+  text-align: right;
   label, ul, select{
     display: inline-block;
-  }
-  label{
-    font-weight: normal;
   }
   select{
     width: 120px;
     box-shadow: none;
     -webkit-box-shadow: none;
     border-color: white;
-    height: 50px;
+    font-size: 12px;
+    height: initial;
   }
 }
 
@@ -135,7 +133,7 @@ img{
 
 .content{
   background-color: transparent;
-  padding: 10px;
+  padding: 10px 0px;
   margin-top: 10px;
   margin-bottom: 10px;
 
@@ -168,12 +166,18 @@ img{
   text-align: right;
 }
 
-.result-header{
+.result-header, .result-footer{
   font-size: 12px;
-  text-indent: 10px;
+  font-weight: lighter;
   color: @header-grey;
-  height: 50px;
-  line-height: 42px;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+}
+
+.result-header{
+  margin-bottom: 10px;
 }
 
 .center{
@@ -213,14 +217,22 @@ img{
   z-index: 100;
 }
 
-.results-container{
-  padding-top: 75px;
-}
-
 .underline{
   border-bottom: 1px solid @content-border;
   margin-bottom: 3px;
   padding-bottom: 3px;
+}
+
+.list-index{
+    font-size: 14px;
+    font-weight: lighter;
+}
+
+.list-title{
+  font-size: 14px;
+  font-weight: lighter;
+  display: block;
+  color: @green;
 }
 
 @import "./icons.less";
@@ -242,6 +254,7 @@ img{
 @import "./blog/blog-main.less";
 @import "./user/user-main.less";
 @import "./moderation.less";
+@import "./rating.less";
 @import "./visualCaptcha.less";
 
 //search

@@ -1,0 +1,4 @@
+<ul ng-show="user" class="plainlist rating">
+  <li ng-mouseover="setDisplayStar($index)" ng-mouseleave="clearDisplayStar()" ng-repeat="star in stars" class="icon medium star" ng-class="{'filled': $index<=projectRating || $index<=displayStar}"></li>
+  {{myRating.rating ? 'My Rating' : 'Rate'}}
+</ul>
