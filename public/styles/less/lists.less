@@ -73,11 +73,7 @@
     position: relative;
     padding: 5px 0;
     vertical-align: top;
-    border-bottom: 1px solid @light-grey;
     margin: 5px 0;
-    &:last-of-type{
-      border-bottom: none;
-    }
     .project-summary{
       position: absolute;
       left: 170px;
@@ -86,13 +82,6 @@
       padding: 0 5px;
       box-sizing: border-box;
       width: ~"calc(100% - 160px)";
-      a{
-        &:first-of-type{
-          font-size: 16px;
-        }
-        display: block;
-        color: @green;
-      }
     }
   }
   .stats{
@@ -281,6 +270,26 @@
     &.highlight{
       border-bottom: 2px solid @green;
       color: @green;
+    }
+  }
+}
+
+.user-projects{
+  .row{
+    padding: 10px 0px;
+  }
+  ul{
+   li:first-of-type{
+     color: @light-grey;
+   }
+  }
+}
+
+.project-list, .user-projects{
+  >li{
+    border-bottom: 1px solid @content-border;
+    &:first-of-type{
+      border-top: 2px solid @content-border;
     }
   }
 }

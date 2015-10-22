@@ -112,6 +112,21 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
           }
         });
 
+        $scope.$on('initialising', function(){
+          $scope.loading = true;
+        });
+
+        $scope.$on('initialised', function(){
+          if($scope.info){
+            $scope.render();
+          }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
+        });
+
         $scope.$on('searching', function(){
           $scope.loading = true;
           $scope.pageTop = 0;
@@ -214,6 +229,7 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
                 for (var i=0; i < row.length; i++){
                   item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
                 }
+                return item;
               });
             });
           });
@@ -262,9 +278,9 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
             if($scope.postponed){
               $scope.postponed.call(null);
             }
-            else{
-              $scope.render();
-            }
+            // else{
+            //   $scope.render();
+            // }
           });
         });
 

@@ -1,33 +1,68 @@
 <div class="container page">
   <div class="row user-header">
-    <div class="col-md-9">
-      <h1 class='user-name'>{{users[0].fullname || users[0].username}}</h1>
-      <span class='user-user' ng-if="users[0].fullname">{{users[0].username}}</span>
-      <p>
-        {{users[0].bio}}
-      </p>
-    </div>
-    <div class="col-md-3">
-      <img src="{{users[0].thumbnail}}" />
-    </div>
+      <div class="col-md-9">
+        <h1 class='user-name'>{{users[0].fullname || users[0].username}}</h1>
+        <span class="user-user" ng-if="users[0].fullname">{{users[0].username}}</span>
+        <span class="user-joined">Joined {{users[0].createdate | date:'MMMM dd, yyyy'}}</span>
+        <p>
+          {{users[0].bio}}
+        </p>
+      </div>
+      <div class="col-md-3">
+        <img src="{{users[0].thumbnail}}" />
+      </div>
   </div>
   <div class="row">
-    <ul class="tabs horizontal">
-      <li ng-class="{active:activeTab===0}">
-        <a ng-click="setTab(0)">Projects</a>
-      </li>
-      <li ng-class="{active:activeTab===1}">
-        <a ng-click="setTab(1)">Contributions</a>
-      </li>
-      <li ng-class="{active:activeTab===2}">
-        <a ng-click="setTab(2)">Articles</a>
-      </li>
-      <li class="break">
-        |
-      </li>
-      <li ng-class="{active:activeTab===3}">
-        <a ng-click="setTab(3)">All Activity</a>
-      </li>
-    </ul>
+    <div class="col-md-9">
+      <ul class="tabs horizontal">
+        <li ng-class="{active:activeTab===0}">
+          <a ng-click="setTab(0)">Projects ({{projectCount}})</a>
+        </li>
+        <li ng-class="{active:activeTab===1}">
+          <a ng-click="setTab(1)">Contributions</a>
+        </li>
+        <li ng-class="{active:activeTab===2}">
+          <a ng-click="setTab(2)">Articles ({{blogCount}})</a>
+        </li>
+        <li class="break">
+          |
+        </li>
+        <li ng-class="{active:activeTab===3}">
+          <a ng-click="setTab(3)">All Activity</a>
+        </li>
+      </ul>
+      <search-input></search-input>
+      <div ng-show="activeTab==0">
+        <search-results id="userProjectResultList" data-config="user-projects"></search-results>
+      </div>
+      <div ng-show="activeTab==1">
+
+      </div>
+      <div ng-show="activeTab==2">
+
+      </div>
+      <div ng-show="activeTab==3">
+
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="user-location">
+        <span class="user-location-title">LOCATION & CONTACT</span>
+        <span>{{users[0].city}}</span>
+        <span>{{users[0].state}}</span>
+        <span>{{users[0].country}}</span>
+        <br/>
+        <span ng-if="users[0].twitter" class="contact twitter">{{users[0].twitter}}</span>
+        <span ng-if="users[0].github_user" class="contact github">{{users[0].github_user}}</span>
+        <span ng-if="users[0].website" class="contact website">{{users[0].website}}</span>
+        <span ng-if="users[0].email" class="contact email">{{users[0].email}}</span>
+      </div>
+      <div class="user-stats">
+
+      </div>
+      <div class="user-tagcloud">
+
+      </div>
+    </div>
   </div>
 </div>

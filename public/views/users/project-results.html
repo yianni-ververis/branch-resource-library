@@ -1,0 +1,25 @@
+<ul class="plainlist user-projects">
+  <li ng-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
+    <div class="row">
+      <div class="col-md-1">
+        <span class="list-index">{{$index+1}}</span>
+      </div>
+      <div class="col-md-3">
+        <span class="list-title">{{project.title}}</span>
+        <span>{{project.username}}</span>
+      </div>
+      <div class="col-md-2">
+        <ul class="plainlist">
+          <li>Updated</li>
+          <li>{{project.last_updated_num | date:'MMM dd, yyyy'}}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul class="plainlist">
+          <li>Summary</li>
+          <li>{{project.short_description}}</li>
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>

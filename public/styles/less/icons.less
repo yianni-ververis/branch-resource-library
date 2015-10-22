@@ -10,13 +10,13 @@
   }
 
   &.large::before{
-    font-size: 28px;
+    font-size: 25px;
   }
 }
 
 .icon{
   cursor: pointer;
-  color: @disabled;
+  color: @dark-grey;
 }
 .flag:hover, .remove:hover, .delete:hover, .flag.flagged, .remove.hidden{
   color: @red;
@@ -89,5 +89,19 @@
 .download{
   &::before{
     content: "\E812";
+  }
+}
+
+.star{
+  display: inline;
+  font-family: branch-icons;
+  &::before{
+    content: "\E821";
+  }
+  &.filled{
+    color: @green;
+    &::before{
+      content: "\E820";
+    }
   }
 }

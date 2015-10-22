@@ -7,7 +7,7 @@ var userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    uniqur: true
+    unique: true
   },
   password: String,
   name: String,
@@ -37,7 +37,9 @@ var userSchema = new Schema({
   github_user: String,
   facebook: String,
   twitter: String,
-  website: String
+  website: String,
+  joindate: Number,
+  lastvisit: Number
 });
 
 userSchema.methods = {
