@@ -34,11 +34,12 @@
 
 			},
       template: function(elem, attr){
-        html = "<div class='confirm-smokescreen' ng-class='{active:active==true}'>";
+        html = "<div class='confirm-smokescreen' ng-class='{active:active==true, wide:options.requireComment==true}'>";
         html += "<div class='confirm-dialog'>";
         html += "<p>{{message}}</p>";
+				html += "<textarea class='form-control' ng-model='comment' ng-if='options.requireComment'></textarea>";
         html += "<ul>";
-        html += "<li ng-repeat='option in options'><button class='ghost-button grey' ng-click='returnOption($index)'>{{option}}</button></li>";
+        html += "<li ng-repeat='option in options.options'><button class='branch-button' ng-click='returnOption($index)'>{{option}}</button></li>";
         html += "</ul>";
         html += "</div>";
 	      html += "</div>";
@@ -52,10 +53,11 @@
           scope.active = true;
         });
         scope.returnOption = function(index){
+					var comment = $(".confirm-dialog textarea").val();
           scope.message = null;
           scope.options = null;
           scope.active = false;
-          scope.callback.call(null, index);
+          scope.callback.call(null, {result: index, comment: comment});
           scope.callback = null;
         };
       }

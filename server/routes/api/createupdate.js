@@ -1,6 +1,7 @@
 //These routes are for creating or updating records
 var MasterController = require("../../controllers/master"),
     Error = require("../../controllers/error"),
+    Notifier = require("../../controllers/notifier"),
     fs = require('fs'),
     attachmentDir = require("../../../attachmentDir"),
     entities = require("../entityConfig"),
@@ -31,7 +32,7 @@ module.exports = function(req, res){
   //This has been separated due to the nature of creating a 'Project'
   var entity = req.params.entity;
   var user = req.user;
-  var userPermissions = req.user.role.permissions['projects'];
+  var userPermissions = req.user.role.permissions[req.params.entity];
   var data = req.body;
   var query;
   if(req.params.id){
@@ -39,10 +40,8 @@ module.exports = function(req, res){
       "_id" : req.params.id
     }
   }
-  if(!userPermissions || userPermissions.create!=true){
-    res.json(Error.insufficientPermissions());
-  }
-  else{
+  //else{
+  if(userPermissions){
     if(userPermissions.allOwners!=true){
       query["createuser"]=user._id;
     }
@@ -50,11 +49,21 @@ module.exports = function(req, res){
     console.log('creating updating, id is ');
     console.log(record._id);
     if(!record._id && !req.params.id){
+      //this is a new item
+      if(userPermissions.create!=true){
+        res.json(Error.insufficientPermissions());
+      }
       record._id = mongoose.Types.ObjectId();
       record.createuser = user._id;
       record.createdate = Date.now();
     }
+    else{
+      if(userPermissions.update!=true){
+        res.json(Error.insufficientPermissions());
+      }
+    }
     record.userid = user._id;
+    record.editdate = Date.now();
     var imageBuffer;
     if(req.params.entity=="projects"){
       //build the similar projects query
@@ -105,6 +114,10 @@ module.exports = function(req, res){
       }
       console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+        if(!newrecord.errCode){
+          //send an notification to all subscribers of the item
+          Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
+        }
         res.json(newrecord);
       });
     }
@@ -112,8 +125,15 @@ module.exports = function(req, res){
       console.log('saving non project entity with query');
       console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+        if(!newrecord.errCode){
+          //send an notification to all subscribers of the item
+          Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
+        }
         res.json(newrecord);
       });
     }
+  }
+  else{
+    res.json(Error.notLoggedIn());
   }
 };

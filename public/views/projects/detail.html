@@ -5,6 +5,7 @@
       <h1>{{projects[0].title}}</h1>
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
       <img src="{{projects[0].thumbnail}}" />
+      <subscribe entity="'projects'" entityid="projects[0]._id" user="currentuserid"></subscribe>
     </div>
     <div class="col-md-5">
       <ul class="plainlist">

@@ -18,7 +18,9 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "blogs",
     "picklists",
     "picklistitems",
-    "flags"
+    "flags",
+    "ratings",
+    "subscriptions"
   ];
 
   var defaultSelection;
@@ -94,7 +96,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
       Project.get({projectId: $scope.features[$scope.activeFeature].entityId}, function(result){
         if(resultHandler.process(result)){
           if(result.data.length > 0){
-            $scope.currentFeature = result.data[0];  
+            $scope.currentFeature = result.data[0];
           }
         }
       })

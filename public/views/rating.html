@@ -1,4 +1,5 @@
-<ul ng-show="user" class="plainlist rating">
-  <li ng-mouseover="setDisplayStar($index)" ng-mouseleave="clearDisplayStar()" ng-repeat="star in stars" class="icon medium star" ng-class="{'filled': $index<=projectRating || $index<=displayStar}"></li>
-  {{myRating.rating ? 'My Rating' : 'Rate'}}
+<ul ng-show="user || mode=='static'" class="plainlist rating">
+  <li ng-show="$index<getStar() || mode!='static'" ng-click="rate(star)" ng-mouseover="setDisplayStar(star)" ng-mouseleave="clearDisplayStar()" ng-repeat="star in stars" class="icon medium star" ng-class="{'filled': star<=getStar()}"></li>
+  <span ng-if="mode!='static'">{{myRating.rating ? 'My Rating' : 'Rate'}}</span>
+  <span ng-if="mode=='static' && displaystar=='-'">Not yet rated</span>
 </ul>

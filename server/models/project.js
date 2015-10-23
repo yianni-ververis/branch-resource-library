@@ -19,8 +19,7 @@ var projectSchema = new Schema({
   git_clone_url: String,
   git_repo: String,
   git_user: String,
-  threadid: String,
-  taglist: Buffer,
+  threadid: String,  
   tags: String,
   votenum: Number,
   votetotal: Number,
@@ -36,6 +35,7 @@ var projectSchema = new Schema({
     type: Boolean,
     default: false
   },
+  hide_comment: String,
   flagged: {
     type: Boolean,
     default: false

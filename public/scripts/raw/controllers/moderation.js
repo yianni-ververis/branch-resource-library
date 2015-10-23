@@ -18,9 +18,13 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
   };
 
   $scope.hideEntity = function(){
-    Entity.save({entityId: $scope.entityid, function: "hide"}, function(result){
-      if(resultHandler.process(result)){
-        $scope.approved = "False";
+    confirm.prompt("Please enter a reason for unapproving the item. An email will be sent to the owner so try not to be too harsh.", {requireComment: true, options:["Send", "Cancel"]}, function(response){
+      if(response.result==0){
+        Entity.save({entityId: $scope.entityid, function: "hide", hideComment: response.comment}, function(result){
+          if(resultHandler.process(result)){
+            $scope.approved = "False";
+          }
+        });
       }
     });
   };
@@ -39,8 +43,8 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
   };
 
   $scope.deleteEntity = function(){
-    confirm.prompt("Are you sure you want to delete the selected item", ["Yes", "No"], function(result){
-      if(result==0){
+    confirm.prompt("Are you sure you want to delete the selected item?", {options:["Yes", "No"]}, function(response){
+      if(response.result==0){
         Entity.delete({entityId: $scope.entityid}, function(result){
             if(resultHandler.process(result)){
               window.location = "#"+$scope.entity;
