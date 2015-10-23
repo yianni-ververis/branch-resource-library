@@ -1,12 +1,12 @@
 <ul class="plainlist moderation-list" ng-class="{'horizontal':orientation=='horizontal'}">
   <li class="icon flag {{size}}" ng-if="userManager.canFlag(entity)" ng-click="flagEntity()" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
-    <span ng-if="size=='large'">Flag</span>
+    <span ng-if="size=='large'">Report Spam</span>
   </li>
   <li class="icon approve {{size}}" ng-if="(userManager.canApprove(entity) && !isApproved()) || (userManager.canHide(entity) && !isApproved())" ng-click="approveEntity()">
     <span ng-if="size=='large'">Approve</span>
   </li>
   <li class="icon remove {{size}}" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
-    <span ng-if="size=='large'">Hide</span>
+    <span ng-if="size=='large'">Unapprove</span>
   </li>
   <li class="icon delete {{size}}" ng-if="userManager.canDelete(entity)" ng-click="deleteEntity()">
     <span ng-if="size=='large'">Delete</span>

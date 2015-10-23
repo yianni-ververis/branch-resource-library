@@ -38,13 +38,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
         }
         else{
           $scope.blogs = result.data;
-          //if this is the detail view we'll update the breadcrumbs
-          if($state.current.name == "blogs.detail"){
-            $scope.$root.$broadcast('spliceCrumb', {
-              text: $scope.blogs[0].title,
-              link: "/blogs/"+$scope.blogs[0]._id
-            });
-          }
+          //if this is the detail view we'll update the breadcrumbs          
         }
         $scope.blogInfo = result;
         delete $scope.blogInfo["data"];

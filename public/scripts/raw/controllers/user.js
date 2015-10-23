@@ -53,15 +53,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
         $scope.setTab(0);
         delete $scope.userInfo["data"];
 
-        if($state.current.name=="users.detail"){
-          $scope.$root.$broadcast('spliceCrumb', {
-            text: $scope.users[0].username,
-            link: "/users/"+$scope.users[0]._id
-          });
-          defaultSelection.push({
-            field: "userId",
-            values: [{qText:$scope.users[0]._id}]
-          });
+        if($state.current.name=="users.detail"){          
           userManager.refresh(function(hasUser){
             if(!hasUser){
               defaultSelection.push({

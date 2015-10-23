@@ -114,23 +114,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
           $scope.projects = result.data;
 
           $scope.getMyRating($scope.getRate)
-          //if this is the detail view we'll update the breadcrumbs
-          if($state.current.name == "projects.detail"){
-            $scope.$root.$broadcast('spliceCrumb', {
-              text: $scope.projects[0].title,
-              link: "/projects/"+$scope.projects[0]._id
-            });
-          }
-          if($state.current.name == "projects.addedit" && $stateParams.projectId!="new"){
-            $scope.$root.$broadcast('spliceCrumb', {
-              text: $scope.projects[0].title,
-              link: "/projects/"+$scope.projects[0]._id
-            });
-            $scope.$root.$broadcast('addCrumb', {
-              text: "Edit",
-              link: "/projects/"+$scope.projects[0]._id+"/edit"
-            });
-          }
+          //if this is the detail view we'll update the breadcrumbs          
         }
         if($stateParams.status){
           if($stateParams.status=='created'){

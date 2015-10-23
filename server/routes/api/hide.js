@@ -4,7 +4,7 @@
 var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     Error = require("../../controllers/error"),
-    qrs = require("../../../SenseQRS");
+    mailer = require('../../controllers/emailer');
 
 module.exports = function(req, res){
   var query = req.query || {};
@@ -19,9 +19,16 @@ module.exports = function(req, res){
   else{
     MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they own (where applicable)
       if(response.data.length > 0){
-        MasterController.save(query, {approved: false}, entities[entity], function(result){
-          //we should execute a reload of the app here
-          //qrs.executeTask("Branch_Reload");
+        MasterController.save(query, {approved: false, hide_comment: req.body.hideComment}, entities[entity], function(result){
+          //send an email to the owner to tell them what has happened
+          var options = {
+            to: "brian.munz@qlik.com",
+            subject: "Branch Item Unapproved",
+            html: "<p>"+ result.title + " has been unapproved with the following comment - </p>" + req.body.hideComment
+          }
+          mailer.sendMail(options, function(){
+
+          });
           res.json(result);
         });
       }

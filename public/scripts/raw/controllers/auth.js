@@ -85,6 +85,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
         notifications.notify("An email has been sent to the specified address.", null, {sentiment: 'positive'});
       }
       else{
+        $scope.resetting = false;
         notifications.notify(result.errText, null, {sentiment: 'negative'});
       }
     })

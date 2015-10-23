@@ -1,7 +1,7 @@
 //(function() {
-  var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSanitize", "visualCaptcha" ]);
+  var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig, ratingConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig, ratingConfig, subscribeConfig) {
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -175,6 +175,7 @@
   // include "./directives/comments.js"
   // include "./directives/moderation.js"
   // include "./directives/rating.js"
+  // include "./directives/subscribe.js"
   // include "./directives/search-input.js"
   // include "./directives/search-filter.js"
   // include "./directives/search-results.js"

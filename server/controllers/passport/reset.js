@@ -3,7 +3,9 @@ var LocalStrategy = require('passport-local').Strategy,
 		bCrypt = require('bcryptjs'),
 		md5 = require('MD5'),
 		async = require('async'),
-    Error = require('../../controllers/error');
+		_ = require('underscore'),
+		mailer = require('../emailer'),
+    Error = require('../error');
 
 module.exports = function(req, res, next){
   var shared = {}
@@ -29,7 +31,7 @@ module.exports = function(req, res, next){
 
     // create new password
     function(next) {
-      shared.newPassword = $.getRandomString(6);
+      shared.newPassword = getRandomString(8);
       next();
     },
 
@@ -53,7 +55,6 @@ module.exports = function(req, res, next){
 
       // setup email data
       var mailOptions = {
-        from: 'Qlik Branch <branchadmin@qlik.com>',
         to: shared.user.email,
         subject: 'Password reset',
         html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +
@@ -62,11 +63,7 @@ module.exports = function(req, res, next){
       }
 
       // send email with new password
-      $.smtp.sendMail(mailOptions, function(error, info){
-        if(error){
-          return console.log(error)
-        }
-        console.log('Message sent: ' + info.response)
+      mailer.sendMail(mailOptions, function(){
 			  res.json({});
       })
     }
@@ -78,7 +75,10 @@ module.exports = function(req, res, next){
   // })
 }
 
-
+var getRandomString = function(length) {
+	var set = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+	return _.shuffle(set.split('')).splice(0, length).join('')
+}
 // Generates hash using bCrypt
 var createSalt = function(password) {
   return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null)

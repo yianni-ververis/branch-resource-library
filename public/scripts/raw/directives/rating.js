@@ -24,53 +24,97 @@
 		};
   }]);
 
-  module.directive('rating', ['ratingConfig', '$resource', '$timeout', 'resultHandler', function (confirmConfig, $resource, $timeout, resultHandler) {
+  module.directive('rating', ['ratingConfig', '$resource', '$timeout', 'resultHandler', function (resultConfig, $resource, $timeout, resultHandler) {
     return {
 			restrict: "E",
 			replace: true,
 			scope:{
         entity: "=",
         entityid: "=",
-				user: "="
+				user: "=",
+        mode: "=",
+        displaystar: "="
 			},
       templateUrl: "/views/rating.html",
       link: function(scope){
         var Rating = $resource("/api/ratings/:ratingId", {ratingId: "@ratingId"});
 
         scope.$watch('user', function(newVal, oldVal){
-          if(scope.user && scope.entityid){
+          if(scope.user && scope.entityid && scope.mode!='static'){
             scope.getRating();
           }
         });
 
         scope.$watch('entityid', function(newVal, oldVal){
-          if(scope.user && scope.entityid){
+          if(scope.user && scope.entityid && scope.mode!='static'){
             scope.getRating();
           }
         });
 
-        scope.displayStar = -1;
-        scope.stars = {
-          "0": -2,
-          "1": -1,
-          "2": 1,
-          "3": 2,
-          "4": 3
+        scope.stars = [1,2,3,4,5];
+
+        scope.displayStar;
+        scope.pointsMap = {
+          "1": -2,
+          "2": -1,
+          "3": 1,
+          "4": 2,
+          "5": 3
         };
 
-        scope.setDisplayStar = function(index){
-          scope.displayStar = index;
+        scope.getStar = function(){
+          if(scope.displaystar){
+            return Math.round(scope.displaystar);
+          }
+          else if (scope.myRating && scope.myRating.rating) {
+            return Math.round(scope.myRating.rating);
+          }
+          else{
+            return null;
+          }
+        };
+
+        scope.setDisplayStar = function(star){
+          if(scope.mode=='static') {
+            return
+          }
+          scope.displaystar = star;
         };
         scope.clearDisplayStar = function(){
-          scope.displayStar = -1;
+          if(scope.mode=='static') {
+            return
+          }
+          scope.displaystar = null;
         };
 
         scope.getRating = function(){
           Rating.get({entityId: scope.entityid, userid: scope.user}, function(result){
             if(resultHandler.process(result)){
-              scope.myRating = result.data[0];
+              scope.myRating = result.data[0] || {};
             }
           });
+        };
+
+        scope.rate = function(rating){
+          var query = {};
+          if(scope.myRating && scope.myRating._id){
+            query.ratingId = scope.myRating._id;
+            scope.myRating.entityId = scope.entityid;
+            scope.myRating.rating = rating;
+            scope.myRating.points = scope.pointsMap[rating];
+          }
+          else{
+            scope.myRating = {
+              entityId: scope.entityid,
+              rating: rating,
+              points: scope.pointsMap[rating]
+            };
+          }
+          Rating.save(query, scope.myRating, function(result){
+            if(resultHandler.process(result)){
+
+            }
+          })
         };
       }
     }
