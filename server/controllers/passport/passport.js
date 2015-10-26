@@ -1,4 +1,5 @@
 var User = require('../../models/user');
+var LoginHistory = require('../../models/loginhistory');
 
 module.exports = function(passport){
 
@@ -13,7 +14,7 @@ module.exports = function(passport){
   });
 
   //Configure login strategy
-  require('./login.js')(passport, User);
+  require('./login.js')(passport, User, LoginHistory);
 
   //configure signup strategy
   require('./signup.js')(passport, User);

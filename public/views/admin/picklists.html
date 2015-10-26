@@ -20,6 +20,7 @@
   <ul class="picklist-list list">
     <li ng-repeat="item in picklistItems">
       <input class="form-control editable" ng-disabled="userManager.canUpdate('picklists')" ng-model="item.name"/>
+      <div class="delete" ng-show="permissions.canDelete('picklistitems')" ng-click="delete(item._id)">Delete</div>
     </li>
   </ul>
   <div class="">

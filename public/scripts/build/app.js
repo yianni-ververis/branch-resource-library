@@ -105,7 +105,7 @@
     })
     //used to navigate to a given blog detail page
     .state("blogs.detail", {
-      url: "/:blogId",
+      url: "/:blogId?status",
       views:{
         "@":{
           templateUrl: "/views/blogs/detail.html",

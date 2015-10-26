@@ -176,7 +176,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           }
           else{
             //update the contributors
-
+            console.log(gitresult);
             //update the update date and git check data
             var hasChanged = results.data[0].last_updated!=new Date(gitresult.updated_at);
             results.data[0].last_updated = new Date(gitresult.updated_at);

@@ -53,7 +53,11 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
         $scope.setTab(0);
         delete $scope.userInfo["data"];
 
-        if($state.current.name=="users.detail"){          
+        if($state.current.name=="users.detail"){
+          defaultSelection.push({
+            field: "userId",
+            values: [{qText: $stateParams.userId}]
+          });
           userManager.refresh(function(hasUser){
             if(!hasUser){
               defaultSelection.push({

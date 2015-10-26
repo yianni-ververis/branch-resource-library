@@ -6,6 +6,7 @@
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
       <img src="{{projects[0].thumbnail}}" />
       <subscribe entity="'projects'" entityid="projects[0]._id" user="currentuserid"></subscribe>
+      <a href="{{projects[0].download_link}}">Download</a>
     </div>
     <div class="col-md-5">
       <ul class="plainlist">
@@ -54,4 +55,5 @@
   <div comments entity="'projects'" entityid="projectId" parent="projects[0]">
 
   </div>
+  <div class="loading-smoke" ng-show="projectLoading"></div>
 </div>

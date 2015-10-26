@@ -1,31 +1,41 @@
-<div class="container page">
-  <div class="row content blog addeditBlog">
-    <label>Title:</label>
-    <input class="form-control" type="text" ng-model="newBlogTitle" placeholder="Title" />
-    <label>Type:</label>
-    <select class="form-control" name="" ng-model="newBlogType" ng-options="item.name for item in blogTypes track by item._id">
-    </select>
-    <div class="" ng-show="newBlogType.name!='Tweet'">
-      <div class="image-upload">
-        <label>Image:</label>
-        <span class="btn btn-default btn-file">
-          Choose
-          <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="blogImage"/>
-        </span>
+<div class="container page blog-edit">
+  <div class="content">
+    <notification-dialog></notification-dialog>
+    <h1>Create a new Blog Post</h1>
+    <div class="row">
+      <div class="col-md-12">
+        <label>Title:</label>
+        <input class="form-control" type="text" ng-model="blogs[0].title" placeholder="Title" />
+        <label>Type:</label>
+        <select class="form-control" name="" ng-model="blogs[0].blogType" ng-options="item.name for item in blogTypes track by item._id">
+          <option value="">Please specify a Type</option>
+        </select>
       </div>
-      <div class="image-preview">
-        <img src="{{newBlogImage}}" ng-show="newBlogImage"/>
-        <div class="no-image" ng-hide="newBlogImage">
-          No Image Selected<br />Optimum ratio for images is 4:1
+      <div class="col-md-12" ng-show="blogs[0].blogType.name!='Tweet'">
+        <div class="image-upload">
+          <label>Image:</label>
+          <span class="btn btn-default btn-file">
+            Choose
+            <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="blogImage"/>
+          </span>
+        </div>
+        <div class="image-preview">
+          <img src="{{blogs[0].thumbnail}}" ng-show="blogs[0].thumbnail"/>
+          <div class="no-image" ng-hide="blogs[0].thumbnail">
+            No Image Selected<br />Optimum ratio for images is 4:1
+          </div>
         </div>
       </div>
-    </div>
-    <label>Content:</label>
-    <div class="">
-      <div id="blogContent" class="">
+      <div class="col-md-12">
+        <label>Content:</label>
+        <div class="">
+          <div id="blogContent" class="">
 
+          </div>
+        </div>
+        <button class="branch-button" type="button" name="button" ng-click="validateNewBlogData()">Submit for Approval</button>
       </div>
     </div>
-    <button class="btn" type="button" name="button" ng-click="validateNewBlogData()">Submit for Approval</button>
   </div>
+  <div class="loading-smoke" ng-show="blogLoading"></div>
 </div>
