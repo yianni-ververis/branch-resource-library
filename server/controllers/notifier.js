@@ -22,9 +22,9 @@ module.exports = {
         list.data.forEach(function(item, index){
           console.log(item.userid.email);
           options.to = "nwr@qlik.com";
-          mailer.sendMail(options, function(){
-
-          });
+          // mailer.sendMail(options, function(){
+          //
+          // });
         });
       }
     })
