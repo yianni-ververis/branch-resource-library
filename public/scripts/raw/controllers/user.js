@@ -67,7 +67,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
             });
           }
           else{
-            if(!userManager.canApprove('projects')){
+            if(!userManager.canApprove('project')){
               defaultSelection.push({
                 field: "approved",
                 values: [{qText: "True"}]

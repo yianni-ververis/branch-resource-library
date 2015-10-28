@@ -5,7 +5,7 @@
       <h1>{{projects[0].title}}</h1>
       by <a href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
       <img src="{{projects[0].thumbnail}}" />
-      <subscribe entity="'projects'" entityid="projects[0]._id" user="currentuserid"></subscribe>
+      <subscribe entity="'projects" entityid="projects[0]._id" user="currentuserid"></subscribe>
       <a href="{{projects[0].download_link}}">Download</a>
     </div>
     <div class="col-md-5">
@@ -41,8 +41,8 @@
       </ul>
     </div>
     <div class="col-md-3 align-left">
-      <rating entity="'projects'" entityid="projects[0]._id" user="currentuserid"></rating>
-      <moderation entity="'projects'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
+      <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
+      <moderation entity="'project'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
     </div>
   </div>
   <div class="row content">
@@ -52,7 +52,7 @@
     <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
     </div>
   </div>
-  <div comments entity="'projects'" entityid="projectId" parent="projects[0]">
+  <div comments entity="'project'" entityid="projectId" parent="projects[0]">
 
   </div>
   <div class="loading-smoke" ng-show="projectLoading"></div>

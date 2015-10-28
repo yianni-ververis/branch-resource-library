@@ -7,7 +7,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   var defaultSelection;
 
-  if(!userManager.canApprove('blogs')){
+  if(!userManager.canApprove('blog')){
     defaultSelection = {
       field: "approved",
       values: [0],
@@ -216,7 +216,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           }]
         }
         else{
-          if(!userManager.canApprove('blogs')){
+          if(!userManager.canApprove('blog')){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
@@ -228,7 +228,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
       });
     }
     else{
-      if(!userManager.canApprove('blogs')){
+      if(!userManager.canApprove('blog')){
         defaultSelection = [{
           field: "approved",
           values: [{qText: "True"}]

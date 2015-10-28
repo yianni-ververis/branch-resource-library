@@ -85,6 +85,6 @@
     }
   },
   "defaultSort": "last_updated_num",
-  "entity": "projects",
+  "entity": "project",
   "pagesize" : 50
 }
