@@ -1,16 +1,16 @@
 app.service('searchExchange', ["$rootScope", "userManager", function($rootScope, userManager){
   var that = this;
-  var config = {
-    host: "10.211.55.3:8080/anon",
-    isSecure: false,
-    rejectUnauthorized: false
-  };
   // var config = {
-  //   host: "qtdevrelations",
-  //   prefix: "/anon",
-  //   isSecure: true,
+  //   host: "10.211.55.3:8080/anon",
+  //   isSecure: false,
   //   rejectUnauthorized: false
   // };
+  var config = {
+    host: "qtdevrelations",
+    prefix: "/anon",
+    isSecure: true,
+    rejectUnauthorized: false
+  };
 
   this.objects = {};
   this.online = false;
@@ -24,8 +24,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   var senseApp;
 
   qsocks.Connect(config).then(function(global){
-    global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
-    //global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
+    //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+    global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
       senseApp = app;
       $rootScope.$broadcast("senseready", app);
     }, function(error) {
