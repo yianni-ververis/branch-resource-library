@@ -1,7 +1,7 @@
 var LocalStrategy    = require('passport-local').Strategy;
 var md5 						 = require('MD5');
 
-module.exports = function(passport, User){
+module.exports = function(passport, User, LoginHistory){
 
 	passport.use('local', new LocalStrategy({
             usernameField : 'username',
@@ -10,7 +10,7 @@ module.exports = function(passport, User){
         },
         function(req, username, password, done) {
             // check in mongo if a user with username exists or not
-						var regExp = new RegExp("^"+username+"$", "i");						
+						var regExp = new RegExp("^"+username+"$", "i");
             User.findOne({ 'username' : {$regex: regExp} },
                 function(err, user) {
                     // In case of any error, return using the done method
@@ -33,6 +33,12 @@ module.exports = function(passport, User){
                     }
                     // User and password both match, return user from done method
                     // which will be treated like success
+										LoginHistory.create({userid: user._id}, function(err, result){
+											user.lastvisit = result.createdate.getTime();
+											user.save(function(err){
+
+											});
+										});
                     return done(null, user);
                 }
             );

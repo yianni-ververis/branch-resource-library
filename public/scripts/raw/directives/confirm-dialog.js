@@ -53,12 +53,13 @@
           scope.active = true;
         });
         scope.returnOption = function(index){
+					console.log('firing');
 					var comment = $(".confirm-dialog textarea").val();
-          scope.message = null;
+					scope.message = null;
           scope.options = null;
           scope.active = false;
-          scope.callback.call(null, {result: index, comment: comment});
-          scope.callback = null;
+					scope.callback.call(null, {result: index, comment: comment});
+          //scope.callback = null;
         };
       }
     }

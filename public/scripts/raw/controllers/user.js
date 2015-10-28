@@ -1,7 +1,7 @@
 app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, searchExchange){
-  var User = $resource("api/users/:userId", {userId: "@userId"});
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var Blog = $resource("api/blogs/:blogId", {projectId: "@blogId"});
+  var User = $resource("api/user/:userId", {userId: "@userId"});
+  var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+  var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
   var ChangePassword = $resource("auth/change");
 
   $scope.query = {};
@@ -53,25 +53,29 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
         $scope.setTab(0);
         delete $scope.userInfo["data"];
 
-        if($state.current.name=="users.detail"){          
-          userManager.refresh(function(hasUser){
-            if(!hasUser){
+        if($state.current.name=="users.detail"){
+          defaultSelection.push({
+            field: "userId",
+            values: [{qText: $stateParams.userId}]
+          });
+        }
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            defaultSelection.push({
+              field: "approved",
+              values: [{qText: "True"}]
+            });
+          }
+          else{
+            if(!userManager.canApprove('projects')){
               defaultSelection.push({
                 field: "approved",
                 values: [{qText: "True"}]
               });
             }
-            else{
-              if(!userManager.canApprove('projects')){
-                defaultSelection.push({
-                  field: "approved",
-                  values: [{qText: "True"}]
-                });
-              }
-            }
-            searchExchange.init(defaultSelection);
-          });
-        }
+          }
+          searchExchange.init(defaultSelection);
+        });
       }
     });
   };

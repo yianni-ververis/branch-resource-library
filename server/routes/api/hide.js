@@ -17,16 +17,12 @@ module.exports = function(req, res){
     res.json(Error.insufficientPermissions());
   }
   else{
-    MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they own (where applicable)
+    MasterController.get(req.query, query, entities[entity], function(response){
       if(response.data.length > 0){
         MasterController.save(query, {approved: false, hide_comment: req.body.hideComment}, entities[entity], function(result){
           //send an email to the owner to tell them what has happened
-          var options = {
-            to: "brian.munz@qlik.com",
-            subject: "Branch Item Unapproved",
-            html: "<p>"+ result.title + " has been unapproved with the following comment - </p>" + req.body.hideComment
-          }
-          mailer.sendMail(options, function(){
+          var to = "brian.munz@qlik.com";
+          mailer.sendMail('unapprove', req.params.entity, result, function(){
 
           });
           res.json(result);

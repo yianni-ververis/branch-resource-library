@@ -27,6 +27,7 @@
 
 .featured{
   position: relative;
+  border-bottom: 1px solid @content-border;
   p{
     padding: 10px 0;
   }
@@ -37,8 +38,6 @@
     }
   }
   &.article{
-    background-color: @light-grey;
-
     h2{
       color: @default-text;
     }
@@ -66,14 +65,10 @@
   }
 
   .featured-article{
-    color: white;
     background-position: right;
     .featured-article-content{
       float: left;
       width: 50%;
-    }
-    a{
-      color: @dark-grey !important;
     }
   }
 

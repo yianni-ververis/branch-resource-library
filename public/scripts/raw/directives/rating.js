@@ -37,7 +37,7 @@
 			},
       templateUrl: "/views/rating.html",
       link: function(scope){
-        var Rating = $resource("/api/ratings/:ratingId", {ratingId: "@ratingId"});
+        var Rating = $resource("/api/rating/:ratingId", {ratingId: "@ratingId"});
 
         scope.$watch('user', function(newVal, oldVal){
           if(scope.user && scope.entityid && scope.mode!='static'){

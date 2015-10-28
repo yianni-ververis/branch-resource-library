@@ -5,13 +5,14 @@ var picklistItemSchema = new Schema({
   picklistId: Schema.ObjectId,
   name: {
     type: String,
-    required: true,  
+    required: true,
     trim: true
   },
   createuser: {
     type: Schema.ObjectId,
     ref: 'user'
-  }
+  },
+  seq: Number
 });
 
 module.exports = mongoose.model('picklistitem', picklistItemSchema);

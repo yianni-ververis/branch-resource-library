@@ -1,6 +1,6 @@
 <ul class="list">
   <li ng-repeat="project in projects" ng-class="{highlight: highlightRow(project._id)}">
     <a ui-sref="project.detail({id:project._id})">{{project.title}}</a>
-    <div class="use inline right" ng-click="setFeature(project._id)">Use<div>
+    <div class="use inline right" ng-click="setFeature(projects)">Use<div>
   </li>
 </ul>

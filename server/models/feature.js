@@ -11,11 +11,17 @@ var FeatureSchema = new Schema({
     type: String,
     required: true
   },
+  title: String,
   comment: String,
+  image: String,
+  userid: {
+    type: Schema.ObjectId,
+    ref: 'users'
+  },
   entityId: Schema.ObjectId,
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'users'
   },
   edituser: {
     type: Schema.ObjectId,

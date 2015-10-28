@@ -33,6 +33,10 @@
       "suppressNull": false
     },
     {
+      "dimension": "image",
+      "suppressNull": false
+    },
+    {
       "measure": "avg(rating)",
       "label": "rating",
       "sortType" : "qSortByNumeric",

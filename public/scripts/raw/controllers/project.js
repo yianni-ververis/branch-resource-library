@@ -1,10 +1,10 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications){
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
-  var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications, picklistService){
+  var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+  var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
+  var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
   var Git = $resource("system/git/:path", {path: "@path"});
-  var Rating = $resource("api/ratings");
-  var MyRating = $resource("api/ratings/rating/my");
+  var Rating = $resource("api/rating");
+  var MyRating = $resource("api/rating/rating/my");
 
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
@@ -71,57 +71,31 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     }
   };
 
-  $scope.getMyRating= function(query) {
-    // MyRating.save(query, function(result){
-    //   if(resultHandler.process(result)) {
-    //     if (result.total > 0 ) {
-    //       $scope.isReadonly = true
-    //       $scope.rate = result.data[0].rating
-    //     } else {
-    //       $scope.isReadonly = false
-    //     }
-    //   }
-    // })
-  }
-
-  $scope.getPicklistItems = function(picklistName, out){
-    Picklist.get({name: picklistName}, function(result){
-      if(resultHandler.process(result)){
-        if(result.data && result.data[0]){
-          PicklistItem.get({picklistId: result.data[0]._id}, function(result){
-            if(resultHandler.process(result)){
-              $scope[out] = result.data;
-            }
-          });
-        }
-      }
+  $scope.getProductVersions = function(product){
+    picklistService.getPicklistItems(product.name + " Version", function(items){
+      $scope.productVersions = items;
     });
   };
 
-
-  $scope.getProductVersions = function(product){
-    $scope.getPicklistItems(product.name + " Version", "productVersions");
-  };
-
   $scope.getProjectData = function(query, append){
+    $scope.projectLoading = false;
     Project.get(query, function(result){
       if(resultHandler.process(result)){
         $scope.projectLoading = false;
-        if(append && append==true){
-          $scope.projects = $scope.projects.concat(result.data);
-        }
-        else{
-          $scope.projects = result.data;
-
-          $scope.getMyRating($scope.getRate)
-          //if this is the detail view we'll update the breadcrumbs          
+        if(result.data && result.data.length > 0){
+          if(append && append==true){
+            $scope.projects = $scope.projects.concat(result.data);
+          }
+          else{
+            $scope.projects = result.data;
+          }
         }
         if($stateParams.status){
           if($stateParams.status=='created'){
             notifications.notify("Your project has been successfully submitted for approval.", null, {sentiment:"positive"});
           }
           else if ($stateParams.status=='updated') {
-            notifications.notify("Your project has been successfully updated. It may take up to 5 minutes for the project listing page to reflect these changes.", null, {sentiment:"positive"});
+            notifications.notify("Your project has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
           }
         }
         //need to check this!
@@ -135,7 +109,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         $scope.projectInfo = result;
         delete $scope.projectInfo["data"];
 
-        $scope.usegit = $scope.projects[0].git_clone_url!=null ? 'true' : 'false';
         $scope.getProductVersions($scope.projects[0].product);
 
       }
@@ -211,13 +184,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     $scope.projects[0].git_clone_url = project.clone_url;
     $scope.projects[0].git_repo = project.name;
     $scope.projects[0].git_user = project.owner.login;
+    $scope.projects[0].download_link = "https://github.com/"+project.owner.login+"/"+project.name+"/zipball/master";
   };
 
   $scope.checkIfVersionChecked = function(version){
-    console.log($scope.projects[0].productversions);
-    console.log(version);
-    console.log($scope.projects[0].productversions.indexOf(version));
-    if($scope.projects[0].productversions){
+    if($scope.projects[0] && $scope.projects[0].productversions){
       return $scope.projects[0].productversions.indexOf(version)!=-1;
     }
     else {
@@ -239,8 +210,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       thumbnail.onload = function() {
         var width = thumbnail.width;
         var height = thumbnail.height;
-        imageCanvas.width = (width * (600/height));;
-        imageCanvas.height = 600;
+        imageCanvas.width = width;
+        imageCanvas.height = height;
         thumbnailCanvas.width = (width * (77/height));
         thumbnailCanvas.height = 77;
 
@@ -253,7 +224,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         }
 
         //draw the thumbnail and save the blob
-        thumbnailContext.drawImage(thumbnail, 0, 0, thumbnailCanvas.width * (77/thumbnailCanvas.height), 77);
+        thumbnailContext.drawImage(thumbnail, 0, 0, thumbnailCanvas.width, thumbnailCanvas.height);
         $scope.thumbnail = {
           type: imageType,
           name: imageName,
@@ -325,6 +296,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.saveNewProject = function(){
     var versions = [];
+    $scope.projectLoading = true;
     $(".product-version:checkbox:checked").each(function(index, val){
       versions.push($(this).attr("data-versionid"));
       if(index==$(".product-version:checkbox:checked").length - 1){
@@ -343,6 +315,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       query.projectId = $scope.projects[0]._id;
     }
     Project.save(query, data, function(result){
+      $scope.projectLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
         window.location = "#projects/"+result._id+"?status="+status;
@@ -375,9 +348,18 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     });
   }
   else if($state.current.name=="projects.addedit"){
-    $scope.getPicklistItems("Product", "projectProducts", true);
-    $scope.getPicklistItems("Category", "projectCategories", true);
-    $scope.getPicklistItems("Project Status", "projectStatuses", true);
+    picklistService.getPicklistItems("Product", function(items){
+      $scope.projectProducts = items;
+    });
+    picklistService.getPicklistItems("Category", function(items){
+      $scope.projectCategories = items;
+    });
+    picklistService.getPicklistItems("Project Status", function(items){
+      $scope.projectStatuses = items;
+    });
+    if($stateParams.projectId=="new"){
+      $scope.projects = [{}];
+    }
     var hasUser = userManager.hasUser();
     if(!hasUser){
       userManager.refresh(function(hasUser){
@@ -428,23 +410,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       //this effectively initiates the results
       searchExchange.clear(true);
     }
-    //$("#newProjectContent").summernote();
-    //$scope.projects = [{}]; //add en empty object
-  }
-
-  function canvasToBlob(canvas, type){
-    var byteString = atob(canvas.toDataURL().split(",")[1]),
-        ab = new ArrayBuffer(byteString.length),
-        ia = new Uint8Array(ab),
-        i;
-
-    for (i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-
-    return new Blob([ab], {
-        type: type
-    });
   }
 
 }]);

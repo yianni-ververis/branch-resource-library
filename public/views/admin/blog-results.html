@@ -1,0 +1,16 @@
+<ul class="blog-list plainlist">
+  <li ng-repeat="blog in items" id="{{blog.blogId}}" ng-hide="isHidden(blog.blogId)">
+    <div class="col-md-8">
+      <div class="thumb-container">
+        <img src="{{blog.thumbnail}}"/>
+      </div>
+      <div class="blog-summary">
+        <a class="list-title" href="#blogs/{{blog.blogId}}">{{blog.title}}</a>
+        <a href="#users/{{blog.userid}}">{{blog.username || blog.userid.username}}</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button class="branch-button" type="button" name="button" ng-click="broadcast('setFeature', [{id: blog.blogId, data:blog}])">Use</button>
+    </div>
+  </li>
+</ul>
