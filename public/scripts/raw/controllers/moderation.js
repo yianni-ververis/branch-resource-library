@@ -7,12 +7,15 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
     return $scope.approved == "True" || $scope.approved == true;
   };
 
-  $scope.flagEntity = function(){
-    //Need to implement new flagging functionality
-    var fn = $scope.flagged==true ? "unflag" : "flag";
-    Entity.save({entityId: $scope.entityid, function: fn}, function(result){
-      if(resultHandler.process(result)){
-        $scope.flagged = !$scope.flagged;
+  $scope.flagEntity = function(flagType){
+    confirm.prompt("Please provide a comment for this action.", {requireComment: true, options:["Ok", "Cancel"]}, function(response){
+      var fn = $scope.flagged==true ? "unflag" : "flag";
+      if(response.result==0){
+        Entity.save({entityId: $scope.entityid, function: fn}, {comment: response.comment, flagType: flagType}, function(result){
+          if(resultHandler.process(result)){
+            $scope.flagged = !$scope.flagged;
+          }
+        });
       }
     });
   };
@@ -53,4 +56,18 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
       }
     });
   };
+
+  if(!userManager.hasUser()){
+    userManager.refresh(function(hasUser){
+      if(!hasUser){
+        $scope.hasUser = false;
+      }
+      else{
+        $scope.hasUser = true;
+      }
+    })
+  }
+  else{
+    $scope.hasUser = true;
+  }
 }]);

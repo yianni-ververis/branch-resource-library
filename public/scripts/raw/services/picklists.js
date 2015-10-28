@@ -1,6 +1,6 @@
 app.service('picklistService', ['$resource', 'resultHandler', function($resource, resultHandler){
-  var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
-  var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+  var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
+  var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
 
   this.getPicklistItems = function(picklistName, callbackFn){
     Picklist.get({name: picklistName}, function(result){

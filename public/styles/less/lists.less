@@ -188,6 +188,7 @@
 .picklist-list{
   li{
     input{
+      width: ~"calc(100% - 120px)";
       &.editable{
         border: none;
         background-color: transparent;
@@ -195,6 +196,10 @@
         height: 30px;
         line-height: 30px;
       }
+    }
+    .delete, .move{
+      width: 30px;
+      display: inline-block;
     }
   }
 }

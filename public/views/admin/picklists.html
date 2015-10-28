@@ -19,12 +19,16 @@
   </div> -->
   <ul class="picklist-list list">
     <li ng-repeat="item in picklistItems">
-      <input class="form-control editable" ng-disabled="userManager.canUpdate('picklists')" ng-model="item.name"/>
-      <div class="delete" ng-show="permissions.canDelete('picklistitems')" ng-click="delete(item._id)">Delete</div>
+      <input class="form-control editable" ng-disabled="!userManager.canUpdate('picklistitems')" ng-model="item.name"/>      
+      <div class="move icon down medium" ng-disabled="$index==picklistItems.length-1 || picklistItems.length==1" ng-click="movePicklistItem($index, 1)"></div>
+      <div class="move icon up medium" ng-disabled="$index==0 || picklistItems.length==1" ng-click="movePicklistItem($index, -1)"></div>
+      <div class="icon medium delete" ng-show="userManager.canDelete('picklistitems')" ng-click="deletePicklistItem(item._id)"></div>
     </li>
   </ul>
   <div class="">
-    <input class="form-control" type="text" placeholder="New Item" ng-model="newlistitem" />
-    <div class="new inline" ng-click="newPicklistItem(newlistitem)">Add</div>
+    <form ng-submit="newPicklistItem(newlistitem)">
+      <input class="form-control" type="text" placeholder="New Item" ng-model="newlistitem" />
+      <button type="submit" class="new inline">Add</div>
+    </form>
   </div>
 </div>

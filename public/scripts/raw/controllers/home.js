@@ -1,7 +1,7 @@
 app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
-  var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
+  var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
+  var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+  var Article = $resource("api/article/:articleId", {articleId: "@articleId"});
 
   $scope.featuredProject = {};
   $scope.featuredArticle = {};
@@ -17,20 +17,10 @@ app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams
         var entityId = $scope.features[f].entityId;
         switch ($scope.features[f].name){
           case "project":
-          $scope.featuredProject.comment = $scope.features[f].comment;
-            Project.get({projectId: entityId}, function(result){
-              if(resultHandler.process(result)){
-                $scope.featuredProject.project = result.data[0];
-              }
-            });
+            $scope.featuredProject = $scope.features[f];
             break;
           case "article":
-          $scope.featuredArticle.comment = $scope.features[f].comment;
-            Article.get({articleId: entityId}, function(result){
-              if(resultHandler.process(result)){
-                $scope.featuredArticle.article = result.data[0];
-              }
-            });
+            $scope.featuredArticle = $scope.features[f];
             break;
         }
       }

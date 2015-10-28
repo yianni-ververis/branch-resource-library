@@ -1,5 +1,5 @@
 module.exports = {
-    users:{
+    user:{
       collection: "users",
       model: require("../models/user"),
       populates: "role",
@@ -12,7 +12,7 @@ module.exports = {
       limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    projects:{
+    project:{
       collection: "projects",
       model: require("../models/project"),
       populates: "userid category product status",
@@ -25,7 +25,7 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    blogs:{
+    blog:{
       collection: "blogs",
       model: require("../models/blog"),
       populates: "userid",
@@ -38,7 +38,7 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    ratings: {
+    rating: {
       collection: "ratings",
       model: require("../models/rating"),
       populates: "userid",
@@ -48,7 +48,7 @@ module.exports = {
       logViews: false,
       limit: 10,
     },
-    subscriptions: {
+    subscription: {
       collection: "subscriptions",
       model: require("../models/subscription"),
       populates: "userid",
@@ -58,7 +58,7 @@ module.exports = {
       logViews: false,
       limit: 10,
     },
-    views: {
+    view: {
       collection: "views",
       model: require("../models/views"),
       populates: "userid",
@@ -68,7 +68,7 @@ module.exports = {
       logViews: false,
       limit: 10,
     },
-    articles:{
+    article:{
       collection: "articles",
       model: require("../models/article"),
       populates: "userid",
@@ -81,7 +81,7 @@ module.exports = {
       limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    comments:{
+    comment:{
       collection: "comments",
       model: require("../models/comment"),
       populates: "userid",
@@ -94,7 +94,7 @@ module.exports = {
       limit: 10,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    userroles:{
+    userrole:{
       collection: "userroles",
       model: require("../models/userrole"),
       populates: "",
@@ -106,10 +106,10 @@ module.exports = {
       },
       requiresAuthentication: true    //only applies to GET requests. All other requests MUST be authenticated
     },
-    features:{
+    feature:{
       collection: "features",
       model: require("../models/feature"),
-      populates: "",
+      populates: "userid",
       exemptFromOwnership: true,
       exemptFromApproval: true,
       logViews: false,
@@ -130,7 +130,7 @@ module.exports = {
       },
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    products:{
+    product:{
       collection: "products",
       model: require("../models/product"),
       populates: "",
@@ -142,7 +142,7 @@ module.exports = {
       },
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    picklists: {
+    picklist: {
       collection: "picklists",
       model: require("../models/picklist"),
       populates: "",
@@ -154,7 +154,7 @@ module.exports = {
       },
       requiresAuthentication: false
     },
-    picklistitems: {
+    picklistitem: {
       collection: "picklistitems",
       model: require("../models/picklistitem"),
       populates: "",
@@ -162,11 +162,11 @@ module.exports = {
       exemptFromApproval: true,
       logViews: false,
       sort: {
-        name: 1
+        seq: 1
       },
       requiresAuthentication: false
     },
-    flags: {
+    flag: {
       collection: "flags",
       model: require("../models/flag"),
       populates: "",

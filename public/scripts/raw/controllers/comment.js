@@ -1,5 +1,5 @@
 app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
-  var Comment = $resource("api/comments/:commentId", {commentId: "@commentId"});
+  var Comment = $resource("api/comment/:commentId", {commentId: "@commentId"});
   var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
 
   $scope.userManager = userManager;

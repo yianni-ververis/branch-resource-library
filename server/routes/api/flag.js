@@ -13,32 +13,41 @@ module.exports = {
     var user = req.user;
     var userPermissions = req.user.role.permissions[entity];
 
-    //check that the user has sufficient permissions for this operation
-    if(!userPermissions || userPermissions.flag!=true){
-      res.json(Error.insufficientPermissions());
+    if(req.body.flagType == "spam"){
+      if(!user){
+        res.json(Error.notLoggedIn());
+      }
     }
     else{
-      MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they have access to
-        if(response.data.length > 0){
-          var flag = new Flag();
-          flag.userid = user._id;
-          flag.flagged = true;
-          flag.entity = req.params.entity;
-          flag.entityId = req.params.id;
-          flag.save(function(err){
-            if(err){
-
-            }
-            else{
-              res.json(flag);
-            }
-          });
-        }
-        else{
-          res.json(Error.noRecord());
-        }
-      });
+      //check that the user has sufficient permissions for this operation
+      if(!userPermissions || userPermissions.flag!=true){
+        res.json(Error.insufficientPermissions());
+      }
     }
+    console.log('flag query');
+    console.log(query);
+    MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they have access to
+      if(response.data.length > 0){
+        var flag = new Flag();
+        flag.userid = user._id;
+        flag.flagged = true;
+        flag.flagType = req.body.flagType;
+        flag.comment = req.body.comment;
+        flag.entity = req.params.entity;
+        flag.entityId = req.params.id;
+        flag.save(function(err){
+          if(err){
+            res.json(Error.custom(err));
+          }
+          else{
+            res.json(flag);
+          }
+        });
+      }
+      else{
+        res.json(Error.noRecord());
+      }
+    });
   },
   unflag: function(req, res){
     var query = req.query || {};
@@ -61,7 +70,7 @@ module.exports = {
         else{
           res.json(result);
         }
-      });        
+      });
     }
   }
 };

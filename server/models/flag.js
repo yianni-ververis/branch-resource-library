@@ -12,6 +12,8 @@ var flagSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'users'
   },
+  flagType: String,
+  comment: String,
   flagged: Boolean
 });
 

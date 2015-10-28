@@ -1,5 +1,5 @@
 app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, notifications, picklistService){
-  var Blog = $resource("api/blogs/:blogId", {blogId: "@blogId"});
+  var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
   $scope.pageSize = 20;
   $scope.query = {};
 

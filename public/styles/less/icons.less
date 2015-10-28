@@ -31,6 +31,22 @@
   }
 }
 
+.move{
+  &.up{
+    &::before{
+      content: "\E806";
+    }
+  }
+  &.down{
+    &::before{
+      content: "\E805";
+    }
+  }
+  &[disabled]{
+    color: @disabled;
+  }
+}
+
 .prev{
   &::before{
     content: "\E80A";

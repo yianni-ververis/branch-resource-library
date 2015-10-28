@@ -1,26 +1,28 @@
-app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange){
-  var User = $resource("api/users/:userId", {userId: "@userId"});
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var Article = $resource("api/articles/:articleId", {articleId: "@articleId"});
-  var UserRoles = $resource("api/userroles/:roleId", {roleId: "@roleId"});
-  var Feature = $resource("api/features/:featureId", {featureId: "@featureId"});
-  var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
-  var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, confirm){
+  var User = $resource("api/user/:userId", {userId: "@userId"});
+  var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+  var Article = $resource("api/article/:articleId", {articleId: "@articleId"});
+  var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
+  var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
+  var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
+  var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
 
   $scope.userManager = userManager;
 
+  $scope.doingStuff = false;
+
   $scope.collections = [
-    "users",
-    "userroles",
-    "features",
-    "projects",
-    "comments",
-    "blogs",
-    "picklists",
-    "picklistitems",
-    "flags",
-    "ratings",
-    "subscriptions"
+    "user",
+    "userrole",
+    "feature",
+    "project",
+    "comment",
+    "blog",
+    "picklist",
+    "picklistitem",
+    "flag",
+    "rating",
+    "subscription"
   ];
 
   var defaultSelection;
@@ -92,19 +94,16 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
 
   $scope.setActiveFeature = function(index){
     $scope.activeFeature = index;
-    if($scope.features[$scope.activeFeature].name=="project"){
-      Project.get({projectId: $scope.features[$scope.activeFeature].entityId}, function(result){
-        if(resultHandler.process(result)){
-          if(result.data.length > 0){
-            $scope.currentFeature = result.data[0];
-          }
+    Feature.get({_id: $scope.features[$scope.activeFeature]._id}, function(result){
+      if(resultHandler.process(result)){
+        if(result.data && result.data.length > 0){
+          $scope.currentFeature = result.data[0];
         }
-      })
-    }
+      }
+    });
   };
 
   $scope.saveRole = function(){
-    console.log($scope.roles[$scope.activeRole]);
     UserRoles.save({roleId:$scope.roles[$scope.activeRole]._id}, $scope.roles[$scope.activeRole], function(result){
       if(resultHandler.process(result, "Save")){
         $scope.userManager.refresh();
@@ -113,7 +112,6 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   };
 
   $scope.savePicklist = function(){
-    console.log($scope.picklists[$scope.activePicklist]);
     Picklists.save({picklistId:$scope.picklists[$scope.activePicklist]._id}, $scope.picklists[$scope.activePicklist], function(result){
       if(resultHandler.process(result, "Save")){
 
@@ -135,7 +133,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   $scope.newPicklist = function(newlistname){
     var that = this;
     Picklist.save({}, {name: newlistname}, function(result){
-      if(resultHandler.process(result, "Create")){
+      if(resultHandler.process(result)){
         $scope.picklists.push(result);
         that.newlistname = "";
         $scope.setActivePickList($scope.picklists.length -1);
@@ -147,7 +145,8 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     var that = this;
     var item = {
       name: newlistitem,
-      picklistId: $scope.picklists[$scope.activePicklist]._id
+      picklistId: $scope.picklists[$scope.activePicklist]._id,
+      seq: $scope.picklistItems.length
     };
     that.newlistitem = "";
     $scope.savePicklistItem(item);
@@ -163,7 +162,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
 
   $scope.savePicklistItem = function(item){
     PicklistItem.save({picklistitemId: item._id || ""}, item, function(result){
-      if(resultHandler.process(result, "Save")){
+      if(resultHandler.process(result)){
         if($scope.picklistItems){
           $scope.picklistItems.push(result);
         }
@@ -180,7 +179,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
       copyrolename += " - copy";
     }
     UserRoles.save({}, {name: copyrolename, permissions: roleToCopy.permissions}, function(result){
-      if(resultHandler.process(result, "Copy")){
+      if(resultHandler.process(result)){
         $scope.roles.push(result);
         $scope.setRole($scope.roles.length -1);
       }
@@ -191,21 +190,42 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     $scope.setFeature(args[0]);
   });
 
-  $scope.setFeature = function(id){
-    //if($scope.features[$scope.activeFeature].name=="project"){
-      $scope.features[$scope.activeFeature].entityId = id;
-      Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, {entityId: id}, function(result){
-        if(resultHandler.process(result)){
-          $scope.setActiveFeature($scope.activeFeature);
-        }
+  $scope.changeFeatureImage = function(){
+    confirm.prompt("Would you like to upload an image or enter a url to link to?", {options:["Upload", "Link", "Cancel"]}, function(response){
+      if(response.result==0){
+        //upload
+      }
+      else if(response.result==1){
+        //link
+        confirm.prompt("Please enter a link to an image", {requireComment: true, options:["Ok","Cancel"]}, function(response){
+          if(response.result==0){
+            $scope.currentFeature.image = response.comment;
+            $scope.saveFeature();
+          }
+        });
+      }
+    });
+  };
 
-      });
-    //}
+  $scope.setFeature = function(entity){
+    $scope.features[$scope.activeFeature].entityId = entity.id;
+    currentFeature.entityId = entity.id;
+    currentFeature.title = entity.data.title;
+    currentFeature.comment = entity.data.short_description || entity.data.content;
+    currentFeature.image = entity.data.image=="-"? entity.data.thumbnail : entity.data.image;
+    currentFeature.userid = entity.data.user;
+    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, data, function(result){
+      if(resultHandler.process(result)){
+        $scope.setActiveFeature($scope.activeFeature);
+      }
+    });
   };
 
   $scope.saveFeature = function(){
-    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.features[$scope.activeFeature], function(result){
-      resultHandler.process(result);
+    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.currentFeature, $scope.features[$scope.activeFeature], function(result){
+      if(resultHandler.process(result)){
+        $scope.setActiveFeature($scope.activeFeature);
+      }
     });
   };
 
@@ -214,5 +234,40 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
       return true;
     }
     return false;
-  }
+  };
+
+  $scope.deletePicklistItem = function(id){
+    $scope.doingStuff = true;
+    PicklistItem.delete({picklistitemId: id}, function(result){
+      $scope.doingStuff = false;
+      if(resultHandler.process(result)){
+          $scope.setActivePickList($scope.activePicklist);
+      }
+    });
+  };
+
+  $scope.movePicklistItem = function(index, direction){
+    var stepA = $scope.picklistItems[index];
+    var stepB = $scope.picklistItems[index + direction];
+    originalA = stepA.seq || index;
+    originalB = stepA.seq || (index + direction);
+    if(!stepA.seq){
+      stepA.seq = originalA;
+    }
+    if(!stepB.seq){
+      stepB.seq = originalB;
+    }
+    stepA.seq += direction;
+    stepB.seq -= direction;
+    PicklistItem.save({picklistitemId: stepA._id}, stepA, function(result){
+      if(resultHandler.process(result)){
+        PicklistItem.save({picklistitemId: stepB._id}, stepB, function(result){
+          if(resultHandler.process(result)){
+            $scope.picklistItems.splice(originalA, 1);
+            $scope.picklistItems.splice(originalA+=direction, 0, stepA);
+          }
+        });
+      }
+    });
+  };
 }]);

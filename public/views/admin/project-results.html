@@ -5,12 +5,12 @@
         <img src="{{project.thumbnail}}"/>
       </div>
       <div class="project-summary">
-        <a href="#projects/{{project.projectId}}">{{project.title}}</a>
+        <a class="list-title" href="#projects/{{project.projectId}}">{{project.title}}</a>
         <a href="#users/{{project.userid}}">{{project.username || project.userid.username}}</a>
       </div>
     </div>
     <div class="col-md-4">
-      <button type="button" name="button" ng-click="broadcast('setFeature', [project.projectId])">Use</button>
+      <button class="branch-button" type="button" name="button" ng-click="broadcast('setFeature', [{id: project.projectId, data:project}])">Use</button>
     </div>
   </li>
 </ul>

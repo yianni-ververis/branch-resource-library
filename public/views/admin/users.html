@@ -1,5 +1,4 @@
 <div class="user">
   <search-input></search-input>
-  <search-results config="users" pagesize="pageSize"></search-results>
-  <ng-include ng-show="{{users.length==0}}" src="'/views/noresults.html'"></ng-include>
+  <search-results id="adminUserResults" data-config="users"></search-results>  
 </div>

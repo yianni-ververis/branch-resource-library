@@ -11,6 +11,6 @@
     <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.email}}</a>
     <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.email}}</a>
     <a class="link" ui-sref=".detail({userId:'{{user.userid}}'})">{{user.role}}</a>
-    <div class="delete" ng-show="permissions.canDelete('users')" ng-click="delete(user.userid)">Delete</div>
+    <div class="delete" ng-show="userManager.canDelete('users')" ng-click="delete(user.userid)">Delete</div>
   </li>
 </ul>

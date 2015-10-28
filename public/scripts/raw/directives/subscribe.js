@@ -39,7 +39,7 @@
       },
       link: function(scope){
         scope.buttonText = "Please wait...";
-        var Subscribe = $resource("/api/subscriptions/:subId", {subId: "@subId"});
+        var Subscribe = $resource("/api/subscription/:subId", {subId: "@subId"});
 
         scope.$watch('user', function(newVal, oldVal){
           if(scope.user && scope.entityid){

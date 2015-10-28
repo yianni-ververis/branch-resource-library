@@ -8,19 +8,11 @@ app.service('resultHandler', ["notifications", function(notifications){
       }
       return false;
     }
-    else if (result.errCode) {      
-      // notifications.showError({
-      //   message: result.errText,
-      //   hideDelay: 3000,
-      //   hide: true
-      // });
+    else if (result.errCode) {
+      
       return false;
     }
     else {
-      //if an action has been passed notify the user of it's success
-      if(action){
-        notifications.showSuccess({message: action + " Successful"});
-      }
       return true;
     }
   }

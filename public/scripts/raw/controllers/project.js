@@ -1,10 +1,10 @@
 app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications, picklistService){
-  var Project = $resource("api/projects/:projectId", {projectId: "@projectId"});
-  var Picklist = $resource("api/picklists/:picklistId", {picklistId: "@picklistId"});
-  var PicklistItem = $resource("api/picklistitems/:picklistitemId", {picklistitemId: "@picklistitemId"});
+  var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+  var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
+  var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
   var Git = $resource("system/git/:path", {path: "@path"});
-  var Rating = $resource("api/ratings");
-  var MyRating = $resource("api/ratings/rating/my");
+  var Rating = $resource("api/rating");
+  var MyRating = $resource("api/rating/rating/my");
 
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
@@ -72,7 +72,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.getProductVersions = function(product){
-    $scope.getPicklistItems(product.name + " Version", "productVersions");
+    picklistService.getPicklistItems(product.name + " Version", function(items){
+      $scope.productVersions = items;
+    });
   };
 
   $scope.getProjectData = function(query, append){
