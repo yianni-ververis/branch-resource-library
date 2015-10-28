@@ -208,13 +208,13 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   };
 
   $scope.setFeature = function(entity){
-    $scope.features[$scope.activeFeature].entityId = entity.id;
-    currentFeature.entityId = entity.id;
-    currentFeature.title = entity.data.title;
-    currentFeature.comment = entity.data.short_description || entity.data.content;
-    currentFeature.image = entity.data.image=="-"? entity.data.thumbnail : entity.data.image;
-    currentFeature.userid = entity.data.user;
-    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, data, function(result){
+    //$scope.features[$scope.activeFeature].entityId = entity.id;
+    $scope.currentFeature.entityId = entity.id;
+    $scope.currentFeature.title = entity.data.title;
+    $scope.currentFeature.comment = entity.data.short_description || entity.data.content;
+    $scope.currentFeature.image = entity.data.image=="-"? entity.data.thumbnail : entity.data.image;
+    $scope.currentFeature.userid = entity.data.user;
+    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.currentFeature, function(result){
       if(resultHandler.process(result)){
         $scope.setActiveFeature($scope.activeFeature);
       }
