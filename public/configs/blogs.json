@@ -54,6 +54,6 @@
     }
   },
   "defaultSort": "createdate",
-  "entity": "blogs",
+  "entity": "blog",
   "pagesize" : 20
 }

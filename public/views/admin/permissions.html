@@ -4,7 +4,7 @@
     <li ng-class="{active:activeRole===$index}" ng-repeat="role in roles" ng-click="setRole($index)">
       <a>{{role.name}}</a>
     </li>
-    <li ng-show="userManager.canCreate('userroles')" >
+    <li ng-show="userManager.canCreate('userrole')" >
       <input class="form-control new-input" ng-model="newrolename" placeholder="New Role"/>
       <div class="new inline" ng-click="newRole(newrolename)">Add</div>
     </li>
@@ -13,9 +13,9 @@
 <div class="col-md-9">
   <h2 class="underline">Permissions</h2>
   <div class="permission-summary">
-    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!userManager.canCreate('userroles')" ng-model="copyRoleName"/>
-    <div class="copy inline" ng-show="userManager.canCreate('userroles')" ng-click="copyRole(copyRoleName)">Copy</div>
-    <button ng-click="delete(activeRole)" ng-show="userManager.canDelete('userroles') && copyRoleName!='admin'" class="btn btn-default btn-delete">Delete</button>
+    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!userManager.canCreate('userrole')" ng-model="copyRoleName"/>
+    <div class="copy inline" ng-show="userManager.canCreate('userrole')" ng-click="copyRole(copyRoleName)">Copy</div>
+    <button ng-click="delete(activeRole)" ng-show="userManager.canDelete('userrole') && copyRoleName!='admin'" class="btn btn-default btn-delete">Delete</button>
   </div>
   <ul class="permission-list list">
     <li class="table-header">

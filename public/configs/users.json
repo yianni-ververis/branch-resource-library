@@ -28,6 +28,6 @@
     }
   },
   "defaultSort": "username",
-  "entity": "users",
+  "entity": "user",
   "pagesize" : 20
 }

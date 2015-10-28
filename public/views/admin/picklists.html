@@ -4,7 +4,7 @@
     <li ng-class="{active:activePicklist===$index}" ng-repeat="list in picklists" ng-click="setActivePickList($index)">
       <a>{{list.name}}</a>
     </li>
-    <li ng-show="userManager.canCreate('picklists')" >
+    <li ng-show="userManager.canCreate('picklist')" >
       <input class="form-control new-input" ng-model="newlistname" placeholder="New Picklist"/>
       <div class="new inline" ng-click="newPicklist(newlistname)">Add</div>
     </li>
@@ -12,17 +12,12 @@
 </div>
 <div class="col-md-9">
   <h2 class="underline">Items</h2>
-  <!-- <div class="picklist-summary">
-    <label>Name:</label><input class="form-control copy-input" ng-change="saveRole()" ng-disabled="!userManager.canCreate('picklists')" ng-model="copyListName"/>
-    <div class="copy inline" ng-show="userManager.canCreate('picklists')" ng-click="copyPickist(copyListName)">Copy</div>
-    <button ng-click="delete(activePicklist)" ng-show="userManager.canDelete('picklists')" class="btn btn-default btn-delete">Delete</button>
-  </div> -->
   <ul class="picklist-list list">
     <li ng-repeat="item in picklistItems">
-      <input class="form-control editable" ng-disabled="!userManager.canUpdate('picklistitems')" ng-model="item.name"/>      
+      <input class="form-control editable" ng-disabled="!userManager.canUpdate('picklistitem')" ng-model="item.name"/>
       <div class="move icon down medium" ng-disabled="$index==picklistItems.length-1 || picklistItems.length==1" ng-click="movePicklistItem($index, 1)"></div>
       <div class="move icon up medium" ng-disabled="$index==0 || picklistItems.length==1" ng-click="movePicklistItem($index, -1)"></div>
-      <div class="icon medium delete" ng-show="userManager.canDelete('picklistitems')" ng-click="deletePicklistItem(item._id)"></div>
+      <div class="icon medium delete" ng-show="userManager.canDelete('picklistitem')" ng-click="deletePicklistItem(item._id)"></div>
     </li>
   </ul>
   <div class="">

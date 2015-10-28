@@ -20,9 +20,7 @@
           <li><i>{{blog.replycount}}</i> Comments</li>
         </ul>
       </div>
-      <div class="col-md-1" moderation entity="'blogs'" entityid="blog.blogId" approved="blog.approved">
-
-      </div>
+      <moderation entity="'blog'" entityid="blog.blogId" approved="blog.approved" size="'medium'" flagged="flagged[blog.blogId]" flagcount="blog.flagcount" editable="false"></moderation>      
     </div>
   </li>
 </ul>

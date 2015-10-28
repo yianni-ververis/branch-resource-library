@@ -389,7 +389,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
           }]
         }
         else{
-          if(!userManager.canApprove('projects')){
+          if(!userManager.canApprove('project')){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
@@ -401,7 +401,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       });
     }
     else{
-      if(!userManager.canApprove('projects')){
+      if(!userManager.canApprove('project')){
         defaultSelection = [{
           field: "approved",
           values: [{qText: "True"}]
