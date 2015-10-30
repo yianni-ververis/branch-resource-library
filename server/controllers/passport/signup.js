@@ -1,11 +1,12 @@
-var LocalStrategy = require('passport-local').Strategy
-var bCrypt = require('bcryptjs')
-var md5 = require('MD5')
-var async = require('async')
-var spamCheck = require('spam-check')
-var spamchecker = require('known-spam-emails')
+var LocalStrategy = require('passport-local').Strategy;
+var bCrypt = require('bcryptjs');
+var md5 = require('MD5');
+var async = require('async');
+var spamCheck = require('spam-check');
+var spamchecker = require('known-spam-emails');
+var mongoose = require("mongoose");
 
-module.exports = function(passport, User){
+module.exports = function(passport, User, UserProfile){
 
 	passport.use('signup', new LocalStrategy({
       usernameField: 'username',
@@ -33,7 +34,7 @@ module.exports = function(passport, User){
 
         // check user already exists
         function(next) {
-          User.findOne({ $or: [{ username: username }, { email: req.body.email }]  }, function(err, user) {
+          UserProfile.findOne({ $or: [{ username: username }, { email: req.body.email }]  }, function(err, user) {
             if (err) return next(err)
 
             if (user) {
@@ -55,7 +56,9 @@ module.exports = function(passport, User){
 
         // create new user
         function(next) {
-          var newUser = new User(req.body)
+					var newUserId = mongoose.Types.ObjectId();
+          var newUser = new User({_id: newUserId});
+
 
           // set the user's local credentials
           newUser.salt = createSalt(password)
@@ -64,11 +67,16 @@ module.exports = function(passport, User){
           // save the user
           newUser.save(function(err) {
             if (err) return next(err)
+						var newUserProfileData = req.body;
+						newUserProfileData._id = newUserId;
+						var newUserProfile = new UserProfile(newUserProfileData)						
+						newUserProfile.save(function(err){
+							console.log('User Registration succesful')
+							shared.newUser = newUserProfile
+								if (err) return next(err)
+							next()
+						});
 
-            console.log('User Registration succesful')
-            shared.newUser = newUser
-
-            next()
           })
         }
 

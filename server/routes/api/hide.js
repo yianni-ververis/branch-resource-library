@@ -20,8 +20,6 @@ module.exports = function(req, res){
     MasterController.get(req.query, query, entities[entity], function(response){
       if(response.data.length > 0){
         MasterController.save(query, {approved: false, hide_comment: req.body.hideComment}, entities[entity], function(result){
-          //send an email to the owner to tell them what has happened
-          var to = "brian.munz@qlik.com";
           mailer.sendMail('unapprove', req.params.entity, result, function(){
 
           });

@@ -6,6 +6,8 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var Rating = $resource("api/rating");
   var MyRating = $resource("api/rating/rating/my");
 
+  console.log('firing project controller');
+
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
   });
@@ -13,7 +15,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.$on("cleared", function(){
     searchExchange.init(defaultSelection);
-  })
+  });
 
   $scope.pageSize = 20;
 
@@ -78,7 +80,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.getProjectData = function(query, append){
-    $scope.projectLoading = false;
+    $scope.projectLoading = true;
     Project.get(query, function(result){
       if(resultHandler.process(result)){
         $scope.projectLoading = false;

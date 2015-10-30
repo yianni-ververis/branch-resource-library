@@ -108,12 +108,13 @@ module.exports = {
   save: function(query, data, entity, callbackFn){
     if(query){ //update
       console.log('updating record');
-      entity.model.findOneAndUpdate(query, data, function(err, result){
+      entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
         if(err){
           console.log(err);
           callbackFn.call(null, Error.errorSaving(err.message));
         }
         else{
+          console.log(result);
           callbackFn.call(null, result);
         }
       });

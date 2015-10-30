@@ -39,6 +39,6 @@ module.exports = {
     return {
       errCode: 5,
       errText: "Could not delete record. " + (customText || "")
-    }
+    }  
   }
 }

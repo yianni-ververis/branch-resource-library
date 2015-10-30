@@ -1,7 +1,7 @@
 <div class="picklist content">
   <h1>{{title}}</h1>
   <ul class="plainlist">
-    <li ng-class="{selected:item[0].qState == 'S', grey:item[0].qState=='X', locked: item[0].qState=='L'}" ng-repeat="item in info.items" ng-click="selectValue(item[0].qElemNumber)" data-state="{{item[0].qState}}" data-elem="{{item[0].qElemNumber}}">
+    <li ng-class="{selected:item[0].qState == 'S', grey:item[0].qState=='X', locked: item[0].qState=='L'}" ng-repeat="item in items" ng-click="selectValue(item[0].qElemNumber)" data-state="{{item[0].qState}}" data-elem="{{item[0].qElemNumber}}">
       {{item[0].qText}}
     </li>
   </ul>

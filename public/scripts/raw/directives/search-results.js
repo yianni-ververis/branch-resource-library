@@ -96,54 +96,14 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
           return false;
         };
 
-        $scope.$on('searchResults', function(event, hasResults){
-          if(hasResults){
-            if($scope.info){
-              $scope.render();
-            }
-            else{
-              $scope.postponed = function(){
-                $scope.render();
-              }
-            }
-          }
-          else{
-            $scope.renderEmpty();
-          }
-        });
-
-        $scope.$on('initialising', function(){
-          $scope.loading = true;
-        });
-
-        $scope.$on('initialised', function(){
-          if($scope.info){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
-              $scope.render();
-            }
-          }
-        });
-
         $scope.$on('searching', function(){
           $scope.loading = true;
           $scope.pageTop = 0;
         });
 
         $scope.$on("update", function(params){
-          if($scope.info){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
-              $scope.render();
-            }
-          }
-        });
-        $scope.$on('cleared', function(){
-          if($scope.info){
+          console.log('on update handle is '+$scope.handle);
+          if($scope.handle){
             $scope.render();
           }
           else{
@@ -188,10 +148,13 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
 				};
 
         $scope.render = function(){
-          $scope.info.object.getLayout().then(function(layout){
+          console.log('result list handle is - '+$scope.handle);
+          searchExchange.ask($scope.handle, "GetLayout", [], function(response){
+            var layout = response.qLayout;
             $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
-            $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
-              $scope.$apply(function(){
+            searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
+              var data = response.qDataPages;
+              //$scope.$apply(function(){
                 $scope.loading = false;
                 $scope.pageTop = data[0].qArea.qTop;
                 $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
@@ -201,35 +164,87 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
                 for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
                   $scope.pages.push(i);
                 }
-                $scope.items = data[0].qMatrix.map(function(row){
+                $scope.items = []
+                for(var i=0;i<data[0].qMatrix.length;i++){
                   var item = {}
-                  for (var i=0; i < row.length; i++){
-                    item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
+                  //if the nullSuppressor field is null then we throw out the row
+                  if($scope.config.nullSuppressor!=null && data[0].qMatrix[i][$scope.config.nullSuppressor].qText=="-"){
+                    continue;
                   }
-                  return item;
-                });
+                  for (var j=0; j < data[0].qMatrix[i].length; j++){
+                    item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
+                  }
+                  $scope.items.push( item );
+                }
+                if($scope.items.length==0){
+                  $scope.renderEmpty();
+                  return;
+                }
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
-              });
+                $scope.$apply();
+              //});
             });
           });
+          // $scope.info.object.getLayout().then(function(layout){
+          //   $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
+          //   $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+          //     $scope.$apply(function(){
+          //       $scope.loading = false;
+          //       $scope.pageTop = data[0].qArea.qTop;
+          //       $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
+          //       $scope.currentPage = Math.ceil($scope.pageBottom / $scope.config.pagesize);
+          //       $scope.total = layout.qHyperCube.qSize.qcy;
+          //       $scope.pages = [];
+          //       for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
+          //         $scope.pages.push(i);
+          //       }
+          //       $scope.items = []
+          //       for(var i=0;i<data[0].qMatrix.length;i++){
+          //         var item = {}
+          //         //if the nullSuppressor field is null then we throw out the row
+          //         if($scope.config.nullSuppressor!=null && data[0].qMatrix[i][$scope.config.nullSuppressor].qText=="-"){
+          //           continue;
+          //         }
+          //         for (var j=0; j < data[0].qMatrix[i].length; j++){
+          //           item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
+          //         }
+          //         $scope.items.push( item );
+          //       }
+          //       if($scope.items.length==0){
+          //         $scope.renderEmpty();
+          //         return;
+          //       }
+          //       if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
+          //         $scope.pageWidth();
+          //       }
+          //     });
+          //   });
+          // });
         };
 
         $scope.renderEmpty = function(){
           $scope.loading = false;
           $scope.items = [];
+          $scope.$apply();
         };
 
         $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)
-          $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:10, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
-            $scope.$apply(function(){
-              data[0].qMatrix.map(function(row, index){
-                var item = $scope.items[index];
-                for (var i=0; i < row.length; i++){
-                  item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
-                }
-                return item;
+          //$scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:10, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
+          searchExchange.ask($scope.handle, "GetLayout", [], function(response){
+            var layout = response.qLayout;
+            $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
+            searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:10, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
+              var data = response.qDataPages;
+              $scope.$apply(function(){
+                data[0].qMatrix.map(function(row, index){
+                  var item = $scope.items[index];
+                  for (var i=0; i < row.length; i++){
+                    item[$scope.qFields[i].qFallbackTitle] = row[i].qText;
+                  }
+                  return item;
+                });
               });
             });
           });
@@ -273,16 +288,17 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
             sortOptions: $scope.sortOptions,
             defaultSort: getFieldIndex($scope.sort.field, false)
           }, function(result){
-          $scope.$apply(function(){
-            $scope.info = result;
+          //$scope.$apply(function(){
+            $scope.handle = result.handle;
             if($scope.postponed){
               $scope.postponed.call(null);
             }
+            $scope.$apply();
             // else{
             //   $scope.render();
             // }
           });
-        });
+        //});
 
       }});
     },
