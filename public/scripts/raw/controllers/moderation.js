@@ -1,4 +1,4 @@
-app.controller("moderationController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
+app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $rootScope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
   var Entity = $resource("/api/"+$scope.entity+"/:entityId/:function", {entityId: "@entityId", function: "@function"});
 
   $scope.userManager = userManager;
@@ -50,7 +50,10 @@ app.controller("moderationController", ["$scope", "$resource", "$state", "$state
       if(response.result==0){
         Entity.delete({entityId: $scope.entityid}, function(result){
             if(resultHandler.process(result)){
-              window.location = "#"+$scope.entity;
+              if($scope.entity!="comment"){
+                window.location = "#"+$scope.entity;
+              }
+              $rootScope.$broadcast("listItemDeleted", $scope.entityid);
             }
         });
       }

@@ -2,6 +2,7 @@
 var MasterController = require("../../controllers/master"),
     Error = require("../../controllers/error"),
     Notifier = require("../../controllers/notifier"),
+    Mailer = require("../../controllers/emailer"),
     fs = require('fs'),
     attachmentDir = require("../../../attachmentDir"),
     entities = require("../entityConfig"),
@@ -35,6 +36,7 @@ module.exports = function(req, res){
   var userPermissions = req.user.role.permissions[req.params.entity];
   var data = req.body;
   var query;
+  var isNew = false;
   if(req.params.id){
     query = {
       "_id" : req.params.id
@@ -50,6 +52,7 @@ module.exports = function(req, res){
     console.log(record._id);
     if(!record._id && !req.params.id){
       //this is a new item
+      isNew = true;
       if(userPermissions.create!=true){
         res.json(Error.insufficientPermissions());
       }
@@ -126,8 +129,26 @@ module.exports = function(req, res){
       console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
         if(!newrecord.errCode){
-          //send an notification to all subscribers of the item
-          Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
+          if(isNew){
+            //most likely a comment but we'll check anyway
+            if(req.params.entity=="comment"){
+              MasterController.get({}, {_id: newrecord.entityId}, entities[newrecord.entity], function(parent){
+                if(!parent.errCode){
+                  if(parent.data && parent.data[0]){
+                    Mailer.sendMail('create', "comment", {parent: parent.data[0], comment: newrecord}, function(){
+                      console.log('should now be sending email 2');
+                      Notifier.sendCommentNotification(parent.data[0]._id, {parent: parent.data[0], comment:newrecord});
+                    });
+                  }
+                }
+              });
+            }
+          }
+          else{
+            //send an notification to all subscribers of the item
+            Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
+
+          }
         }
         res.json(newrecord);
       });

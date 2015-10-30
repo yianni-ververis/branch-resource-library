@@ -57,7 +57,7 @@
     })
     //used to navigate to the project list page
     .state("projects", {
-      url: "/projects?sort&category&product",
+      url: "/project?terms&page&sort",
       templateUrl: "/views/projects/index.html",
       controller: "projectController",
       data: {
@@ -95,7 +95,7 @@
     })
     //used to navigate to the blog list page
     .state("blogs", {
-      url: "/blogs",
+      url: "/blog",
       templateUrl: "/views/blogs/index.html",
       controller: "blogController",
       data: {
@@ -133,7 +133,7 @@
     })
     //used to navigate to a user list page (not currently used)
     .state("users", {
-      url: "/users?sort",
+      url: "/user?sort",
       templateUrl: "/views/users/index.html",
       controller: "userController",
       data: {
@@ -184,6 +184,7 @@
   // include "./services/result-handler.js"
   // include "./services/search-exchange.js"
   // include "./services/picklists.js"
+  // include "./services/publisher.js"
   // //controllers
   // include "./controllers/admin.js"
   // include "./controllers/auth.js"

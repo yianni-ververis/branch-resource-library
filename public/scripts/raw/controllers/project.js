@@ -164,7 +164,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.applySort = function(){
-    window.location = "#projects?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
+    window.location = "#project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
   $scope.getGitProjects = function(gituser, gitpassword){
@@ -320,7 +320,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       $scope.projectLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#projects/"+result._id+"?status="+status;
+        window.location = "#project/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -366,7 +366,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     if(!hasUser){
       userManager.refresh(function(hasUser){
         if(!hasUser){
-          window.location = "#login?url=projects/"+$stateParams.projectId+"/edit"
+          window.location = "#login?url=project/"+$stateParams.projectId+"/edit"
         }
         else{
           if($stateParams.projectId!="new"){
