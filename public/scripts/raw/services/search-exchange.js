@@ -12,6 +12,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     rejectUnauthorized: false
   };
 
+  this.seqId = 0;
+
   this.objects = {};
   this.online = false;
 
@@ -27,6 +29,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
     global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
       senseApp = app;
+      that.seqId = senseApp.connection.seqid;
       $rootScope.$broadcast("senseready", app);
     }, function(error) {
         if (error.code == "1002") { //app already opened on server
@@ -54,8 +57,10 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
       defaultSelections.forEach(function(selection, index){
         that.makeSelection(selection, function(result) {
           if(index==defaultSelections.length-1){
-            that.lockSelections(function(){
-              $rootScope.$broadcast("initialised", app);
+            that.lockSelections(function(result){
+              console.log('lock change');
+              console.log(result);
+              //$rootScope.$broadcast("update");
               that.executeQueue();
             })
           }
@@ -71,6 +76,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     for (var i=0;i<that.queue.length;i++){
       that.queue[i].call();
     }
+    that.queue = [];
+    console.log('update after queue');
     $rootScope.$broadcast("update");
   };
 
@@ -91,15 +98,19 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   this.clear = function(unlock){
     if(senseApp){
       if(unlock && unlock==true){
-        senseApp.unlockAll().then(function(){
-          senseApp.clearAll().then(function(){
-              $rootScope.$broadcast("cleared");
+        that.ask(senseApp.handle, "UnlockAll", [], function(){
+          that.ask(senseApp.handle, "ClearAll", [],function(result){
+            console.log('clear change');
+            console.log(result);
+            $rootScope.$broadcast("cleared");
           });
         });
       }
       else{
-        senseApp.clearAll().then(function(){
-            $rootScope.$broadcast("cleared");
+        that.ask(senseApp.handle, "ClearAll", [],function(result){
+          console.log('clear change');
+          console.log(result);
+          $rootScope.$broadcast("cleared");
         });
       }
     }
@@ -109,33 +120,44 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   };
 
   this.render = function(){
-    $rootScope.$broadcast("update");
+    //$rootScope.$broadcast("update");
   }
   this.fresh = function(){
       this.search("");
   }
 
-  this.search = function(searchText){
+  this.search = function(searchText, searchFields){
     $rootScope.$broadcast("searching");
     that.terms = searchText.split(" ");
 
-    senseApp.searchAssociations({qContext: "LockedFieldsOnly", qSearchFields:["SearchField"]}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
-      console.log(results);
-      if(results.qTotalSearchResults > 0){
-        senseApp.selectAssociations({qContext: "LockedFieldsOnly", qSearchFields:["SearchField"]}, that.terms, 0 ).then(function(results){
-          $rootScope.$broadcast('searchResults', true);
-        });
-      }
-      else{
-        $rootScope.$broadcast('searchResults', false)
+    //senseApp.searchAssociations({qContext: "CurrentSelections", qSearchFields: searchFields}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}).then(function(results){
+    that.seqId++;
+    that.pendingSearch = that.seqId;
+    senseApp.connection.ask(senseApp.handle, "SearchAssociations", [{qContext: "LockedFieldsOnly", qSearchFields: searchFields}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}], that.seqId).then(function(response){
+      if(response.id == that.pendingSearch){
+        if(response.result.qResults.qTotalSearchResults > 0){
+          //senseApp.selectAssociations({qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0 ).then(function(results){
+          that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
+            console.log('update from search with data');
+            $rootScope.$broadcast('update', true);
+          });
+        }
+        else{
+          console.log('update from search without data');
+          $rootScope.$broadcast('update', false)
+        }
       }
     });
   };
 
-  this.suggest = function(searchText){
-    senseApp.searchSuggest({}, searchText.split(" ")).then(function(results){
-      console.log(results);
-      $rootScope.$broadcast('suggestResults', results);
+  this.suggest = function(searchText, suggestFields){
+    //senseApp.searchSuggest({qContext: "LockedFieldsOnly", qSearchFields: suggestFields}, searchText.split(" ")).then(function(results){
+    that.seqId++;
+    that.pendingSuggest = that.seqId;
+    senseApp.connection.ask(senseApp.handle, "SearchSuggest", [{qContext: "LockedFieldsOnly", qSearchFields: suggestFields}, searchText.split(" ")], that.seqId).then(function(response){
+      if(response.id == that.pendingSuggest){
+        $rootScope.$broadcast('suggestResults', response.result.qResult);
+      }
     });
   };
 
@@ -143,7 +165,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     var fn;
     if(that.objects[options.id]){
       fn = function(){
-        callbackFn.call(null, {object:that.objects[options.id]});
+        callbackFn.call(null, {handle:that.objects[options.id]});
       }
     }
     else{
@@ -162,9 +184,12 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
             }
           }
         };
-        senseApp.createSessionObject(lbDef).then(function(response){
+        that.seqId++;
+        senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [lbDef], that.seqId).then(function(response){
           //callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
-          callbackFn.call(null, {object: response});
+          console.log('adding filter for '+ options.field+' with handle '+response.result.qReturn.qHandle);
+          that.objects[options.id] = response.result.qReturn.qHandle;
+          callbackFn.call(null, {handle: response.result.qReturn.qHandle});
         });
       };
     }
@@ -182,16 +207,19 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   };
 
   this.makeSelection = function(options, callbackFn, priority){
-    if(that.objects[options.id]){
+    if(f = that.objects[options.field]){
       fn = function(){
-        callbackFn.call(null, {object:that.objects[options.id]});
+        that.ask(f, "SelectValues", [options.values], function(response){
+          callbackFn.call(null, response);
+        });
       }
     }
     else{
       fn = function(){
-        senseApp.getField(options.field).then(function(result){
-          result.selectValues(options.values).then(function(result){
-            callbackFn.call(null, {object: result});
+        that.ask(senseApp.handle, "GetField" ,[options.field], function(response){
+          that.objects[options.field] = response.qReturn.qHandle;
+          that.ask(response.qReturn.qHandle, "SelectValues", [options.values], function(response){
+            callbackFn.call(null, response);
           });
         });
       };
@@ -211,7 +239,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
 
   that.lockSelections = function(callbackFn){
     fn = function(){
-      senseApp.lockAll().then(function(result){
+      that.ask(senseApp.handle, "LockAll", [], function(result){
         callbackFn.call(null);
       });
     }
@@ -233,10 +261,11 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     var fn;
     if(that.objects[options.id]){
       fn = function(){
-        callbackFn.call(null, {object:that.objects[options.id]});
+        callbackFn.call(null, {handle:that.objects[options.id]});
       }
     }
     else{
+      console.log('creating results for '+options.id);
       //create a new session object
       fn = function(){
         var hDef = {
@@ -251,9 +280,16 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
           	"qInterColumnSortOrder": options.defaultSort
           }
         }
-        senseApp.createSessionObject(hDef).then(function(response){
-          that.objects[options.id] = response;
-          callbackFn.call(null, {object:response});
+        that.seqId++;
+        senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
+          // that.seqId++;
+          // senseApp.connection.ask(response.result.qReturn.qHandle, "GetObject", [], that.seqId).then(function(response){
+          //   that.objects[options.id] = response.result.qLayout;
+          //   callbackFn.call(null, {object:response.result});
+          // });
+          that.objects[options.id] = response.result.qReturn.qHandle;
+          console.log(that.objects);
+          callbackFn.call(null, {handle:response.result.qReturn.qHandle});
         });
       }
     }
@@ -263,6 +299,13 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
     else{
       that.queue.push(fn);
     }
+  }
+
+  this.ask = function(handle, method, args, callbackFn){
+    that.seqId++;
+    senseApp.connection.ask(handle, method, args, that.seqId).then(function(response){
+      callbackFn.call(null, response.result);
+    });
   }
 
   function buildFieldDefs(fields, sorting){

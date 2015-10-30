@@ -61,7 +61,6 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res, next){
         || (!user && entity.exemptFromApproval!=true)){
       query["approved"]=true;
     }
-
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
     });
@@ -147,7 +146,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         else{
           viewQuery.ip = ip;
         }
-        MasterController.get(viewQuery, viewQuery, entities["views"], function(results){
+        MasterController.get(viewQuery, viewQuery, entities["view"], function(results){
           console.log(results);
           if(results.data.length == 0){
             console.log('saving new view');
@@ -157,7 +156,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             }
             viewData.ip = ip;
             viewData.entityId = req.params.id;
-            MasterController.save(null, viewData, entities["views"], function(result){
+            MasterController.save(null, viewData, entities["view"], function(result){
               console.log(result);
             });
           }

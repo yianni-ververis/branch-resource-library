@@ -1,7 +1,7 @@
 module.exports = {
-    user:{
-      collection: "users",
-      model: require("../models/user"),
+    userprofile:{
+      collection: "userprofiles",
+      model: require("../models/userprofile"),
       populates: "role",
       exemptFromOwnership: false,
       exemptFromApproval: true,

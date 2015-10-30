@@ -1,5 +1,5 @@
 app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, confirm){
-  var User = $resource("api/user/:userId", {userId: "@userId"});
+  var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/article/:articleId", {articleId: "@articleId"});
   var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
@@ -13,6 +13,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
 
   $scope.collections = [
     "user",
+    "userprofile",
     "userrole",
     "feature",
     "project",
@@ -28,7 +29,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   var defaultSelection;
 
   $scope.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
+    searchExchange.init();
   })
 
   $scope.pageSize = 20;
@@ -78,7 +79,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-    searchExchange.clear();
+    searchExchange.clear(true);
   };
 
   $scope.setRole = function(index){
@@ -270,4 +271,6 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
       }
     });
   };
+
+  $scope.setTab(0);
 }]);

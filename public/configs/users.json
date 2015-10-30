@@ -13,6 +13,10 @@
       "suppressNull": true
     },
     {
+      "dimension" : "lastvisit",
+      "suppressNull": false
+    },
+    {
       "dimension" : "role",
       "suppressNull": false
     }
@@ -28,6 +32,8 @@
     }
   },
   "defaultSort": "username",
-  "entity": "user",
+  "entity": "userprofile",
+  "searchFields": ["usersearch"],
+  "nullSuppressor": 0,
   "pagesize" : 20
 }

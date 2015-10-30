@@ -25,7 +25,7 @@ var Templater = (function(){
         var pieces = [];
         while (s=pattern.exec(html)){
             pieces.push({what:s[0], item:s[0].replace("{{","").replace("}}","")});
-        }
+        }        
         return pieces;
     }
 
@@ -154,7 +154,13 @@ var Templater = (function(){
 
                 for(var i=0;i<this.pieces.length;i++){
                     try{
-                        this.compiledHTML = this.compiledHTML.replace(this.pieces[i].what, data[this.pieces[i].item]);
+                      //check to see if the piece refers to a child property
+                      var props = this.pieces[i].item.split(".");
+                      var result = data;
+                      for (var p in props){
+                        result = result[props[p]];
+                      }
+                      this.compiledHTML = this.compiledHTML.replace(this.pieces[i].what, result);
                     }
                     catch(err){
                         console.log("error", data.toString());

@@ -47,7 +47,7 @@ app.service('userManager', ['$resource', function($resource){
     this.refreshing = true;
     System.get({path:'userInfo'}, function(result){
       that.menu = result.menu;
-      that.userInfo = result.user;
+      that.userInfo = result.user;      
       if(callbackFn){
         callbackFn.call(null, that.hasUser());
       }

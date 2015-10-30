@@ -89,6 +89,8 @@
     }
   },
   "defaultSort": "last_updated_num",
+  "searchFields": ["SearchField"],
+  "nullSuppressor": 0,
   "entity": "project",
   "pagesize" : 20
 }

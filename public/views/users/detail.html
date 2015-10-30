@@ -31,7 +31,7 @@
           <a ng-click="setTab(3)">All Activity</a>
         </li>
       </ul>
-      <search-input></search-input>
+      <search-input data-config="user-projects"></search-input>
       <div ng-show="activeTab==0">
         <search-results id="userProjectResultList" data-config="user-projects"></search-results>
       </div>
@@ -46,11 +46,12 @@
       </div>
     </div>
     <div class="col-md-3">
+      <moderation entity="'userprofile'" entityid="users[0]._id" approved="users[0].approved" owner="users[0]._id" size="'large'" editable="true"></moderation>
       <div class="user-location">
         <span class="user-location-title">LOCATION & CONTACT</span>
-        <span>{{users[0].city}}</span>
-        <span>{{users[0].state}}</span>
-        <span>{{users[0].country}}</span>
+        <span ng-if="users[0].city">{{users[0].city}}</span>
+        <span ng-if="users[0].state">{{users[0].state}}</span>
+        <span ng-if="users[0].country">{{users[0].country}}</span>
         <br/>
         <span ng-if="users[0].twitter" class="contact twitter">{{users[0].twitter}}</span>
         <span ng-if="users[0].github_user" class="contact github">{{users[0].github_user}}</span>

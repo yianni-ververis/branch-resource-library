@@ -54,6 +54,8 @@
     }
   },
   "defaultSort": "createdate",
+  "searchFields": ["SearchField"],
+  "nullSuppressor": 0,
   "entity": "blog",
   "pagesize" : 20
 }
