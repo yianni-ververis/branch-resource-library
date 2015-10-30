@@ -6,8 +6,8 @@
     <div class="row">
       <div class="col-md-9">
         <div class="blog-summary">
-          <h1><a href="#blogs/{{blog.blogId}}">{{blog.title}}</a></h1>
-          <span>Posted {{blog.createdate_num | date : 'dd MMM y at H:mm'}} by <a href="#user/{{blog.userId}}">{{blog.username}}</a></span>
+          <h1><a href="#blog/{{blog.blogId}}">{{blog.title}}</a></h1>
+          <span>Posted {{blog.createdate_num | date : 'dd MMM y at H:mm'}} by <a href="#user/{{blog.userId}}">{{blog.userid.username}}</a></span>
         </div>
       </div>
       <div class="col-md-2">
@@ -20,7 +20,7 @@
           <li><i>{{blog.replycount}}</i> Comments</li>
         </ul>
       </div>
-      <moderation entity="'blog'" entityid="blog.blogId" approved="blog.approved" size="'medium'" flagged="flagged[blog.blogId]" flagcount="blog.flagcount" editable="false"></moderation>      
+      <moderation entity="'blog'" entityid="blog.blogId" approved="blog.approved" size="'medium'" flagged="flagged[blog.blogId]" flagcount="blog.flagcount" editable="false"></moderation>
     </div>
   </li>
 </ul>

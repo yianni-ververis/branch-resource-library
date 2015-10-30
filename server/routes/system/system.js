@@ -62,21 +62,21 @@ function buildMenu(user){
       label: "Change Password",
       href: "#users/changepassword"
     });
-    if(user.role.permissions && user.role.permissions.blogs && user.role.permissions.blogs.create==true){
+    if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){
       basicMenu.splice(0,0,{
         label: "Create Blog",
-        href: "#blogs/new/edit"
+        href: "#blog/new/edit"
       });
     }
-    if(user.role.permissions && user.role.permissions.projects && user.role.permissions.projects.create==true){
+    if(user.role.permissions && user.role.permissions.project && user.role.permissions.project.create==true){
       basicMenu.splice(0,0,{
         label: "Create Project",
-        href: "#projects/new/edit"
+        href: "#project/new/edit"
       });
     }
     basicMenu.splice(0,0, {
       label: "Profile",
-      href: "#users/" + user._id
+      href: "#user/" + user._id
     });
     topMenu = {
       items:[{

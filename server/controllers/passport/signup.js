@@ -5,6 +5,7 @@ var async = require('async');
 var spamCheck = require('spam-check');
 var spamchecker = require('known-spam-emails');
 var mongoose = require("mongoose");
+var Mailer = require("../emailer");
 
 module.exports = function(passport, User, UserProfile){
 
@@ -69,11 +70,14 @@ module.exports = function(passport, User, UserProfile){
             if (err) return next(err)
 						var newUserProfileData = req.body;
 						newUserProfileData._id = newUserId;
-						var newUserProfile = new UserProfile(newUserProfileData)						
+						var newUserProfile = new UserProfile(newUserProfileData)
 						newUserProfile.save(function(err){
+							if (err) return next(err)
 							console.log('User Registration succesful')
 							shared.newUser = newUserProfile
-								if (err) return next(err)
+							Mailer.sendMail("signup", "user", newUserProfile, function(){
+								
+							});
 							next()
 						});
 

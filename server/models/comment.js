@@ -9,6 +9,7 @@ var commentSchema = new Schema({
     default: Date.now
   },
   entityId: Schema.ObjectId,
+  entity: String,
   userid: {
     type: Schema.ObjectId,
     ref: 'users'

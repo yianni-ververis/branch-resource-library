@@ -7,8 +7,8 @@
     <label></label>
   </li>
   <li ng-repeat="user in items">
-    <a class="link" href="#users/{{user.userId}}">{{user.username}}</a>
-    <a class="link" href="#users/{{user.userId}}">{{user.email}}</a>
+    <a class="link" href="#user/{{user.userId}}">{{user.username}}</a>
+    <a class="link" href="#user/{{user.userId}}">{{user.email}}</a>
     <a class="link">{{user.lastvisit | date:'dd MMM yy HH:mm'}}</a>
     <a class="link">{{user.role}}</a>
     <div class="delete" ng-show="userManager.canDelete('user')" ng-click="delete(user.userid)">Delete</div>

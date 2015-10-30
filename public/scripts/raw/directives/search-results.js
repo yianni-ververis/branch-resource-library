@@ -1,4 +1,4 @@
-app.directive("searchResults", ["$resource", "searchExchange", "userManager", "resultHandler", function($resource, searchExchange, userManager, resultHandler){
+app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchExchange", "userManager", "resultHandler", "publisher", function($resource, $state, $stateParams, searchExchange, userManager, resultHandler, publisher){
   return {
     restrict: "E",
     replace: true,
@@ -101,6 +101,17 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
           $scope.pageTop = 0;
         });
 
+        publisher.subscribe("update", $(element).attr("id"), function(){
+          if($scope.handle){
+            $scope.render();
+          }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
+        });
+
         $scope.$on("update", function(params){
           console.log('on update handle is '+$scope.handle);
           if($scope.handle){
@@ -154,8 +165,10 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
             $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
             searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
               var data = response.qDataPages;
+              var items = [];
               //$scope.$apply(function(){
                 $scope.loading = false;
+                $scope.terms
                 $scope.pageTop = data[0].qArea.qTop;
                 $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
                 $scope.currentPage = Math.ceil($scope.pageBottom / $scope.config.pagesize);
@@ -174,54 +187,21 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
                   for (var j=0; j < data[0].qMatrix[i].length; j++){
                     item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
                   }
-                  $scope.items.push( item );
+                  items.push( item );
                 }
-                if($scope.items.length==0){
+                if(items.length==0){
                   $scope.renderEmpty();
                   return;
                 }
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
-                $scope.$apply();
+                $scope.$apply(function(){
+                  $scope.items = items;
+                });
               //});
             });
           });
-          // $scope.info.object.getLayout().then(function(layout){
-          //   $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
-          //   $scope.info.object.getHyperCubeData("/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]).then(function(data){
-          //     $scope.$apply(function(){
-          //       $scope.loading = false;
-          //       $scope.pageTop = data[0].qArea.qTop;
-          //       $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
-          //       $scope.currentPage = Math.ceil($scope.pageBottom / $scope.config.pagesize);
-          //       $scope.total = layout.qHyperCube.qSize.qcy;
-          //       $scope.pages = [];
-          //       for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
-          //         $scope.pages.push(i);
-          //       }
-          //       $scope.items = []
-          //       for(var i=0;i<data[0].qMatrix.length;i++){
-          //         var item = {}
-          //         //if the nullSuppressor field is null then we throw out the row
-          //         if($scope.config.nullSuppressor!=null && data[0].qMatrix[i][$scope.config.nullSuppressor].qText=="-"){
-          //           continue;
-          //         }
-          //         for (var j=0; j < data[0].qMatrix[i].length; j++){
-          //           item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
-          //         }
-          //         $scope.items.push( item );
-          //       }
-          //       if($scope.items.length==0){
-          //         $scope.renderEmpty();
-          //         return;
-          //       }
-          //       if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
-          //         $scope.pageWidth();
-          //       }
-          //     });
-          //   });
-          // });
         };
 
         $scope.renderEmpty = function(){
@@ -251,13 +231,32 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
         };
 
         $scope.applySort = function(sort){
-          $scope.info.object.applyPatches([{
+          searchExchange.ask($scope.handle, "ApplyPatches", [[{
             qPath: "/qHyperCubeDef/qInterColumnSortOrder",
             qOp: "replace",
             qValue: getFieldIndex(sort.field)
-          }], true).then(function(result){
+          }], true], function(){
             $scope.render();
           });
+          // $scope.info.object.applyPatches([{
+          //   qPath: "/qHyperCubeDef/qInterColumnSortOrder",
+          //   qOp: "replace",
+          //   qValue: getFieldIndex(sort.field)
+          // }], true).then(function(result){
+          //   $scope.render();
+          // });
+        };
+
+        $scope.checkUrlForPresets = function(callbackFn){
+          var terms, page, sort;
+          var callSearch = false;
+          if($stateParams.terms){
+            terms = $stateParams.terms.split(":");
+            that.terms = terms;
+            callSearch = true;
+          }
+          //that.search(terms.join(" "), );
+          callbackFn.call(null, !callSearch);
         };
 
         function getFieldIndex(field, asString){
@@ -288,17 +287,14 @@ app.directive("searchResults", ["$resource", "searchExchange", "userManager", "r
             sortOptions: $scope.sortOptions,
             defaultSort: getFieldIndex($scope.sort.field, false)
           }, function(result){
-          //$scope.$apply(function(){
             $scope.handle = result.handle;
             if($scope.postponed){
+              console.log('execute postponed');
               $scope.postponed.call(null);
             }
             $scope.$apply();
-            // else{
-            //   $scope.render();
-            // }
+
           });
-        //});
 
       }});
     },

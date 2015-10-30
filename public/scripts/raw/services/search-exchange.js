@@ -1,4 +1,4 @@
-app.service('searchExchange', ["$rootScope", "userManager", function($rootScope, userManager){
+app.service('searchExchange', ["$rootScope", "userManager", "publisher", function($rootScope, userManager, publisher){
   var that = this;
   // var config = {
   //   host: "10.211.55.3:8080/anon",
@@ -22,6 +22,8 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
 
   this.pendingSearch;
   this.pendingSuggest;
+
+  this.matched;
 
   var senseApp;
 
@@ -54,31 +56,39 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
   this.init = function(defaultSelections){
     $rootScope.$broadcast("initialising");
     if(defaultSelections && defaultSelections.length > 0){
-      defaultSelections.forEach(function(selection, index){
-        that.makeSelection(selection, function(result) {
-          if(index==defaultSelections.length-1){
-            that.lockSelections(function(result){
-              console.log('lock change');
-              console.log(result);
-              //$rootScope.$broadcast("update");
-              that.executeQueue();
-            })
-          }
-        }, true);
-      });
+        defaultSelections.forEach(function(selection, index){
+          that.makeSelection(selection, function(result) {
+            if(index==defaultSelections.length-1){
+              that.lockSelections(function(result){
+                console.log('lock change');
+                //$rootScope.$broadcast("update");
+                that.executeQueue();
+              })
+            }
+          }, true);
+        });
     }
     else{
-        that.executeQueue();
+      that.executeQueue();
     }
   };
 
   this.executeQueue = function(){
-    for (var i=0;i<that.queue.length;i++){
-      that.queue[i].call();
+    if(that.queue.length > 0){
+      for (var i=0;i<that.queue.length;i++){
+        that.queue[i].call();
+        if(i==that.queue.length-1){
+          that.queue = [];
+          console.log('update after queue');
+          $rootScope.$broadcast("update");
+          //publisher.publish("update");
+        }
+      }
     }
-    that.queue = [];
-    console.log('update after queue');
-    $rootScope.$broadcast("update");
+    else {
+      //publisher.publish("update");
+      $rootScope.$broadcast("update");
+    }
   };
 
   this.executePriority = function(){
@@ -87,6 +97,7 @@ app.service('searchExchange', ["$rootScope", "userManager", function($rootScope,
         priorityFn.call(null);
         if(index = that.priority.length-1){
           that.priority = [];
+          that.executeQueue();
         }
       })
     }

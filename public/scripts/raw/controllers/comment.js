@@ -70,7 +70,13 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $scope.commentQuery.sortOrder = $scope.sort.order;
 
 
-
+  $scope.$on("listItemDeleted", function(event, params){
+    for(var i=0;i<$scope.comments.length;i++){
+      if($scope.comments[i]._id==params){
+        $scope.comments.splice(i,1);
+      }
+    }
+  });
 
 
   $scope.getCommentData = function(query, append){
@@ -108,6 +114,7 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
     var commentText = $("#summernote").code();
     Comment.save({}, {
       entityId: $scope.entityid,
+      entity: $scope.entity,
       content: commentText
     }, function(result){
       if(resultHandler.process(result)){
