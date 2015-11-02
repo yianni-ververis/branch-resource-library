@@ -58,6 +58,7 @@ module.exports = function(req, res){
       }
       record._id = mongoose.Types.ObjectId();
       record.createuser = user._id;
+      record.userid = user._id;
       record.createdate = Date.now();
     }
     else{
@@ -65,7 +66,7 @@ module.exports = function(req, res){
         res.json(Error.insufficientPermissions());
       }
     }
-    record.userid = user._id;
+    record.edituser = user._id;
     record.editdate = Date.now();
     var imageBuffer;
     if(req.params.entity=="projects"){

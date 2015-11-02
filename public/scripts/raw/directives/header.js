@@ -10,6 +10,7 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
       scope.userManager = userManager;
       scope.getLoginUrl = function(){
         var suffix = "";
+
         if($state.$current.name!="home"){
           suffix += "?url=";
         }

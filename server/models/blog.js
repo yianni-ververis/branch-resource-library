@@ -12,7 +12,7 @@ var blogSchema = new Schema({
   thumbnail: String,
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   blogType: {
       type: Schema.ObjectId,
@@ -20,11 +20,11 @@ var blogSchema = new Schema({
   },
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'userprofiles'
   },
   approved:{
     type: Boolean,

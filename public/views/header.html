@@ -5,7 +5,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-main">
         <li ng-if="!userManager.hasUser()">
-          <a href="{{getLoginUrl()}}">Login</a>
+          <a class="green" href="{{getLoginUrl()}}">Login</a>
         </li>
         <li class="dropdown" ng-repeat="item in userManager.menu.items" role="button" ng-if="userManager.hasUser()">
           <a data-toggle="dropdown" href="{{item.href}}" class="dropdown-toggle green">
@@ -26,8 +26,8 @@
             <li><a href="http://community.qlik.com" target="_window">Qlik Community</a></li>
           </ul>
         </li>
-        <li ng-class="{active: activeItem=='blog'}"><a href="#blog">Blog</a></li>
-        <li ng-class="{active: activeItem=='project'}"><a href="#project">Projects</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#project">Projects</a></li>
       </ul>
     </div>
   </div>

@@ -11,15 +11,15 @@ var articleSchema = new Schema({
   threadid: String,
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'userprofiles'
   }
 });
 

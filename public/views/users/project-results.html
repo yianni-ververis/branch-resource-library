@@ -5,8 +5,8 @@
         <span class="list-index">{{$index+1}}</span>
       </div>
       <div class="col-md-3">
-        <span class="list-title">{{project.title}}</span>
-        <span>{{project.username}}</span>
+        <span class="list-title"><a href="#project/{{project.projectId}}">{{project.title}}</a></span>
+        <span><a class="user-link" href="#user/{{project.userId}}">{{project.username}}</a></span>
       </div>
       <div class="col-md-2">
         <ul class="plainlist">

@@ -1,65 +1,70 @@
-.user-header{
-  border-bottom: 1px solid @content-border;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  position: relative;
-
-  .user-name{
-      display: inline-block;
+.user-profile{
+  .results-container{
+    margin-top: 40px;
   }
-  .user-user{
-    color: @light-grey;
-    font-size: 14px;
-    margin-right: 20px
-  }
-  .user-joined{
-    color: @light-grey;
-  }
-}
-
-.user-location{
-  color: @dark-grey;
-  .user-location-title{
-    font-weight: normal;
-  }
-  span{
+  .user-header{
+    border-bottom: 1px solid @content-border;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
     position: relative;
-    display: block;
-    height: 18px;
-    line-height: 18px;
-  }
-  .contact{
-    color: @green;
-    padding-left: 20px;
-    &::before{
-      font-family: branch-icons;
-      position: absolute;
-      top: 0px;
-      left: 0px;
+
+    .user-name{
+        display: inline-block;
+    }
+    .user-user{
+      color: @light-grey;
       font-size: 14px;
+      margin-right: 20px
     }
-    &.twitter{
+    .user-joined{
+      color: @light-grey;
+    }
+  }
+
+  .user-location{
+    color: @dark-grey;
+    .user-location-title{
+      font-weight: normal;
+    }
+    span{
+      position: relative;
+      display: block;
+      height: 18px;
+      line-height: 18px;
+    }
+    .contact{
+      color: @green;
+      padding-left: 20px;
       &::before{
-        color: @dark-grey;
-        content: "\E810";
+        font-family: branch-icons;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        font-size: 14px;
       }
-    }
-    &.github{
-      &::before{
-        color: @dark-grey;
-        content: "\E81E";
+      &.twitter{
+        &::before{
+          color: @dark-grey;
+          content: "\E810";
+        }
       }
-    }
-    &.email{
-      &::before{
-        color: @dark-grey;
-        content: "\E819";
+      &.github{
+        &::before{
+          color: @dark-grey;
+          content: "\E81E";
+        }
       }
-    }
-    &.website{
-      &::before{
-        color: @dark-grey;
-        content: "\E81C";
+      &.email{
+        &::before{
+          color: @dark-grey;
+          content: "\E819";
+        }
+      }
+      &.website{
+        &::before{
+          color: @dark-grey;
+          content: "\E81C";
+        }
       }
     }
   }

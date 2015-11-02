@@ -6,10 +6,10 @@ module.exports = mongoose.model('projectcategories', {
   description: String,
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
 });

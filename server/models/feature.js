@@ -16,16 +16,16 @@ var FeatureSchema = new Schema({
   image: String,
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   entityId: Schema.ObjectId,
   createuser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   }
 });
 

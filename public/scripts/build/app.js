@@ -9,61 +9,39 @@
     .state("home", {
       url: "/",
       templateUrl: "/views/home/index.html",
-      controller: "homeController",
-      data:{
-        crumb: "Home"
-      }
+      controller: "homeController"
     })
     //login and signup page
     .state("loginsignup", {
       url: "/loginsignup?url",
       templateUrl : "/views/loginsignup.html",
-      controller: "authController",
-      data: {
-        crumb: "Login",
-        link: "loginsignup"
-      }
+      controller: "authController"
     })
     //login page
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("login", {
       url: "/login?url",
       templateUrl : "/views/login.html",
-      controller: "authController",
-      data: {
-        crumb: "Login",
-        link: "login"
-      }
+      controller: "authController"
     })
     //password reset page
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("reset", {
       url: "/reset",
       templateUrl : "/views/reset.html",
-      controller: "authController",
-      data: {
-        crumb: "Login",
-        link: "login"
-      }
+      controller: "authController"
     })
     //used to navigate to the admin console
     .state("admin", {
       url: "/admin",
       templateUrl: "/views/admin/index.html",
-      controller: "adminController",
-      data: {
-        crumb: "Admin"
-      }
+      controller: "adminController"
     })
     //used to navigate to the project list page
     .state("projects", {
       url: "/project?terms&page&sort",
       templateUrl: "/views/projects/index.html",
-      controller: "projectController",
-      data: {
-        crumb: "Projects",
-        link: "projects"
-      }
+      controller: "projectController"
     })
     //used to navigate to a given project detail page
     .state("projects.detail", {
@@ -73,10 +51,6 @@
           templateUrl: "/views/projects/detail.html",
           controller: "projectController",
         }
-      },
-      data:{
-        crumb: "New Project",
-        link: "projects/new"
       }
     })
     //used to navigate to a given project detail page
@@ -87,21 +61,13 @@
           templateUrl: "/views/projects/addedit.html",
           controller: "projectController",
         }
-      },
-      data:{
-        crumb: "New Project",
-        link: "projects/new"
       }
     })
     //used to navigate to the blog list page
     .state("blogs", {
       url: "/blog",
       templateUrl: "/views/blogs/index.html",
-      controller: "blogController",
-      data: {
-        crumb: "Blogs",
-        link: "blogs"
-      }
+      controller: "blogController"
     })
     //used to navigate to a given blog detail page
     .state("blogs.detail", {
@@ -111,10 +77,6 @@
           templateUrl: "/views/blogs/detail.html",
           controller: "blogController",
         }
-      },
-      data:{
-        crumb: "New Blog",
-        link: "blogs/detail"
       }
     })
     //used to navigate to a the blog add/edit page
@@ -125,20 +87,13 @@
           templateUrl: "/views/blogs/addedit.html",
           controller: "blogController",
         }
-      },
-      data:{
-        crumb: "New Blog",
-        link: "blogs/new"
       }
     })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/user?sort",
       templateUrl: "/views/users/index.html",
-      controller: "userController",
-      data: {
-        crumb: "Users"
-      }
+      controller: "userController"
     })
     //used to allow users to change their password
     .state("users.changepassword", {
@@ -148,9 +103,6 @@
           templateUrl: "/views/users/changepassword.html",
           controller: "userController",
         }
-      },
-      data: {
-        crumb: "Change Password"
       }
     })
     //used to navigate to a given user detail page
@@ -161,9 +113,32 @@
           templateUrl: "/views/users/detail.html",
           controller: "userController",
         }
-      },
-      data: {
-        crumb: "Detail"
+      }
+    })
+    //used to navigate to a given user add/edit page
+    .state("users.addedit", {
+      url: "/:userId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/users/addedit.html",
+          controller: "userController",
+        }
+      }
+    })
+    //used to navigate to a user list page (not currently used)
+    .state("userprofiles", {
+      url: "/userprofile?sort",
+      templateUrl: "/views/users/index.html",
+      controller: "userController"
+    })
+    //used to navigate to a given user add/edit page
+    .state("userprofiles.addedit", {
+      url: "/:userId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/users/addedit.html",
+          controller: "userController",
+        }
       }
     })
   }]);

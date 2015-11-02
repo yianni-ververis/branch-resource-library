@@ -5,10 +5,10 @@ module.exports = mongoose.model('products', {
   name: String,
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
 });

@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var loginhistorySchema = new Schema({
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createdate: {
     type: Date,
