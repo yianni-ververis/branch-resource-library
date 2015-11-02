@@ -5,7 +5,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-main">
         <li ng-if="!userManager.hasUser()">
-          <a href="{{getLoginUrl()}}">Login</a>
+          <a href="{{getLoginUrl()}}"><span class="active-underline">Login<span></a>
         </li>
         <li class="dropdown" ng-repeat="item in userManager.menu.items" role="button" ng-if="userManager.hasUser()">
           <a data-toggle="dropdown" href="{{item.href}}" class="dropdown-toggle green">
@@ -19,15 +19,15 @@
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" data-count="" class="dropdown-toggle">Qlik<span class="caret"></span></a>
+          <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" data-count="" class="dropdown-toggle"><span class="active-underline">Qlik</span><span class="caret"></span></a>
           <ul role="menu" class="dropdown-menu">
             <li><a href="http://www.qlik.com" target="_window">Qlik.com</a></li>
             <li><a href="http://market.qlik.com" target="_window">Qlik Market</a></li>
             <li><a href="http://community.qlik.com" target="_window">Qlik Community</a></li>
           </ul>
         </li>
-        <li ng-class="{active: activeItem=='blog'}"><a href="#blog">Blog</a></li>
-        <li ng-class="{active: activeItem=='project'}"><a href="#project">Projects</a></li>
+        <li ng-class="{active: activeItem=='blog'}"><a href="#blog"><span class="active-underline">Blog</span></a></li>
+        <li ng-class="{active: activeItem=='project'}"><a href="#project"><span class="active-underline">Projects</span></a></li>
       </ul>
     </div>
   </div>
