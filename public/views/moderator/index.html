@@ -1,0 +1,22 @@
+<div class="container page">
+  <div class="row">
+      <div class="col-md-9">
+        <h1 class='user-name'>Moderator Console</h1>
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-9">
+      <ul class="tabs horizontal">
+        <li ng-class="{active:activeTab===0}">
+          <a ng-click="setTab(0)">Unapproved</a>
+        </li>
+        <li ng-class="{active:activeTab===1}">
+          <a ng-click="setTab(1)">Flagged</a>
+        </li>
+        <li ng-class="{active:activeTab===2}">
+          <a ng-click="setTab(2)">Spam</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

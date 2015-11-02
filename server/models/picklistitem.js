@@ -10,7 +10,7 @@ var picklistItemSchema = new Schema({
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'userprofiles'
   },
   seq: Number
 });

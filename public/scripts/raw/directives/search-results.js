@@ -247,18 +247,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           // });
         };
 
-        $scope.checkUrlForPresets = function(callbackFn){
-          var terms, page, sort;
-          var callSearch = false;
-          if($stateParams.terms){
-            terms = $stateParams.terms.split(":");
-            that.terms = terms;
-            callSearch = true;
-          }
-          //that.search(terms.join(" "), );
-          callbackFn.call(null, !callSearch);
-        };
-
         function getFieldIndex(field, asString){
           for (var i=0;i<$scope.fields.length;i++){
             if($scope.fields[i].dimension && $scope.fields[i].dimension==field){

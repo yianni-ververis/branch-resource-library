@@ -5,8 +5,8 @@
 <div class="frosted-cover frosted-white">
   <div class="container featured-project">
     <div class="featured-project-content">
-      <h2><a href="#projects/{{featuredProject.entityId}}">{{featuredProject.title}}</a></h2>
-      by <a>{{featuredProject.userid.username}}</a>
+      <h2><a href="#project/{{featuredProject.entityId}}">{{featuredProject.title}}</a></h2>
+      by <a href="#user/{{featuredProject.userid._id}}">{{featuredProject.userid.username}}</a>
       <p>
         {{featuredProject.comment}}
       </p>

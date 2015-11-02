@@ -95,8 +95,18 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     });
     $scope.getUserData($scope.query);
   }
-  else if($state.current.name=="users.addedit"){
+  else if($state.current.name=="users.addedit" || $state.current.name=="userprofiles.addedit"){
     //need to implement edit stuff
+    userManager.refresh(function(hasUser){
+      if(!hasUser){
+        window.location = "#login?url=user/"+$stateParams.userId+"/edit"
+      }
+      else{
+        if($stateParams.userId!="new"){
+          $scope.getUserData($scope.query);
+        }
+      }
+    });    
   }
   else{
     //shouldn't reach here

@@ -62,6 +62,10 @@ function buildMenu(user){
       label: "Change Password",
       href: "#users/changepassword"
     });
+    basicMenu.splice(0,0, {
+      label: "Edit Profile",
+      href: "#user/" + user._id + "/edit"
+    });
     if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){
       basicMenu.splice(0,0,{
         label: "Create Blog",
@@ -74,10 +78,6 @@ function buildMenu(user){
         href: "#project/new/edit"
       });
     }
-    basicMenu.splice(0,0, {
-      label: "Profile",
-      href: "#user/" + user._id
-    });
     topMenu = {
       items:[{
         label: user.username,
@@ -85,6 +85,18 @@ function buildMenu(user){
         items: []
       }]
     };
+    //establish whether or not the user has "moderator" permissions
+    if(user.role.permissions){
+      var strPerm = JSON.stringify(user.role.permissions);
+      console.log(strPerm);
+      if(strPerm.indexOf('"hide":true')!=-1 || strPerm.indexOf('"approve":true')!=-1 || strPerm.indexOf('"flag":true')!=-1){
+        basicMenu.splice(0,0, {
+          label: "Moderator Console",
+          href: "#moderator"
+        });
+      }
+    }
+    //establish whether or not the user is an admin
     if(user.role.name=="admin"){
       basicMenu.splice(0,0, {
         label: "Admin Console",

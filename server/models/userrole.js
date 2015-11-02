@@ -19,11 +19,11 @@ var UserRoleSchema = new Schema({
   },
   edituser: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createuser: {
     type: Schema.ObjectId,
-    ref: 'user'
+    ref: 'userprofiles'
   }
 });
 

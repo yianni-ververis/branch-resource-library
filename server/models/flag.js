@@ -10,7 +10,7 @@ var flagSchema = new Schema({
   entity: String,
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   flagType: String,
   comment: String,

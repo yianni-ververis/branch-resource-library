@@ -1,0 +1,54 @@
+<div class="container page user-edit">
+  <div class="content">
+    <notification-dialog></notification-dialog>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="user-header">
+          <span class="user-user" ng-if="users[0].fullname">{{users[0].username}} ({{users[0].email}})</span>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <h1>General</h1>
+      </div>
+      <div class="col-md-6">
+        <label>Name:</label>
+        <input class="form-control" ng-model="users[0].fullname">
+        <label>Bio:</label>
+        <textarea class="form-control" rows="3" ng-model="users[0].bio"></textarea>
+      </div>
+      <div class="col-md-6">
+        <label>Thumbnail:</label>
+        <form enctype="multipart/form-data" id="newUserImage">
+          <span class="btn btn-default btn-file">
+            Choose
+            <input onchange="angular.element(this).scope().previewThumbnail()" type="file" name="file" id="thumbnail"/>
+          </span>
+        </form>
+        <img src="{{users[0].thumbnail}}" />
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Location & Contact</h1>
+      </div>
+      <div class="col-md-6">
+        <label>City:</label>
+        <input class="form-control" ng-model="users[0].city" placeholder="The city in which you live">
+        <label>State:</label>
+        <input class="form-control" ng-model="users[0].state" placeholder="The state in which you live">
+        <label>Country:</label>
+        <input class="form-control" ng-model="users[0].country" placeholder="We think you get the idea...">
+      </div>
+      <div class="col-md-6">
+        <label>Twitter Handle:</label>
+        <input class="form-control" ng-model="users[0].twitter" placeholder="Share your twitter handle">
+        <label>GitHub Username:</label>
+        <input class="form-control" ng-model="users[0].github_user" placeholder="Let us know your GitHub user">
+        <label>Website:</label>
+        <input class="form-control" ng-model="users[0].website" placeholder="Do you have a website?">
+      </div>
+    </div>
+  </div>
+</div>

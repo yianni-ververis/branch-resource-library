@@ -7,7 +7,7 @@ var subscriptionSchema = new Schema({
   },
   userid: {
     type: Schema.ObjectId,
-    ref: 'users'
+    ref: 'userprofiles'
   },
   createdate: Date
 });
