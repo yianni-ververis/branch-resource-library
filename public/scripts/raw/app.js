@@ -6,7 +6,8 @@
     "ngNotifications", 
     "ngComments", 
     "ngModeration", 
-    "ngSanitize", 
+    "ngSanitize",
+    'ngAnimate',
     'ui.bootstrap' 
     ]);
 

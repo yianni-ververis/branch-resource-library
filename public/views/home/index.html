@@ -1,17 +1,17 @@
-<div ng-show="firstTime"" class="container type-intro">
+<div ng-hide="!firstTime" class="container type-intro animate-hide">
   <div class="type">
     <h1>Welcome to<br><span typewrite type-delay="80" blink-cursor="true" callbackFn="typeComplete()" text="introText"></span></h1>
   </div>
   <div class="action">
-    <div class="col-md-6"></div>
-    <div class="col-md-6"></div>
+    <div class="col-md-12"><button ng-click="toggleFirst()">Toggle</button></div>
   </div>
 </div>
-<div ng-show="!firstTime">
+<div ng-hide="firstTime">
 <div class="spot-image">
   <div class="spot-text-background">
     <div class="container">
       <div class="spot-text">
+        <h1>Welcome to<br> <span typewrite type-delay="80" blink-cursor="true" callbackFn="typeComplete()" text="introText"></span></h1>
       </div>
     </div>
   </div>

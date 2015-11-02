@@ -6,7 +6,8 @@
     "ngNotifications", 
     "ngComments", 
     "ngModeration", 
-    "ngSanitize", 
+    "ngSanitize",
+    'ngAnimate',
     'ui.bootstrap' 
     ]);
 
@@ -1846,8 +1847,12 @@
       }
     });
     
-    $scope.introText = ["innovation", 'creation', 'collaboration', 'Branch']
-    $scope.firstTime = true;
+    $scope.introText = ["innovation", 'creation', 'collaboration', 'Qlik Branch']
+    $scope.firstTime = false;
+    $scope.toggleFirst = function() {
+      $scope.firstTime = !$scope.firstTime;
+      console.log($scope.firstTime)
+    }
 
   }]);
 

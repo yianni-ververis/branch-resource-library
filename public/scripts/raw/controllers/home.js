@@ -50,7 +50,11 @@ app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams
     }
   });
   
-  $scope.introText = ["innovation", 'creation', 'collaboration', 'Branch']
-  $scope.firstTime = true;
+  $scope.introText = ["innovation", 'creation', 'collaboration', 'Qlik Branch']
+  $scope.firstTime = false;
+  $scope.toggleFirst = function() {
+    $scope.firstTime = !$scope.firstTime;
+    console.log($scope.firstTime)
+  }
 
 }]);
