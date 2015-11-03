@@ -18,9 +18,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   }
   $scope.$on("cleared", function(){
     searchExchange.init(defaultSelection);
-  })
-
-  searchExchange.clear(true);
+  })  
 
   $scope.blogTypes;
 
@@ -178,73 +176,75 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
   };
 
-  //only load the project if we have a valid projectId or we are in list view
-  if($state.current.name=="blogs.detail"){
-    $scope.getBlogData($scope.query); //get initial data set
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-    });
-  }
-  else if($state.current.name=="blogs.addedit"){
-    picklistService.getPicklistItems("Blog Type", function(items){
-      $scope.blogTypes = items;
-    });
-    if($stateParams.blogId=="new"){
-      $scope.blogs = [{}];
-    }
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(){
+    //only load the project if we have a valid projectId or we are in list view
+    if($state.current.name=="blogs.detail"){
+      $scope.getBlogData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=blogs/"+$stateParams.blogId+"/edit"
-        }
-        else{
-          if($stateParams.blogId!="new"){
-            $scope.getBlogData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
       });
     }
-    else{
-      if($stateParams.blogId!="new"){
-        $scope.getBlogData($scope.query); //get initial data set
+    else if($state.current.name=="blogs.addedit"){
+      picklistService.getPicklistItems("Blog Type", function(items){
+        $scope.blogTypes = items;
+      });
+      if($stateParams.blogId=="new"){
+        $scope.blogs = [{}];
+      }
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=blogs/"+$stateParams.blogId+"/edit"
+          }
+          else{
+            if($stateParams.blogId!="new"){
+              $scope.getBlogData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.blogId!="new"){
+          $scope.getBlogData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        else{
-          if(!userManager.canApprove('blog')){
+    else{ //this should be the list page
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
+          else{
+            if(!userManager.canApprove('blog')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          //this effectively initiates the results
+          searchExchange.clear(true);
+        });
+      }
+      else{
+        if(!userManager.canApprove('blog')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
         }
         //this effectively initiates the results
         searchExchange.clear(true);
-      });
-    }
-    else{
-      if(!userManager.canApprove('blog')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
       }
-      //this effectively initiates the results
-      searchExchange.clear(true);
+      //$("#newProjectContent").summernote();
+      //$scope.projects = [{}]; //add en empty object
     }
-    //$("#newProjectContent").summernote();
-    //$scope.projects = [{}]; //add en empty object
-  }
+  });
 
   function _arrayBufferToBase64( buffer ) {
     var binary = '';
