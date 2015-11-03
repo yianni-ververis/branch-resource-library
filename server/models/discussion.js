@@ -1,24 +1,24 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var blogSchema = new Schema({
+var discussionSchema = new Schema({
   title: String,
   content: Buffer,
   createdate: {
     type: Date,
     default: Date.now
   },
-  image: String,
-  thumbnail: String,
   userid: {
     type: Schema.ObjectId,
     ref: 'userprofiles'
   },
-  blogType: {
-      type: Schema.ObjectId,
-      ref: 'picklistitems'
-  },
+  tags: String,
   hide_comment: String,
+  status: {
+    type: Schema.ObjectId,
+    ref: "picklistitems",
+    default: "56378d4ca3367986771805a6"
+  },
   edituser: {
     type: Schema.ObjectId,
     ref: 'userprofiles'
@@ -29,7 +29,7 @@ var blogSchema = new Schema({
   },
   approved:{
     type: Boolean,
-    default: false
+    default: true
   },
   flagged:{
     type: Boolean,
@@ -37,4 +37,4 @@ var blogSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('blog', blogSchema)
+module.exports = mongoose.model('discussion', discussionSchema)

@@ -35,12 +35,10 @@ module.exports = function(req, res){
   var user = req.user;
   var userPermissions = req.user.role.permissions[req.params.entity];
   var data = req.body;
-  var query;
+  var query = req.query || {};
   var isNew = false;
   if(req.params.id){
-    query = {
-      "_id" : req.params.id
-    }
+    query["_id"] = req.params.id;
   }
   //else{
   if(userPermissions){
@@ -48,9 +46,7 @@ module.exports = function(req, res){
       query["createuser"]=user._id;
     }
     var record = data.standard || data;
-    console.log('creating updating, id is ');
-    console.log(record._id);
-    if(!record._id && !req.params.id){
+    if(!record._id && !req.params.id && !req.query){
       //this is a new item
       isNew = true;
       if(userPermissions.create!=true){

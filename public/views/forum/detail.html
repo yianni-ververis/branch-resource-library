@@ -1,0 +1,22 @@
+<div class="container page">
+  <div class="row content">
+    <notification-dialog></notification-dialog>
+    <div class="col-md-9">
+      <h1>{{discussions[0].title}}</h1>
+      <span>started by <a class="user-link" href="#user/{{discussions[0].userid._id}}">{{discussions[0].userid.username}}</a></span>
+      <div class="content">
+        <div class="" ng-bind-html="getDiscussionContent(discussions[0].content)">
+
+        </div>
+      </div>
+      <div comments entity="'discussion'" entityid="discussionId">
+
+      </div>
+    </div>
+    <div class="col-md-3">
+      <moderation entity="'discussion'" entityid="discussions[0]._id" approved="discussions[0].approved" owner="discussions[0].userid._id" size="'large'" editable="true"></moderation>
+      <button class="branch-button" type="button" name="button" ng-click="toggleAnswered()">Mark as answered</button>
+    </div>
+  </div>
+  <div class="loading-smoke" ng-show="blogLoading"></div>
+</div>

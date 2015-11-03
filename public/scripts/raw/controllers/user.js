@@ -9,6 +9,8 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
   $scope.query = {};
   $scope.projectCount = 0;
 
+  $scope.userLoading = true;
+
   $scope.$on("cleared", function(){
     searchExchange.init(defaultSelection);
   })
@@ -48,6 +50,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.getUserData = function(query, append){
     User.get(query, function(result){
+      $scope.userLoading = false;
       if(resultHandler.process(result)){
         if(append && append==true){
           $scope.users = $scope.users.concat(result.data);
@@ -106,11 +109,102 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
           $scope.getUserData($scope.query);
         }
       }
-    });    
+    });
   }
   else{
     //shouldn't reach here
 
   }
+
+  $scope.previewThumbnail = function(){
+    $scope.dirtyThumbnail = true;
+    var file = $("#userImage")[0].files[0];
+    var imageName = file.name;
+    var imageType = file.type;
+    var r = new FileReader();
+    r.onloadend = function(event){
+      var imageCanvas = document.createElement('canvas');
+      var imageContext = imageCanvas.getContext('2d');
+      var thumbnailCanvas = document.createElement('canvas');
+      var thumbnailContext = thumbnailCanvas.getContext('2d');
+      var thumbnail = new Image();
+      thumbnail.onload = function() {
+        var width = thumbnail.width;
+        var height = thumbnail.height;
+        imageCanvas.width = width;
+        imageCanvas.height = height;
+        thumbnailCanvas.width = (width * (77/height));
+        thumbnailCanvas.height = 77;
+
+        //draw the image and save the blob
+        imageContext.drawImage(thumbnail, 0, 0, imageCanvas.width, imageCanvas.height);
+        $scope.image = {
+          type: imageType,
+          name: imageName,
+          data: imageCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
+        }
+
+        //draw the thumbnail and save the blob
+        thumbnailContext.drawImage(thumbnail, 0, 0, thumbnailCanvas.width, thumbnailCanvas.height);
+        $scope.thumbnail = {
+          type: imageType,
+          name: imageName,
+          data: thumbnailCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
+        }
+        $scope.$apply(function(){
+          $scope.users[0].thumbnail = thumbnailCanvas.toDataURL();
+        });
+      };
+      thumbnail.src = r.result;
+    }
+    r.readAsDataURL(file);
+  };
+
+  $scope.validateNewUserData = function(){
+    //We're validating client side so that we don't keep passing image data back and forth
+    //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
+    var errors = [];
+    //Verify the project has a name
+    if(!$scope.users[0].fullname || $scope.users[0].fullname==""){
+      errors.push("Please tell us your name");
+    }
+    //If there are errors we need to notify the user
+    if(errors.length > 0){
+      //show the errors
+      notifications.notify("The blog post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+      window.scrollTo(100,0);
+    }
+    else{
+      //Save the record
+      $scope.saveUser();
+    }
+  };
+
+  $scope.saveUser = function(){
+    $scope.userLoading = true;
+    var data = {
+      standard: $scope.users[0]
+    };
+    if($scope.dirtyThumbnail){
+      data.special = {
+        image: $scope.image,
+        thumbnail: $scope.thumbnail
+      }
+    }
+    var query = {};
+    if($scope.users[0]._id){
+      query.userId = $scope.users[0]._id;
+    }
+    User.save(query, data, function(result){
+      $scope.userLoading = false;
+      if(resultHandler.process(result)){
+        var status = $scope.isNew ? "created" : "updated";
+        window.location = "#user/"+result._id+"?status="+status;
+      }
+      else{
+        notifications.notify(result.errText, null, {sentiment: "negative"});
+      }
+    });
+  };
 
 }]);

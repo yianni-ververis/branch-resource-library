@@ -1,0 +1,66 @@
+{
+  "fields":[
+    {
+      "dimension": "entityId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "userId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "username",
+      "suppressNull": false
+    },
+    {
+      "dimension": "last_updated_num",
+      "suppressNull": false
+    },
+    {
+      "dimension": "DocType",
+      "suppressNull": false
+    },
+    {
+      "dimension": "spamCount",
+      "suppressNull": false
+    },
+    {
+      "measure": "Sum({$<entityId={\"=Sum(spamCount)>0\"}>}spamCount)",
+      "label": "dummy",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
+    }
+  ],
+  "template": "/views/moderator/spammed-results.html",
+  "sorting":{
+    "last_updated_num": {
+      "id": "last_updated_num",
+      "name": "Last Updated",
+      "order": -1,
+      "field": "last_updated_num",
+      "sortType": "qSortByNumeric"
+    },
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title",
+      "sortType": "qSortByAscii"
+    },
+    "username": {
+      "id": "username",
+      "name": "User",
+      "order": 1,
+      "field": "username",
+      "sortType": "qSortByAscii"
+    }
+  },
+  "defaultSort": "last_updated_num",
+  "nullSuppressor": 0,
+  "searchFields": ["SearchField"],
+  "pagesize" : 50
+}

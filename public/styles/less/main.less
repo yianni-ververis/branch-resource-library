@@ -108,6 +108,10 @@ img{
 
 }
 
+.emphasize{
+  font-weight: 500;
+}
+
 .page{
   min-height: ~"calc(100% - 120px)";
 }
@@ -209,6 +213,17 @@ img{
   left: 0;
   height: 100%;
   width: 100%;
+  z-index: 20;
+}
+
+.smoke{
+  background-color: rgba(255,255,255,0.7);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 20;
 }
 
 .search-header{
@@ -252,6 +267,7 @@ img{
 @import "./breadcrumbs.less";
 @import "./confirm-dialog.less";
 @import "./admin/admin-main.less";
+@import "./moderator/moderator-main.less";
 @import "./header/header-main.less";
 @import "./header/header-mobile.less";
 @import "./home/home-main.less";

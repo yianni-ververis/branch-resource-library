@@ -63,9 +63,15 @@ function buildMenu(user){
       href: "#users/changepassword"
     });
     basicMenu.splice(0,0, {
-      label: "Edit Profile",
-      href: "#user/" + user._id + "/edit"
+      label: "My Profile",
+      href: "#user/" + user._id
     });
+    if(user.role.permissions && user.role.permissions.forum && user.role.permissions.forum.create==true){
+      basicMenu.splice(0,0,{
+        label: "Create Discussion",
+        href: "#forum/new/edit"
+      });
+    }
     if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){
       basicMenu.splice(0,0,{
         label: "Create Blog",

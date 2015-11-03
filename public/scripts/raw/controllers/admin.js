@@ -19,6 +19,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "project",
     "comment",
     "blog",
+    "discussion",
     "picklist",
     "picklistitem",
     "flag",

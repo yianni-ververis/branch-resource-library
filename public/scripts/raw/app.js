@@ -37,6 +37,12 @@
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })
+    //used to navigate to the moderator console
+    .state("moderator", {
+      url: "/moderator",
+      templateUrl: "/views/moderator/index.html",
+      controller: "moderatorController"
+    })
     //used to navigate to the project list page
     .state("projects", {
       url: "/project?terms&page&sort",
@@ -86,6 +92,32 @@
         "@":{
           templateUrl: "/views/blogs/addedit.html",
           controller: "blogController",
+        }
+      }
+    })
+    //used to navigate to the forum list page
+    .state("forum", {
+      url: "/forum",
+      templateUrl: "/views/forum/index.html",
+      controller: "discussionController"
+    })
+    //used to navigate to a given blog detail page
+    .state("forum.detail", {
+      url: "/:discussionId?status",
+      views:{
+        "@":{
+          templateUrl: "/views/forum/detail.html",
+          controller: "discussionController",
+        }
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("forum.addedit", {
+      url: "/:discussionId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/forum/addedit.html",
+          controller: "discussionController",
         }
       }
     })
@@ -162,6 +194,7 @@
   // include "./services/publisher.js"
   // //controllers
   // include "./controllers/admin.js"
+  // include "./controllers/moderator.js"
   // include "./controllers/auth.js"
   // include "./controllers/home.js"
   // include "./controllers/project.js"

@@ -2,10 +2,14 @@
   <div class="row">
       <div class="col-md-9">
         <h1 class='user-name'>Moderator Console</h1>
+        <p>
+          You can use this area to view and manage all of the 'unapproved', 'flagged' and 'spammed' items.<br />
+          Please note that updates can take up to 5 minutes to appear here.
+        </p>
       </div>
   </div>
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-12">
       <ul class="tabs horizontal">
         <li ng-class="{active:activeTab===0}">
           <a ng-click="setTab(0)">Unapproved</a>
@@ -17,6 +21,43 @@
           <a ng-click="setTab(2)">Spam</a>
         </li>
       </ul>
+    </div>
+    <div class="col-md-12">
+      <div ng-show="activeTab==0">
+        <search-input data-config="moderator-unapproved"></search-input>
+        <search-results id="moderatorUnapprovedResultList" data-config="moderator-unapproved"></search-results>
+      </div>
+      <div ng-show="activeTab==1">
+        <search-input data-config="moderator-flagged"></search-input>
+        <search-results id="moderatorFlaggedResultList" data-config="moderator-flagged"></search-results>
+      </div>
+      <div ng-show="activeTab==2">
+        <search-input data-config="moderator-spammed"></search-input>
+        <search-results id="moderatorSpammedResultList" data-config="moderator-spammed"></search-results>
+      </div>
+    </div>
+  </div>
+  <div class="smoke" ng-show="showComments">
+    <div class="flag-comment-container container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="underline">
+            <h1>{{commentType}} Comments</h1>
+            <h2>{{commentsTitle}}</h2>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <ul class="plainlist">
+            <li ng-repeat="item in comments" class="content underline">
+              <span><a class="user-link" href="#user/{{item.userid._id}}">{{item.userid.username}}</a> on {{item.createdate |  date:'MMM dd, yyyy'}} at {{ item.createdate |  date:'HH:mm'}}</span>
+              <p class="grey emphasize">
+                {{item.comment}}
+              </p>
+            </li>
+          </ul>
+          <button class="branch-button" ng-click="closeComments()" name="button">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
