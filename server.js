@@ -32,6 +32,7 @@ require('./server/models/rating.js');
 require('./server/models/views.js');
 require('./server/models/subscription.js');
 require('./server/models/article.js');
+require('./server/models/discussion.js');
 require('./server/models/attachment.js');
 require('./server/models/comment.js');
 require('./server/models/picklist.js');

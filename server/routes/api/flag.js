@@ -63,7 +63,7 @@ module.exports = {
       if(userPermissions.approve==false){
         query["userid"] = user._id;
       }
-      Flag.update(query, {flagged: false}, function(err, result){
+      Flag.update(query, {flagged: false, edituser: user._id}, function(err, result){
         if(err){
           console.log(err);
         }

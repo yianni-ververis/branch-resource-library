@@ -6,8 +6,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var Rating = $resource("api/rating");
   var MyRating = $resource("api/rating/rating/my");
 
-  console.log('firing project controller');
-
   $scope.$on('searchResults', function(){
     $scope.senseOnline = true;
   });
@@ -17,7 +15,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.init(defaultSelection);
   });
 
-  $scope.pageSize = 20;
+  $scope.dirtyThumbnail = false;
 
   $scope.userManager = userManager;
   $scope.Confirm = confirm;
@@ -199,6 +197,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.previewThumbnail = function(){
+    $scope.dirtyThumbnail = true;
     var file = $("#thumbnail")[0].files[0];
     var imageName = file.name;
     var imageType = file.type;
@@ -306,8 +305,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     });
     var data = {
-      standard: $scope.projects[0],  //data that we can just assign to the project
-      special:{ //that will be used to set additional properties
+      standard: $scope.projects[0]  //data that we can just assign to the project
+    }
+    if($scope.dirtyThumbnail){
+      data.special = { //that will be used to set additional properties
         image: $scope.image,
         thumbnail: $scope.thumbnail
       }
@@ -342,76 +343,78 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.clear();
   };
 
-  //only load the project if we have a valid projectId or we are in list view
-  if($state.current.name=="projects.detail"){
-    $scope.getProjectData($scope.query); //get initial data set
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-    });
-  }
-  else if($state.current.name=="projects.addedit"){
-    picklistService.getPicklistItems("Product", function(items){
-      $scope.projectProducts = items;
-    });
-    picklistService.getPicklistItems("Category", function(items){
-      $scope.projectCategories = items;
-    });
-    picklistService.getPicklistItems("Project Status", function(items){
-      $scope.projectStatuses = items;
-    });
-    if($stateParams.projectId=="new"){
-      $scope.projects = [{}];
-    }
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(){
+    //only load the project if we have a valid projectId or we are in list view
+    if($state.current.name=="projects.detail"){
+      $scope.getProjectData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=project/"+$stateParams.projectId+"/edit"
-        }
-        else{
-          if($stateParams.projectId!="new"){
-            $scope.getProjectData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
       });
     }
-    else{
-      if($stateParams.projectId!="new"){
-        $scope.getProjectData($scope.query); //get initial data set
+    else if($state.current.name=="projects.addedit"){
+      picklistService.getPicklistItems("Product", function(items){
+        $scope.projectProducts = items;
+      });
+      picklistService.getPicklistItems("Category", function(items){
+        $scope.projectCategories = items;
+      });
+      picklistService.getPicklistItems("Project Status", function(items){
+        $scope.projectStatuses = items;
+      });
+      if($stateParams.projectId=="new"){
+        $scope.projects = [{}];
+      }
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=project/"+$stateParams.projectId+"/edit"
+          }
+          else{
+            if($stateParams.projectId!="new"){
+              $scope.getProjectData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.projectId!="new"){
+          $scope.getProjectData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        else{
-          if(!userManager.canApprove('project')){
+    else{ //this should be the list page
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
+          else{
+            if(!userManager.canApprove('project')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          //this effectively initiates the results
+          searchExchange.clear(true);
+        });
+      }
+      else{
+        if(!userManager.canApprove('project')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
         }
         //this effectively initiates the results
         searchExchange.clear(true);
-      });
-    }
-    else{
-      if(!userManager.canApprove('project')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
       }
-      //this effectively initiates the results
-      searchExchange.clear(true);
     }
-  }
+  });
 
 }]);

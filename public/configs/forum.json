@@ -1,7 +1,7 @@
 {
   "fields":[
     {
-      "dimension": "blogId",
+      "dimension": "discussionId",
       "suppressNull": true
     },
     {
@@ -25,19 +25,15 @@
       "suppressNull": false
     },
     {
-      "dimension": "image",
+      "dimension": "tags",
       "suppressNull": false
     },
     {
-      "measure": "sum(viewNum)",
-      "label": "views"
-    },
-    {
-      "measure" : "count(DISTINCT commentId)",
-      "label" : "commentcount"
+      "dimension": "forumStatus",
+      "suppressNull": false
     }
   ],
-  "template": "/views/blogs/blog-results.html",
+  "template": "/views/forum/forum-results.html",
   "sorting":{
     "createdate": {
       "id": "createdate",

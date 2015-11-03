@@ -1,0 +1,10 @@
+<ul class="plainlist discussions">
+  <li ng-repeat="discussion in items" id="{{discussion.discussionId}}">
+    <div class="row">
+      <div class="col-md-12">
+        <span class="list-title"><a href="#forum/{{discussion.discussionId}}">{{discussion.title}}</a></span>
+        <span>started by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a></span>
+      </div>
+    </div>
+  </li>
+</ul>

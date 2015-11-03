@@ -5,6 +5,8 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.blogLoading = $stateParams.blogId!="new";
 
+  $scope.dirtyThumbnail = false;
+
   var defaultSelection;
 
   if(!userManager.canApprove('blog')){
@@ -67,6 +69,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   }
 
   $scope.previewThumbnail = function(){
+    $scope.dirtyThumbnail = true;
     var file = $("#blogImage")[0].files[0];
     var imageName = file.name;
     var imageType = file.type;
@@ -141,12 +144,14 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     $scope.blogLoading = true;
     $scope.blogs[0].content = $("#blogContent").code();
     var data = {
-      standard: $scope.blogs[0],
-      special:{
+      standard: $scope.blogs[0]
+    };
+    if($scope.dirtyThumbnail){
+      data.special = {
         image: $scope.image,
         thumbnail: $scope.thumbnail
       }
-    };
+    }
     var query = {};
     if($scope.blogs[0]._id){
       query.blogId = $scope.blogs[0]._id;
@@ -155,7 +160,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
       $scope.blogLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#blogs/"+result._id+"?status="+status;
+        window.location = "#blog/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});

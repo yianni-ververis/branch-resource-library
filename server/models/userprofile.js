@@ -23,6 +23,8 @@ var userProfileSchema = new Schema({
     ref: 'userrole',
     default: "558c1e12f947a1a8d63b1396"
   },
+  image: String,
+  thumbnail: String,
   company: String, //Company name
   bio: String,
   title: String,

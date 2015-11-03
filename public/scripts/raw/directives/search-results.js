@@ -13,7 +13,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         $scope.qFields;
         $scope.sortOptions = $scope.config.sorting;
         $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
-        var Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
+        var Entity;
+        if($scope.config.entity){
+          Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
+        }
 
         //add additional sorting for moderators and admins
         if(userManager.canApprove($scope.config.entity)){
@@ -48,28 +51,32 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         };
 
         $scope.getHidden = function(){
-          Entity.get({id: "hidden"}, {
-            limit: 100  //if we have more than 100 hidden items we have some housekeeping to do
-          }, function(result){
-            if(resultHandler.process(result)){
-              $scope.hidden = result.data;
-            }
-          });
+          if(Entity){
+            Entity.get({id: "hidden"}, {
+              limit: 100  //if we have more than 100 hidden items we have some housekeeping to do
+            }, function(result){
+              if(resultHandler.process(result)){
+                $scope.hidden = result.data;
+              }
+            });
+          }
         };
 
         $scope.getFlagged = function(){
-          Entity.get({id: "flagged"}, {
-            limit: 100  //if we have more than 100 flagged items we have some housekeeping to do
-          }, function(result){
-            if(resultHandler.process(result)){
-              //$scope.flagged = result.data;
-              if(result.data){
-                for(var i=0;i<result.data.length;i++){
-                  $scope.flagged[result.data[i].entityId] = true;
+          if(Entity){
+            Entity.get({id: "flagged"}, {
+              limit: 100  //if we have more than 100 flagged items we have some housekeeping to do
+            }, function(result){
+              if(resultHandler.process(result)){
+                //$scope.flagged = result.data;
+                if(result.data){
+                  for(var i=0;i<result.data.length;i++){
+                    $scope.flagged[result.data[i].entityId] = true;
+                  }
                 }
               }
-            }
-          });
+            });
+          }
         };
 
         $scope.getHidden();
