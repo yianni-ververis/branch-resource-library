@@ -13,7 +13,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.$root.$on("cleared", function(){
     searchExchange.init(defaultSelection);
-  })
+  });
 
   $scope.blogTypes;
 
@@ -165,7 +165,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
       return "";
     }
   };
-
 
   if($state.current.name=="blogs.detail"){
     $scope.getBlogData($scope.query); //get initial data set
