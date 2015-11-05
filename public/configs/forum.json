@@ -59,6 +59,7 @@
   },
   "defaultSort": "createdate",
   "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,
   "entity": "blog",
   "pagesize" : 20

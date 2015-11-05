@@ -1,4 +1,4 @@
-app.directive('searchInput', ['searchExchange', '$state', '$interpolate', function (searchExchange, $state, $interpolate) {
+app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confirm", function (searchExchange, $state, $interpolate, confirm) {
   return {
     restrict: "E",
     replace: true,
@@ -37,7 +37,7 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
             SPACE: 32
         };
 
-        scope.searchText = "";
+        scope.searchText;
 
         scope.searchTimeout = 300;
         scope.suggestTimeout = 100;
@@ -79,32 +79,50 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
             scope.hideSuggestion();
             return;
           }
-          if(event.keyCode == Key.DOWN){
+          else if(event.keyCode == Key.DOWN){
             //show the suggestions again
             scope.showSuggestion();
           }
-          if(event.keyCode == Key.RIGHT){
+          else if(event.keyCode == Key.RIGHT){
             //activate the next suggestion
             if(scope.suggesting){
               event.preventDefault();
               scope.nextSuggestion();
             }
           }
-          if(event.keyCode == Key.LEFT){
+          else if(event.keyCode == Key.LEFT){
             //activate the previous suggestion
             if(scope.suggesting){
               event.preventDefault();
               scope.prevSuggestion();
             }
           }
-          if(event.keyCode == Key.ENTER || event.keyCode == Key.TAB){
+          else if(event.keyCode == Key.ENTER || event.keyCode == Key.TAB){
             if(scope.suggesting){
               event.preventDefault();
               scope.acceptSuggestion();
             }
           }
-          if(event.keyCode == Key.SPACE){
+          else if(event.keyCode == Key.SPACE){
+            //we'll check here to make sure the latest term is at least 2 characters
+            if(scope.searchText.split(" ").length==5){
+              confirm.prompt("I hate to break it to you but you can only search for 5 things. Must try harder!", {options:["Thanks, I accept this without question"]}, function(response){
+              });
+              event.preventDefault();
+              return false;
+            }
+            else if(scope.searchText.split(" ").pop().length==1){
+              confirm.prompt("You'll need to search for something longer than '"+scope.searchText.split(" ").pop()+"'", {options:["That makes sense."]}, function(response){
+              });
+              event.preventDefault();
+              return false;
+            }
+            else{
               scope.hideSuggestion();
+            }
+          }
+          else{
+            scope.hideSuggestion();
           }
 
         };
@@ -116,8 +134,11 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
           }
           if(reservedKeys.indexOf(event.keyCode) == -1){
             if(scope.searchText.length > 0){
-              scope.preSearch();
-              scope.preSuggest();
+              //we'll check here to make sure the latest term is at least 2 characters before searching
+              if(scope.searchText.split(" ").pop().length>1){
+                scope.preSearch();
+                scope.preSuggest();
+              }
             }
             else{
               //clear the search
@@ -206,6 +227,31 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', functi
         scope.clear = function(){
           searchExchange.clear();
         };
+
+        scope.$root.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+          //if there is an existing state we should update the pageTop property on the scope
+          //and apply patches to the object for sorting
+          if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+            if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+              scope.searchText = "";
+              if(searchExchange.state){
+                if(searchExchange.state && searchExchange.state.searchText){
+                  scope.searchText = searchExchange.state.searchText;
+                  //scope.preSearch();
+                }
+              }
+              scope.preSearch();
+            }
+          }
+        });
+
+        scope.$on("update", function(){
+          if(!scope.searchText){
+            if(searchExchange.state && searchExchange.state.searchText){
+              scope.searchText = searchExchange.state.searchText;
+            }
+          }
+        });
 
         function getGhostString(query, suggestion){
           var suggestBase = query;

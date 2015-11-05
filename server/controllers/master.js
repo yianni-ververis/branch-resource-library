@@ -106,18 +106,32 @@ module.exports = {
     });
   },
   save: function(query, data, entity, callbackFn){
-    if(query){ //update
+    if(query && hasProps(query)){ //update
       console.log('updating record');
-      entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
-        if(err){
-          console.log(err);
-          callbackFn.call(null, Error.errorSaving(err.message));
-        }
-        else{
-          console.log(result);
-          callbackFn.call(null, result);
-        }
-      });
+      if(query._id){
+        entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
+          if(err){
+            console.log(err);
+            callbackFn.call(null, Error.errorSaving(err.message));
+          }
+          else{
+            console.log(result);
+            callbackFn.call(null, result);
+          }
+        });
+      }
+      else{
+        entity.model.update(query, data, {multi:true}).populate(entity.populates).exec(function(err, result){
+          if(err){
+            console.log(err);
+            callbackFn.call(null, Error.errorSaving(err.message));
+          }
+          else{
+            console.log(result);
+            callbackFn.call(null, result);
+          }
+        });
+      }
     }
     else{ //new
       console.log('creating record');
@@ -153,3 +167,12 @@ module.exports = {
     });
   }
 };
+
+function hasProps(obj){
+  for (var key in obj){
+    if(obj.hasOwnProperty(key)){
+      return true;  //the update query has a property
+    }
+  }
+  return false;
+}

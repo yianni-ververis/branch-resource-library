@@ -14,7 +14,7 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
         $scope.$parent.toggleSelect(attr.field, elemNum);
       }
       $scope.$on('searchResults', function(){
-        if($scope.info){
+        if($scope.handle){
           $scope.render();
         }
         else{
@@ -29,7 +29,7 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
       });
 
       $scope.$on('initialised', function(){
-        if($scope.info){
+        if($scope.handle){
           $scope.render();
         }
         else{
@@ -50,7 +50,7 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
         }
       });
       $scope.$on('cleared', function(){
-        if($scope.info){
+        if($scope.handle){
           $scope.render();
         }
         else{
@@ -65,18 +65,10 @@ app.directive("searchFilter", ["searchExchange", function(searchExchange){
           var layout = response.qLayout;
           searchExchange.ask($scope.handle, "GetListObjectData", ["/qListObjectDef",[{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]], function(response){
             var data = response.qDataPages;
-            $scope.$apply(function(){
-              $scope.items = data[0].qMatrix;
-            });
+            $scope.items = data[0].qMatrix;
+            $scope.$apply();
           });
         });
-        // $scope.info.object.getLayout().then(function(layout){
-        //   $scope.info.object.getListObjectData("/qListObjectDef", [{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]).then(function(data){
-        //     $scope.$apply(function(){
-        //       $scope.info.items = data[0].qMatrix;
-        //     });
-        //   });
-        // });
       };
 
       $scope.selectValue = function(value){

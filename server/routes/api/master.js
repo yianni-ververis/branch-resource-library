@@ -133,7 +133,10 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         //check to see if the current user or IP Address has viewed the same item
         //in the last hour. If not add an item to the views table
         var anHourAgo = (new Date()).getTime() - (360000);
-        var ip = req.ip.split(":").pop();
+        var ip = -1;
+        if(req.ip){
+          ip = req.ip.split(":").pop();
+        }
         var viewQuery = {
           createdate: {
             $gt: anHourAgo
@@ -147,9 +150,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           viewQuery.ip = ip;
         }
         MasterController.get(viewQuery, viewQuery, entities["view"], function(results){
-          console.log(results);
           if(results.data.length == 0){
-            console.log('saving new view');
             var viewData = {};
             if(req.user){
               viewData.userid = req.user._id;
@@ -157,10 +158,11 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             viewData.ip = ip;
             viewData.entityId = req.params.id;
             MasterController.save(null, viewData, entities["view"], function(result){
-              console.log(result);
+
             });
           }
         });
+
       }
       if(req.params.entity=="projects"&&(results.data && results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
@@ -175,7 +177,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           }
           else{
             //update the contributors
-            console.log(gitresult);
+
             //update the update date and git check data
             var hasChanged = results.data[0].last_updated!=new Date(gitresult.updated_at);
             results.data[0].last_updated = new Date(gitresult.updated_at);
@@ -186,7 +188,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               if(err){
                 console.log(err);
               }
-              console.log(readmeresult);
               results.data[0].content = atob(readmeresult.content);
               results.data[0].save(function(err){
                 if(!err){
@@ -231,23 +232,23 @@ router.post("/:entity/rating/my", Auth.isLoggedIn, get.getMyRating);
 //This route is for deleting a list of records on the specified entity
 //url parameters can be used to add filtering
 //Requires "delete" permission on the specified entity
-router.delete("/:entity", Auth.isLoggedIn, function(req, res){
-  var query = req.query || {};
-  var entity = req.params.entity;
-  var user = req.user;
-  var userPermissions = req.user.role.permissions[entity];
-  if(!userPermissions || userPermissions.delete!=true){
-    res.json(Error.insufficientPermissions());
-  }
-  else{
-    if(userPermissions.allOwners!=true){
-      query["createuser"]=user._id;
-    }
-    MasterController.delete(query, entities[entity], function(result){
-      res.json(result);
-    });
-  }
-});
+// router.delete("/:entity", Auth.isLoggedIn, function(req, res){
+//   var query = req.query || {};
+//   var entity = req.params.entity;
+//   var user = req.user;
+//   var userPermissions = req.user.role.permissions[entity];
+//   if(!userPermissions || userPermissions.delete!=true){
+//     res.json(Error.insufficientPermissions());
+//   }
+//   else{
+//     if(userPermissions.allOwners!=true){
+//       query["createuser"]=user._id;
+//     }
+//     MasterController.delete(query, entities[entity], function(result){
+//       res.json(result);
+//     });
+//   }
+// });
 
 //This route is for deleting a specific record on the specified entity
 //url parameters can be used to add filtering
@@ -264,7 +265,7 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
   else{
     if(userPermissions.allOwners!=true){
       query["createuser"]=user._id;
-    }
+    }    
     MasterController.delete(query, entities[entity], function(result){
       //need to delete any comments and flags
       res.json(result);

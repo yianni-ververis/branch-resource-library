@@ -90,6 +90,7 @@
   },
   "defaultSort": "last_updated_num",
   "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,
   "entity": "project",
   "pagesize" : 20

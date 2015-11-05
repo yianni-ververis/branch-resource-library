@@ -5,22 +5,15 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.blogLoading = $stateParams.blogId!="new";
 
+  $scope.isNew = $stateParams.blogId=="new";
+
   $scope.dirtyThumbnail = false;
 
   var defaultSelection;
 
-  if(!userManager.canApprove('blog')){
-    defaultSelection = {
-      field: "approved",
-      values: [0],
-      lock: true
-    }
-  }
-  $scope.$on("cleared", function(){
+  $scope.$root.$on("cleared", function(){
     searchExchange.init(defaultSelection);
   })
-
-  searchExchange.clear(true);
 
   $scope.blogTypes;
 
@@ -53,20 +46,14 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           $scope.blogs = result.data;
           //if this is the detail view we'll update the breadcrumbs
         }
+        if($state.current.name=="blogs.addedit"){
+          $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
+        }
         $scope.blogInfo = result;
         delete $scope.blogInfo["data"];
       }
     });
   };
-
-  if($scope.blogId == 'new'){
-    $("#blogContent").summernote({
-      height: 600
-    });
-  }
-  else{
-    $scope.getBlogData($scope.query);
-  }
 
   $scope.previewThumbnail = function(){
     $scope.dirtyThumbnail = true;
@@ -104,7 +91,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           data: thumbnailCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
         }
         $scope.$apply(function(){
-          $scope.projects[0].thumbnail = thumbnailCanvas.toDataURL();
+          $scope.blogs[0].thumbnail = thumbnailCanvas.toDataURL();
         });
       };
       thumbnail.src = r.result;
@@ -116,16 +103,16 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     //We're validating client side so that we don't keep passing image data back and forth
     //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
     var errors = [];
-    //Verify the project has a name
+    //Verify the blog has a name
     if(!$scope.blogs[0].title || $scope.blogs[0].title==""){
       errors.push("Please specify a Title");
     }
-    //Verify the project has a type
+    //Verify the blog has a type
     if(!$scope.blogs[0].blogType){
       errors.push("Please select a Type");
     }
-    //Verify the project has content
-    if($("#blogContent").code().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
+    //Verify the blog has content
+    if($("#blogContent").code().length==0 || $("#blogContent").code().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
       errors.push("Please add some content");
     }
     //If there are errors we need to notify the user
@@ -143,6 +130,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.saveBlog = function(){
     $scope.blogLoading = true;
     $scope.blogs[0].content = $("#blogContent").code();
+    convertToPlainText($scope.blogs[0].content);
     var data = {
       standard: $scope.blogs[0]
     };
@@ -178,14 +166,23 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
   };
 
-  //only load the project if we have a valid projectId or we are in list view
+
   if($state.current.name=="blogs.detail"){
     $scope.getBlogData($scope.query); //get initial data set
+    if(searchExchange.state){
+      $scope.$root.$broadcast('setCrumb', {
+            text: "back to Search Results",
+            link: "blog"
+          });
+    }
     userManager.refresh(function(hasUser){
       $scope.currentuserid = userManager.userInfo._id;
     });
   }
   else if($state.current.name=="blogs.addedit"){
+    $("#blogContent").summernote({
+      height: 400
+    });
     picklistService.getPicklistItems("Blog Type", function(items){
       $scope.blogTypes = items;
     });
@@ -196,7 +193,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     if(!hasUser){
       userManager.refresh(function(hasUser){
         if(!hasUser){
-          window.location = "#login?url=blogs/"+$stateParams.blogId+"/edit"
+          window.location = "#login?url=blog/"+$stateParams.blogId+"/edit"
         }
         else{
           if($stateParams.blogId!="new"){
@@ -229,7 +226,13 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           }
         }
         //this effectively initiates the results
-        searchExchange.clear(true);
+        if(searchExchange.state){
+          //no action necessary, handled by search components
+        }
+        else{
+          console.log('no state so clear');
+          searchExchange.clear(true);
+        }
       });
     }
     else{
@@ -240,10 +243,18 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
         }]
       }
       //this effectively initiates the results
-      searchExchange.clear(true);
+      if(searchExchange.state){
+        //no action necessary, handled by search components
+      }
+      else{
+        console.log('no state so clear');
+        searchExchange.clear(true);
+      }
     }
-    //$("#newProjectContent").summernote();
-    //$scope.projects = [{}]; //add en empty object
+  }
+
+  function convertToPlainText(text){
+    console.log(text);
   }
 
   function _arrayBufferToBase64( buffer ) {

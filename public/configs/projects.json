@@ -21,6 +21,10 @@
       "suppressNull": false
     },
     {
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
       "dimension": "short_description",
       "suppressNull": false
     },
@@ -88,5 +92,6 @@
   "entity": "project",
   "nullSuppressor": 0,
   "searchFields": ["SearchField"],
-  "pagesize" : 50
+  "suggestFields": ["title","username","tags","category","product"],
+  "pagesize" : 20
 }

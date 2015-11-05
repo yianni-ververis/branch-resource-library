@@ -62,5 +62,6 @@
   "defaultSort": "last_updated_num",
   "nullSuppressor": 0,
   "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags","category","product"],
   "pagesize" : 50
 }

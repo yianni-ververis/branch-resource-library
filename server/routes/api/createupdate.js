@@ -37,6 +37,11 @@ module.exports = function(req, res){
   var data = req.body;
   var query = req.query || {};
   var isNew = false;
+  var imageEntities = [
+    "project",
+    "blog",
+    "user"
+  ];
   if(req.params.id){
     query["_id"] = req.params.id;
   }
@@ -46,7 +51,15 @@ module.exports = function(req, res){
       query["createuser"]=user._id;
     }
     var record = data.standard || data;
-    if(!record._id && !req.params.id && !req.query){
+    console.log('create update record id');
+    console.log(record._id);
+    console.log('create update req params id');
+    console.log(req.params.id);
+    console.log('create update req query');
+    console.log(req.query);
+    console.log('create update req query has props');
+    console.log(hasProps(req.query));
+    if(!record._id && !req.params.id && !hasProps(req.query)){
       //this is a new item
       isNew = true;
       if(userPermissions.create!=true){
@@ -56,6 +69,7 @@ module.exports = function(req, res){
       record.createuser = user._id;
       record.userid = user._id;
       record.createdate = Date.now();
+      record.createdate_num = new Date(Date.now()).getTime();
     }
     else{
       if(userPermissions.update!=true){
@@ -83,6 +97,7 @@ module.exports = function(req, res){
     }
 
     if(data.special){
+      //we have image data to deal with
       if(!fs.existsSync(attachmentDir+record._id.toString())){
         fs.mkdirSync(attachmentDir+record._id.toString());
       }
@@ -122,7 +137,10 @@ module.exports = function(req, res){
       });
     }
     else{
-      console.log('saving non project entity with query');
+      if(isNew && imageEntities.indexOf(req.params.entity)!=-1){
+        record.image = "/attachments/default/"+req.params.entity+".png";
+        record.thumbnail = "/attachments/default/"+req.params.entity+".png";
+      }
       console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
         if(!newrecord.errCode){
@@ -155,3 +173,12 @@ module.exports = function(req, res){
     res.json(Error.notLoggedIn());
   }
 };
+
+function hasProps(obj){
+  for (var key in obj){
+    if(obj.hasOwnProperty(key)){
+      return true;  //the update query has a property
+    }
+  }
+  return false;
+}
