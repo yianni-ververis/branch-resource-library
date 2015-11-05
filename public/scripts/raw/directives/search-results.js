@@ -5,8 +5,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
     scope: {
 
     },
-    link: function($scope, element, attr){
-      $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+attr.config+'.json', success: function(json){
+    controller: function($scope, $element, $attrs){
+      $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+$attrs.config+'.json', success: function(json){
         $scope.config = JSON.parse(json);
         $scope.template = $scope.config.template;
         $scope.fields = $scope.config.fields;
@@ -28,6 +28,19 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             "sortType": "qSortByNumeric"
           };
         }
+
+        $scope.highlightText = function(text){
+          if(searchExchange.state && searchExchange.state.searchText){
+            var terms = searchExchange.state.searchText.split(" ");
+            for (var i=0;i<terms.length;i++){
+              text = text.replace(new RegExp(terms[i], "i"), "<span class='highlight"+i+"'>"+terms[i]+"</span>")
+            }
+            return text;
+          }
+          else{
+            return text;
+          }
+        };
 
         $scope.loading = true;
 
@@ -103,23 +116,36 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           return false;
         };
 
-        $scope.$on('searching', function(){
+        $scope.$root.$on('searching', function(){
           $scope.loading = true;
           $scope.pageTop = 0;
         });
 
-        publisher.subscribe("update", $(element).attr("id"), function(){
-          if($scope.handle){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
-              $scope.render();
-            }
-          }
-        });
+        // searchExchange.subscribe("update", $attrs.id, function(){
+        //   if(searchExchange.state && searchExchange.state.sort){
+        //     $scope.sort = searchExchange.state.sort;
+        //   }
+        //   if(searchExchange.state && searchExchange.state.page){
+        //     $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
+        //   }
+        //   console.log('on update handle is '+$scope.handle);
+        //   if($scope.handle){
+        //     $scope.render();
+        //   }
+        //   else{
+        //     $scope.postponed = function(){
+        //       $scope.render();
+        //     }
+        //   }
+        // });
 
-        $scope.$on("update", function(params){
+        $scope.$root.$on("update", function(){
+          if(searchExchange.state && searchExchange.state.sort){
+            $scope.sort = searchExchange.state.sort;
+          }
+          if(searchExchange.state && searchExchange.state.page){
+            $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
+          }
           console.log('on update handle is '+$scope.handle);
           if($scope.handle){
             $scope.render();
@@ -141,6 +167,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         };
 
         $scope.setPage = function(pageNumber){
+          searchExchange.setStateAttr("page", pageNumber);
           $scope.pageTop = ($scope.config.pagesize * pageNumber);
           $scope.render();
         }
@@ -173,7 +200,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
               var data = response.qDataPages;
               var items = [];
-              //$scope.$apply(function(){
+              $scope.$apply(function(){
                 $scope.loading = false;
                 $scope.terms
                 $scope.pageTop = data[0].qArea.qTop;
@@ -184,7 +211,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                 for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
                   $scope.pages.push(i);
                 }
-                $scope.items = []
+                //$scope.items = null;
                 for(var i=0;i<data[0].qMatrix.length;i++){
                   var item = {}
                   //if the nullSuppressor field is null then we throw out the row
@@ -203,10 +230,9 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
-                $scope.$apply(function(){
                   $scope.items = items;
-                });
-              //});
+                  //$scope.$apply();
+              });
             });
           });
         };
@@ -214,7 +240,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         $scope.renderEmpty = function(){
           $scope.loading = false;
           $scope.items = [];
-          $scope.$apply();
+          //$scope.$apply();
         };
 
         $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)
@@ -237,13 +263,16 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           });
         };
 
-        $scope.applySort = function(sort){
+        $scope.applySort = function(sort, render){
+          searchExchange.setStateAttr("sort", sort);
           searchExchange.ask($scope.handle, "ApplyPatches", [[{
             qPath: "/qHyperCubeDef/qInterColumnSortOrder",
             qOp: "replace",
             qValue: getFieldIndex(sort.field)
           }], true], function(){
-            $scope.render();
+            if(render && render==true){
+              $scope.render();
+            }
           });
           // $scope.info.object.applyPatches([{
           //   qPath: "/qHyperCubeDef/qInterColumnSortOrder",
@@ -276,8 +305,30 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           return 0;
         }
 
+        $scope.$root.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+          //if there is an existing state we should update the pageTop property on the scope
+          //and apply patches to the object for sorting
+          if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+            if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+              if(searchExchange.state && searchExchange.state.sort){
+                $scope.applySort(searchExchange.state.sort);
+              }
+            }
+          }
+        });
+
+        $scope.$root.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+          if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+            if(searchExchange.state){
+              if(searchExchange.state.page || searchExchange.state.sort){
+                searchExchange.render();
+              }
+            }
+          }
+        });
+
         searchExchange.addResults({
-            id: $(element).attr("id"),
+            id: $attrs.id,
             fields: $scope.fields,
             sortOptions: $scope.sortOptions,
             defaultSort: getFieldIndex($scope.sort.field, false)

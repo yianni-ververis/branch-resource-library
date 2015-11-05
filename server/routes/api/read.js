@@ -47,7 +47,7 @@ module.exports = {
       else{
         query["entity"]=req.params.entity;  //we only ever get flagged records for a specific entity
         query["flagged"] = true;  //we only ever get flagged records
-        if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
+        if((userPermissions && userPermissions.flag!=true && entity.exemptFromApproval!=true)
             || (!user)){
             query["userid"] = user._id;
         }

@@ -4,10 +4,13 @@ var Schema = mongoose.Schema;
 var discussionSchema = new Schema({
   title: String,
   content: Buffer,
+  content_plaintext: String,
   createdate: {
     type: Date,
     default: Date.now
   },
+  last_updated: Date,
+  last_updated_num: Number,
   userid: {
     type: Schema.ObjectId,
     ref: 'userprofiles'

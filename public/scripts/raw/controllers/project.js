@@ -348,6 +348,12 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.$on("$stateChangeSuccess", function(){
     //only load the project if we have a valid projectId or we are in list view
     if($state.current.name=="projects.detail"){
+      if(searchExchange.state){
+        $scope.$root.$broadcast('setCrumb', {
+              text: "back to Search Results",
+              link: "project"
+            });
+      }
       $scope.getProjectData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
         $scope.currentuserid = userManager.userInfo._id;
@@ -403,7 +409,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             }
           }
           //this effectively initiates the results
-          searchExchange.clear(true);
+          if(searchExchange.state){
+            //no action necessary, handled by search components
+          }
+          else{
+            console.log('no state so clear');
+            searchExchange.clear(true);
+          }
         });
       }
       else{
@@ -414,7 +426,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
           }]
         }
         //this effectively initiates the results
-        searchExchange.clear(true);
+        if(searchExchange.state){
+          //no action necessary, handled by search components          
+        }
+        else{
+          console.log('no state so clear');
+          searchExchange.clear(true);
+        }
       }
     }
   });

@@ -6,10 +6,14 @@
       <div class="col-md-12">
         <label>Title:</label>
         <input class="form-control" type="text" ng-model="blogs[0].title" placeholder="Title" />
+        <label>Short Description:</label>
+        <input class="form-control" type="text" ng-model="blogs[0].short_description" placeholder="A brief description" />
         <label>Type:</label>
-        <select class="form-control" name="" ng-model="blogs[0].blogType" ng-options="item.name for item in blogTypes track by item._id">
+        <select class="form-control" type="text" name="" ng-model="blogs[0].blogType" ng-options="item.name for item in blogTypes track by item._id">
           <option value="">Please specify a Type</option>
         </select>
+        <label>Tags:</label>
+        <input class="form-control" type="text" ng-model="blogs[0].tags" name="name" value="" placeholder="Assign some tags to your blog. e.g. Visualization, Sense">
       </div>
       <div class="col-md-12" ng-show="blogs[0].blogType.name!='Tweet'">
         <div class="image-upload">

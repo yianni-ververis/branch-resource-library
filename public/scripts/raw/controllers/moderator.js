@@ -49,7 +49,7 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
     $scope.commentsTitle = params.title;
     var flagType = params.flagCount ? 'flag' : 'spam';
     $scope.commentType = params.flagCount ? 'Flag' : 'Spam';
-    Flags.get({entityId: params.entityId, flagType: flagType}, function(results){
+    Flags.get({entityId: params.entityId, flagType: flagType, flagged: true}, function(results){
       if(resultHandler.process(results)){
         $scope.showComments = true;
         $scope.comments = results.data;

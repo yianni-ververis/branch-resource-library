@@ -1,16 +1,16 @@
 <div class="results-container content">
-  <div class="" ng-if="items.length>0">
+  <div class="" ng-show="items.length>0">
     <div class="result-header row">
       <div class="resultNumbers col-md-6">
         Showing {{pageTop+1}} - {{pageBottom}} of {{total}} results
       </div>
       <div class="sorting col-md-6">
-        Sort by: <select class="form-control" ng-change="applySort(sort)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+        Sort by: <select class="form-control" ng-change="applySort(sort, true)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12 result-list">
-        <ng-include src="template"></ng-include>
+        <ng-include src="template" scope="scope"></ng-include>
       </div>
     </div>
     <div class="result-footer row">
@@ -36,7 +36,7 @@
       </div>
     </div>
   </div>
-  <div class="no-results" ng-if="items.length==0">
+  <div class="no-results" ng-show="items.length==0">
     <span ng-show="!loading">No Results</span>
     <div class="loading" ng-show="loading">
 

@@ -22,7 +22,7 @@ module.exports = {
     project:{
       to: "nwr@qlik.com",
       subject: "Branch Project Rejected",
-      html: "Project {{title}} on branch.qlik.com has been rejected blah blah blah"
+      html: "Project {{title}} on branch.qlik.com has been rejected with the following comments.<br /><p>{{hide_comment}}</p>"
     }
   },
   update:{

@@ -67,6 +67,7 @@
   },
   "defaultSort": "last_updated_num",
   "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags","category","product"],
   "nullSuppressor": 0,
   "entity": "project",
   "pagesize" : 10

@@ -3,11 +3,16 @@ var Schema = mongoose.Schema;
 
 var blogSchema = new Schema({
   title: String,
+  short_description: String,
   content: Buffer,
+  content_plaintext: String,
+  tags: String,
   createdate: {
     type: Date,
     default: Date.now
   },
+  last_updated: Date,
+  last_updated_num: Number,
   image: String,
   thumbnail: String,
   userid: {
@@ -16,7 +21,7 @@ var blogSchema = new Schema({
   },
   blogType: {
       type: Schema.ObjectId,
-      ref: 'picklistitems'
+      ref: 'picklistitem'
   },
   hide_comment: String,
   edituser: {
@@ -34,7 +39,11 @@ var blogSchema = new Schema({
   flagged:{
     type: Boolean,
     default: false
-  }
+  },
+  deleted: {
+    type: Boolean,
+    default: false
+  }  
 });
 
 module.exports = mongoose.model('blog', blogSchema)

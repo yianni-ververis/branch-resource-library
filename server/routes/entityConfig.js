@@ -4,7 +4,7 @@ module.exports = {
       model: require("../models/userprofile"),
       populates: "role",
       exemptFromOwnership: false,
-      exemptFromApproval: true,
+      exemptFromApproval: false,
       logViews: false,
       sort: {
         username: 1
@@ -28,7 +28,7 @@ module.exports = {
     blog:{
       collection: "blogs",
       model: require("../models/blog"),
-      populates: "userid",
+      populates: "userid blogType",
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,

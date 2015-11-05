@@ -7,16 +7,11 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
 
   $scope.discussionLoading = $stateParams.discussionId!="new";
 
+  $scope.isNew = $stateParams.discussionId=="new";
+
   var defaultSelection;
 
-  if(!userManager.canApprove('discussion')){
-    defaultSelection = {
-      field: "approved",
-      values: [0],
-      lock: true
-    }
-  }
-  $scope.$on("cleared", function(){
+  $scope.$root.$on("cleared", function(){
     searchExchange.init(defaultSelection);
   })
 
@@ -32,7 +27,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
 
   $scope.validateNewDiscussionData = function(){
     var errors = [];
-    //Verify the project has a name
+    //Verify the discussion has a name
     if(!$scope.discussions[0].title || $scope.discussions[0].title==""){
       errors.push("Please specify a title");
     }
@@ -80,7 +75,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
       if(resultHandler.process(result)){
         if($stateParams.status){
           if($stateParams.status=='created'){
-            notifications.notify("Your discussion has been successfully submitted for approval.", null, {sentiment:"positive"});
+            notifications.notify("Your discussion has been successfully created.", null, {sentiment:"positive"});
           }
           else if ($stateParams.status=='updated') {
             notifications.notify("Your discussion has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
@@ -109,7 +104,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
     }
   };
 
-  //only load the project if we have a valid projectId or we are in list view
+  //only load the discussion if we have a valid discussionId or we are in list view
   if($state.current.name=="forum.detail"){
     $scope.getDiscussionData($scope.query); //get initial data set
     userManager.refresh(function(hasUser){
@@ -154,7 +149,13 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
           }
         }
         //this effectively initiates the results
-        searchExchange.clear(true);
+        if(searchExchange.state){
+          //no action necessary, handled by search components
+        }
+        else{
+          console.log('no state so clear');
+          searchExchange.clear(true);
+        }
       });
     }
     else{
@@ -165,7 +166,13 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
         }]
       }
       //this effectively initiates the results
-      searchExchange.clear(true);
+      if(searchExchange.state){
+        //no action necessary, handled by search components
+      }
+      else{
+        console.log('no state so clear');
+        searchExchange.clear(true);
+      }
     }
   }
 

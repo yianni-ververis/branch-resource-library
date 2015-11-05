@@ -1,4 +1,4 @@
-app.service('searchExchange', ["$rootScope", "userManager", "publisher", function($rootScope, userManager, publisher){
+app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "publisher", function($rootScope, $stateParams, userManager, publisher){
   var that = this;
   // var config = {
   //   host: "10.211.55.3:8080/anon",
@@ -22,6 +22,43 @@ app.service('searchExchange', ["$rootScope", "userManager", "publisher", functio
 
   this.pendingSearch;
   this.pendingSuggest;
+
+  this.state;
+
+  this.catalog = {};
+
+  this.subscribe = function(eventName, id, callbackFn){
+    if(!that.catalog[eventName]){
+      that.catalog[eventName] = {};
+    }
+    if(!that.catalog[eventName][id]){
+      that.catalog[eventName][id] = {fn: callbackFn};
+    }
+  };
+
+  this.publish = function(eventName, handles, data){
+    if(that.catalog[eventName]){
+      for(var sub in that.catalog[eventName]){
+        that.catalog[eventName][sub].fn.call(null, data);
+      }
+    }
+  };
+
+  $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      that.state = null;
+    }
+  });
+
+
+
+  this.setStateAttr = function(name, prop){
+    if(!that.state){
+      that.state = {};
+    }
+    that.state[name] = prop;
+    $stateParams[name] = JSON.stringify(prop)
+  };
 
   this.matched;
 
@@ -107,6 +144,14 @@ app.service('searchExchange', ["$rootScope", "userManager", "publisher", functio
   };
 
   this.clear = function(unlock){
+    console.log('clearing state');
+    console.log(that.state);
+    if(that.state && that.state.searchText){
+      that.state.searchText = null;
+    }
+    if(that.state && that.state.searchFields){
+      that.state.searchFields = null;
+    }
     if(senseApp){
       if(unlock && unlock==true){
         that.ask(senseApp.handle, "UnlockAll", [], function(){
@@ -131,13 +176,17 @@ app.service('searchExchange', ["$rootScope", "userManager", "publisher", functio
   };
 
   this.render = function(){
-    //$rootScope.$broadcast("update");
+    console.log('exchange render called');
+    $rootScope.$broadcast("update");
   }
   this.fresh = function(){
       this.search("");
   }
 
   this.search = function(searchText, searchFields){
+    that.setStateAttr("searchText", searchText);
+    that.setStateAttr("searchFields", searchFields);
+
     $rootScope.$broadcast("searching");
     that.terms = searchText.split(" ");
 

@@ -34,6 +34,7 @@
   "defaultSort": "username",
   "entity": "userprofile",
   "searchFields": ["usersearch"],
+  "suggestFields": ["title","username","tags","category","product"],
   "nullSuppressor": 0,
   "pagesize" : 20
 }

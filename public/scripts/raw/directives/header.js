@@ -8,6 +8,16 @@ app.directive('header', ['userManager', '$state', '$interpolate', function (user
     templateUrl: "/views/header.html",
     link: function(scope){
       scope.userManager = userManager;
+      scope.breadcrumb;
+
+      scope.$on("$stateChangeStart", function(){
+        scope.breadcrumb = null;
+      });
+
+      scope.$on('setCrumb', function(event, crumb){
+        scope.breadcrumb = crumb;
+      });
+
       scope.getLoginUrl = function(){
         var suffix = "";
 

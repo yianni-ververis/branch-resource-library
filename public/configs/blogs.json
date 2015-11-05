@@ -9,6 +9,14 @@
       "suppressNull": false
     },
     {
+      "dimension": "short_description",
+      "suppressNull": false
+    },
+    {
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
       "dimension": "userId",
       "suppressNull": true
     },
@@ -17,7 +25,7 @@
       "suppressNull": true
     },
     {
-      "dimension": "createdate",
+      "dimension": "createdate_num",
       "suppressNull": false
     },
     {
@@ -39,11 +47,11 @@
   ],
   "template": "/views/blogs/blog-results.html",
   "sorting":{
-    "createdate": {
-      "id": "createdate",
+    "createdate_num": {
+      "id": "createdate_num",
       "name": "Newest",
       "order": -1,
-      "field": "createdate",
+      "field": "createdate_num",
       "senseType": "qSortByNumeric"
     },
     "title": {
@@ -61,8 +69,9 @@
       "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "createdate",
+  "defaultSort": "createdate_num",
   "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,
   "entity": "blog",
   "pagesize" : 20
