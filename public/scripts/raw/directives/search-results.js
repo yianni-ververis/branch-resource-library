@@ -44,6 +44,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
 
         $scope.loading = true;
 
+        $scope.template;
+
         $scope.items = [];
 
         $scope.hidden = [];
@@ -193,6 +195,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
 				};
 
         $scope.render = function(){
+          console.log('templater');
+          console.log(Templater);
           console.log('result list handle is - '+$scope.handle);
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
             var layout = response.qLayout;
@@ -230,7 +234,9 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
-                  $scope.items = items;
+                $scope.qsItems = items
+                $element.find(".result-list").html("Test");
+                $scope.items = items;
                   //$scope.$apply();
               });
             });
@@ -334,6 +340,9 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             defaultSort: getFieldIndex($scope.sort.field, false)
           }, function(result){
             $scope.handle = result.handle;
+            if(!$scope.template){
+              $scope.template = new Templater($scope.config.template);
+            }
             if($scope.postponed){
               console.log('execute postponed');
               $scope.postponed.call(null);
