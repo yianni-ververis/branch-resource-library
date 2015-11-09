@@ -69,7 +69,7 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
   var senseApp;
 
   qsocks.Connect(config).then(function(global){
-    global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+    global.openDoc("5f053fe1-e784-4e22-8150-c3814d557525").then(function(app){
     //global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
       senseApp = app;
       that.seqId = senseApp.connection.seqid;
@@ -206,13 +206,18 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
     that.pendingSearch = that.seqId;
     senseApp.connection.ask(senseApp.handle, "SearchAssociations", [{qContext: "LockedFieldsOnly", qSearchFields: searchFields}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}], that.seqId).then(function(response){
       if(response.id == that.pendingSearch){
+        if(searchText=="" || response.result.qResults.qTotalSearchResults>0){
         //senseApp.selectAssociations({qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0 ).then(function(results){
-        that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
-          console.log('update from search with data');
-          console.log(response);
-          //$rootScope.$broadcast('update', true);
-          that.publish('update', response.change);
-        });
+          that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
+            console.log('update from search with data');
+            console.log(response);
+            //$rootScope.$broadcast('update', true);
+            that.publish('update', response.change);
+          });
+        }
+        else{
+          that.publish('noresults', response.change);
+        }
       }
     });
   };
@@ -316,29 +321,39 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
   //this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn, priority){
   this.addResults = function(options, callbackFn, priority){
     if(that.objects[options.id]){
-      callbackFn.call(null, {handle:that.objects[options.id]});
+      fn = function(){
+        callbackFn.call(null, {handle:that.objects[options.id]});
+      };
     }
     else{
-      console.log('creating results for '+options.id);
-      //create a new session object
-      var hDef = {
-        "qInfo" : {
-            "qType" : "table"
-        },
-        "qHyperCubeDef": {
-          "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
-          "qMeasures": buildMeasureDefs(options.fields),
-        	"qSuppressZero": false,
-        	"qSuppressMissing": true,
-        	"qInterColumnSortOrder": options.defaultSort
+      fn = function(){
+        console.log('creating results for '+options.id);
+        //create a new session object
+        var hDef = {
+          "qInfo" : {
+              "qType" : "table"
+          },
+          "qHyperCubeDef": {
+            "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
+            "qMeasures": buildMeasureDefs(options.fields),
+          	"qSuppressZero": false,
+          	"qSuppressMissing": true,
+          	"qInterColumnSortOrder": options.defaultSort
+          }
         }
-      }
-      that.seqId++;
-      senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
-        that.objects[options.id] = response.result.qReturn.qHandle;
-        console.log(that.objects);
-        callbackFn.call(null, {handle:response.result.qReturn.qHandle});
-      });
+        that.seqId++;
+        senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
+          that.objects[options.id] = response.result.qReturn.qHandle;
+          console.log(that.objects);
+          callbackFn.call(null, {handle:response.result.qReturn.qHandle});
+        });
+      };
+    }
+    if(that.online){
+      fn.call();
+    }
+    else{
+      that.subscribe('online', options.id, fn);
     }
   };
 

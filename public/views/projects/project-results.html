@@ -1,14 +1,14 @@
 <ul class="project-list plainlist">
-  <li ng-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
+  <li qs-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
     <div class="col-md-9">
       <div class="thumb-container">
-        <img src="{{project.thumbnail}}"/>
+        <img src="{{project.thumbnail}}">
       </div>
       <div class="project-summary">
-        <a href="#project/{{project.projectId}}" class="list-title" ng-bind-html="highlightText(project.title)"></a>
-        <a class="user-link" href="#user/{{project.userId}}" ng-bind-html="highlightText(project.username)"></a>
-        <p ng-bind-html="highlightText(project.short_description)"></p>
-        <span class="emphasize">Tags: </span><span ng-bind-html="highlightText(project.tags)"></span>
+        <a href="#project/{{project.projectId}}" class="list-title">{{project.title}}</a>
+        <a class="user-link" href="#user/{{project.userId}}">{{project.username}}</a>
+        <p>{{project.short_description}}</p>
+        <span class="emphasize">Tags: </span><span>{{project.tags}}</span>
       </div>
     </div>
     <div class="col-md-3">
@@ -18,7 +18,7 @@
         </li>
         <li><i>{{project.views}}</i> Views</li>
         <li><i>{{project.commentcount}}</i> Comments</li>
-        <li>Last Update: <i>{{project.last_updated_num | date : 'dd MMM y'}}</i></li>
+        <li>Last Update: <i>{{project.last_updated_num}}</i></li>
       </ul>
     </div>
   </li>

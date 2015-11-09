@@ -1,5 +1,5 @@
 <div class="results-container content">
-  <div class="" ng-show="items.length>0">
+  <div class="" id="{{elemId}}_list_container" ng-show="!loading">
     <div class="result-header row">
       <div class="resultNumbers col-md-6">
         Showing {{pageTop+1}} - {{pageBottom}} of {{total}} results
@@ -9,8 +9,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12 result-list">
-        <ng-include src="template" scope="scope"></ng-include>
+      <div class="col-md-12 result-list" id="{{elemId}}_list">
+        <ng-include src="template"></ng-include>
       </div>
     </div>
     <div class="result-footer row">
@@ -36,7 +36,7 @@
       </div>
     </div>
   </div>
-  <div class="no-results" ng-show="items.length==0">
+  <div id="{{elemId}}_no_results" class="no-results" ng-show="items.length==0">
     <span ng-show="!loading">No Results</span>
     <div class="loading" ng-show="loading">
 
