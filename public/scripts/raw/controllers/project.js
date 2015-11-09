@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications, picklistService){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});

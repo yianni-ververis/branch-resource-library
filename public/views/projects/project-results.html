@@ -1,5 +1,5 @@
 <ul class="project-list plainlist">
-  <li qs-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
+  <li qs-repeat="project in items" id="{{project.projectId}}">
     <div class="col-md-9">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}">
@@ -14,11 +14,14 @@
     <div class="col-md-3">
       <ul class="stats plainlist">
         <li>
-          <rating displaystar="project.rating" mode="'static'"></rating>
+          <ul class="plainlist rating">
+            <li qs-repeat="star in stars" class="icon medium star filled"></li>
+            <span qs-if="project.rating=='-'">Not yet rated</span>
+          </ul>
         </li>
         <li><i>{{project.views}}</i> Views</li>
         <li><i>{{project.commentcount}}</i> Comments</li>
-        <li>Last Update: <i>{{project.last_updated_num}}</i></li>
+        <li>Last Update: <i>{{project.last_updated_num:Date}}</i></li>
       </ul>
     </div>
   </li>

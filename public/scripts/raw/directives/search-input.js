@@ -1,4 +1,4 @@
-app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confirm", function (searchExchange, $state, $interpolate, confirm) {
+app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($state, $interpolate, confirm) {
   return {
     restrict: "E",
     replace: true,
@@ -71,7 +71,9 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confi
           scope.ghostPart = "";
           scope.ghostQuery = "";
           scope.ghostDisplay = "";
-          scope.preSearch();
+          setTimeout(function(){
+            scope.preSearch();
+          }, 0);
         });
 
 
@@ -233,18 +235,21 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confi
         scope.$root.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
           //if there is an existing state we should update the pageTop property on the scope
           //and apply patches to the object for sorting
-          if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
-            if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
-              scope.searchText = "";
-              if(searchExchange.state){
-                if(searchExchange.state && searchExchange.state.searchText){
-                  scope.searchText = searchExchange.state.searchText;
-                  //scope.preSearch();
+          setTimeout(function(){
+            if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+              if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+                scope.searchText = "";
+                if(searchExchange.state){
+                  if(searchExchange.state && searchExchange.state.searchText){
+                    scope.searchText = searchExchange.state.searchText;
+                    document.getElementById("branch-search-input").value = scope.searchText;
+                    //scope.preSearch();
+                  }
                 }
+                scope.preSearch();
               }
-              scope.preSearch();
             }
-          }
+          },0);
         });
 
         scope.$on("update", function(){

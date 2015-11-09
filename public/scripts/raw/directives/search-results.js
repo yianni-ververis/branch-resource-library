@@ -1,4 +1,4 @@
-app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchExchange", "userManager", "resultHandler", "publisher", function($resource, $state, $stateParams, searchExchange, userManager, resultHandler, publisher){
+app.directive("searchResults", ["$resource", "$state", "$stateParams", "userManager", "resultHandler", "publisher", function($resource, $state, $stateParams, userManager, resultHandler, publisher){
   return {
     restrict: "E",
     replace: true,
@@ -106,9 +106,14 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           return false;
         };
 
-        $scope.$root.$on('searching', function(){
+        searchExchange.subscribe("searching", $attrs.id, function(){
           $scope.loading = true;
           $scope.pageTop = 0;
+          if(el = document.getElementById($attrs.id)){
+            document.getElementById($attrs.id+"_loading").style.display = "block";
+            document.getElementById($attrs.id+"_list_container").style.display = "none";
+            document.getElementById($attrs.id+"_no_results").style.display = "none";
+          }
         });
 
         searchExchange.subscribe("noresults", $attrs.id, function(handles, data){
@@ -116,14 +121,14 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         });
 
         searchExchange.subscribe("update", $attrs.id, function(handles, data){
-          if(searchExchange.state && searchExchange.state.sort){
-            $scope.sort = searchExchange.state.sort;
-          }
-          if(searchExchange.state && searchExchange.state.page){
-            $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
-          }
           console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
+            if(searchExchange.state && searchExchange.state.sort){
+              $scope.sort = searchExchange.state.sort;
+            }
+            if(searchExchange.state && searchExchange.state.page){
+              $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
+            }
             if($scope.handle){
               if(handles){
                 if(handles.indexOf($scope.handle)!=-1){
@@ -204,10 +209,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
 
         $scope.render = function(){
           if(el = document.getElementById($attrs.id+"_list")){  //only run render if the element for the current instance exists
-            console.log(el);
           }
           else{
-            console.log(el);
             return;
           }
           console.log('result list handle is - '+$scope.handle);
@@ -218,8 +221,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
               var data = response.result.qDataPages;
               var items = [];
               $scope.$apply(function(){
-                document.getElementById($attrs.id+"_list_container").style.display = "none";
-                document.getElementById($attrs.id+"_no_results").style.display = "none";
                 $scope.loading = false;
                 $scope.pageTop = data[0].qArea.qTop;
                 $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
@@ -238,6 +239,14 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                   }
                   for (var j=0; j < data[0].qMatrix[i].length; j++){
                     item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
+
+                  }
+                  if(item["rating"]!="-"){
+                    item.stars = [];
+                    var stars = parseInt(item.rating);
+                    for(var k=0;k<stars;k++){
+                      item.stars.push(k);
+                    }
                   }
                   items.push( item );
                 }
@@ -250,7 +259,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                   if(searchExchange.state && searchExchange.state.searchText){
                     terms = searchExchange.state.searchText.split(" ");
                   }
-                  document.getElementById($attrs.id+"_list").innerHTML = $scope.htmlTemplate.getHTML({items:items, terms: terms});
+                  document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms});
+                  document.getElementById($attrs.id+"_paging").innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
                   document.getElementById($attrs.id+"_list_container").style.display = "block";
                   document.getElementById($attrs.id+"_no_results").style.display = "none";
                   console.log('drawing test finished');
@@ -261,6 +271,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                   document.getElementById($attrs.id+"_no_results").style.display = "block";
                   $scope.items = [];
                 }
+                selectSortOption(document.getElementById($attrs.id+"_sort"), $scope.sort);
+                document.getElementById($attrs.id+"_loading").style.display = "none";
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
@@ -309,13 +321,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
               $scope.render();
             }
           });
-          // $scope.info.object.applyPatches([{
-          //   qPath: "/qHyperCubeDef/qInterColumnSortOrder",
-          //   qOp: "replace",
-          //   qValue: getFieldIndex(sort.field)
-          // }], true).then(function(result){
-          //   $scope.render();
-          // });
         };
 
         function getFieldIndex(field, asString){
@@ -338,6 +343,17 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             }
           }
           return 0;
+        };
+
+        function selectSortOption(elem, option){
+          for (var i=0;i<elem.options.length;i++){
+            if(elem.options[i].value == option.id){
+              elem.options[i].setAttribute('selected','')
+            }
+            else{
+              elem.options[i].removeAttribute('selected')
+            }
+          }
         }
 
         $scope.$root.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
@@ -370,9 +386,14 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             defaultSort: getFieldIndex($scope.sort.field, false)
           }, function(result){
             $scope.handle = result.handle;
-            if(!$scope.htmlTemplate){
+            if(!$scope.resultsTemplate){
               $.get($scope.template).success(function(html){
-                $scope.htmlTemplate = new Templater(html);
+                $scope.resultsTemplate = new Templater(html);
+              });
+            }
+            if(!$scope.pagingTemplate){
+              $.get("/views/search/search-paging.html").success(function(html){
+                $scope.pagingTemplate = new Templater(html);
               });
             }
             if($scope.postponed){

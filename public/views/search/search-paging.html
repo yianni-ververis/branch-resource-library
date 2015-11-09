@@ -1,0 +1,18 @@
+<label>Page {{currentPage}} of {{pages.length}}</label>
+<ul class="page-list plainlist">
+  <li qs-hide="currentPage==1">
+    <a ng-click="setPage(0)" class="icon first"></a>
+  </li>
+  <li qs-hide="currentPage==1">
+    <a ng-click="changePage(-1)" class="icon prev"></a>
+  </li>
+  <li qs-repeat="page in pages" class="pageNumber" data-page="{{$}}" onclick="searchExchange.setPage({{$}})" qs-show="withinRange({{$}}, that.data.currentPage, that.data.pages.length, 5)" ng-class="{active: page==currentPage}">
+    <a>{{$}}</a>
+  </li>
+  <li qs-show="currentPage < that.pages.length - 1">
+    <a ng-click="changePage(1)" class="icon next"></a>
+  </li>
+  <li qs-show="currentPage < that.pages.length - 1">
+    <a ng-click="setPage(pages.length-1)" class="icon last"></a>
+  </li>
+</ul>

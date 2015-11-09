@@ -80,13 +80,41 @@ var Templater = (function(){
             }
         }
 
+        var hideElms = htmlObj.querySelectorAll('[qs-hide]');
+        if (hideElms.length > 0){
+            for (var i=0; i<hideElms.length;i++){
+                var htmlItem = getHTMLString(hideElms[i]);
+                var expression = (hideElms[i].attributes)? hideElms[i].attributes["qs-hide"].value : null;
+
+                evalFn.push({
+                    'type':'qs-hide',
+                    'htmlItem': htmlItem,
+                    'expression': expression
+                });
+            }
+        }
+
+        var refElms = htmlObj.querySelectorAll('[qs-ref]');
+        if (refElms.length > 0){
+            for (var i=0; i<refElms.length;i++){
+                var htmlItem = getHTMLString(refElms[i]);
+                var expression = (refElms[i].attributes)? refElms[i].attributes["qs-ref"].value : null;
+
+                evalFn.push({
+                    'type':'qs-ref',
+                    'htmlItem': htmlItem,
+                    'expression': expression
+                });
+            }
+        }
+
         htmlObj.innerHTML = null;
 
         return evalFn;
     }
 
-    function getRepeatBlock(params, evalIterator, data){
-
+    function getRepeatBlock(params, evalIterator, data, iteration){
+        var that = this;
         var htmlString = params.htmlItem;
         for(var i=0;i<params.repeatPieces.length;i++){
             try{
@@ -94,11 +122,47 @@ var Templater = (function(){
                 var fields = params.repeatPieces[i].item.split('.');
                 var item = what;
                 if (fields[0] == params.repeater){
+                    fieldFormatter = fields[1].split(":");
+                    var df = fieldFormatter[1] || null;
                     item = evalIterator;
                     if (fields.length > 1){
-                        item = data[fields[1]];
+                      var prop = fields[1];
+                      if(fields[1].indexOf(":")){
+                        prop = fields[1].split(":")[0];
+                      }
+                      item = data[prop];
                     }
-                    htmlString = htmlString.replace(what, highlightText(item, this.terms));
+                    if(item){
+                      if(df){
+                        //currently only supports date or time
+                        try{
+                          var date = new Date(parseInt(item));
+                          if(df=="Date"){
+                            var day = date.getDate();
+                            var monthIndex = date.getMonth();
+                            var year = date.getFullYear();
+                            var output = day + ' ' + monthNames[monthIndex] + ' ' + year
+                          }
+                          if(df=="Time"){
+                            var output = date.getTime();
+                          }
+                          htmlString = htmlString.replace(what, output);
+                        }
+                        catch(err){
+
+                        }
+                      }
+                      else{
+                        //must be text
+                        htmlString = htmlString.replace(what, highlightText(item, this.terms));
+                      }
+                    }
+                }
+                else if(fields[0]=="$"){
+                  item = parseInt(evalIterator)+1;
+                  if(item){
+                      htmlString = htmlString.replace(what, item);
+                  }
                 }
 
             }
@@ -106,6 +170,83 @@ var Templater = (function(){
                 console.log("error", htmlString);
             }
         }
+
+        var myEval = function(expr){
+            var rootExpr;
+            if(expr.indexOf("(")==-1){
+              rootExpr = expr.split(".");
+              if(rootExpr.length>1){
+                rootExpr.splice(0,1);
+              }
+              rootExpr = rootExpr.join(".");
+            }
+            var s = true;
+            try{
+              if(expr.indexOf("(")!=-1){
+                eval('s='+expr);
+              }
+              else{
+                eval('var o=data; if (that.data.'+rootExpr+' || data.'+rootExpr+' || that.data.'+expr+' || data.'+expr+' || '+expr+') { s=true; } else { s=false; }');
+              }
+            }
+            catch(err){
+              s = false;
+            }
+            finally{
+
+            }
+            return s;
+        };
+
+        var fn = repeater(htmlString);
+        //hide/remove any items for the show/if conditions
+        for (var k=0; k<fn.length; k++){  //then we can run again and update the if/show blocks
+          if (fn[k].type === 'qs-if'){
+              if (myEval(fn[k].expression) === false){
+                  //Remove dom element from template
+                  fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
+                  htmlString = htmlString.replace(fn[k]['htmlItem'], '');
+              }
+          }else  if (fn[k].type === 'qs-show'){
+              var show = (myEval(fn[k].expression) === true)? 'initial' : 'none';
+              fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
+              if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
+                var str = fn[k]['htmlItem'].replace('qs-show', 'style="display:'+show+'" qs-done');
+                htmlString = htmlString.replace(fn[k]['htmlItem'], str);
+              }
+          }
+          else  if (fn[k].type === 'qs-hide'){
+              var show = (myEval(fn[k].expression) === true)? 'none' : 'initial';
+              fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
+              if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
+                var str = fn[k]['htmlItem'].replace('qs-hide', 'style="display:'+show+'" qs-done');
+                htmlString = htmlString.replace(fn[k]['htmlItem'], str);
+              }
+          }
+          else  if (fn[k].type === 'qs-ref'){
+              var loc = window.location.hash.split("?")[0];
+              loc += "?" + fn[k].expression;
+              loc = loc.replace(/%22/g, "");
+              //var show = (myEval(fn[k].expression) === true)? 'none' : 'block';
+              fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
+              if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
+                var str = fn[k]['htmlItem'].replace('qs-ref', 'href='+loc+' qs-done');
+                htmlString = htmlString.replace(fn[k]['htmlItem'], str);
+              }
+          }
+        }
+
+        //check to see if we need to repeat again
+        if (fn && fn.length > iteration){
+          for (var j=iteration; j<fn.length; j++){
+            //on the first pass we're just looking for repeat blocks
+            if (fn[j].type === 'qs-repeat'){
+                htmlString = repeat.call(this, htmlString, fn[j]['htmlItem'], fn[j], data[fn[j]['dimension']], j);
+                break;  //we break out of the loop after the first execution. The repeater block should handle embedded repeats
+            }
+          }
+        }
+
 
         return htmlString;
     }
@@ -115,38 +256,60 @@ var Templater = (function(){
             value: function(data){
               var that = this;
                 this.compiledHTML = this.templateHTML;
+                this.data = data;
                 this.terms = data.terms;
                 var myEval = function(expr){
+                  var rootExpr = expr.split(".");
+                    if(rootExpr.length>1){
+                      rootExpr.splice(0,1);
+                    }
+                    rootExpr = rootExpr.join(".");
                     var s = true;
-                    eval('var o=data; if ('+expr+') { s=true; } else { s=false; }');
+                    try{
+                      eval('var o=data; if (that.data.'+rootExpr+' || data.'+rootExpr+' || that.data.'+expr+' || data.'+expr+' || '+expr+') { s=true; } else { s=false; }');
+                    }
+                    catch(err){
+                      s = false;
+                    }
+                    finally{
+                    }
                     return s;
                 };
 
                 var fn = this.evalFn;
                 if (fn && fn.length > 0){
                     for (var i=0; i<fn.length; i++){
-                        if (fn[i].type === 'qs-if'){
-                            if (myEval(fn[i].expression) === false){
-                                //Remove dom element from template
-                                fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
-                                this.compiledHTML = this.compiledHTML.replace(fn[i]['htmlItem'], '');
-                            }
-                        }else  if (fn[i].type === 'qs-show'){
-                            var show = (myEval(fn[i].expression) === true)? 'block' : 'none';
-                            fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
-                            var str = fn[i]['htmlItem'].replace('qs-show', 'style="display:'+show+'" qs-show');
+                      //on the first pass we're just looking for repeat blocks
+                      if (fn[i].type === 'qs-repeat'){
+                          this.compiledHTML = repeat.call(this, this.compiledHTML, fn[i]['htmlItem'], fn[i], data[fn[i]['dimension']], i);
+                          break;  //we break out of the loop after the first execution. The repeater block should handle embedded repeats
+                      }
+                    }
+                    //DUE TO CONFLICTS IN REPEATED COMPONENTS 'QS-IF' IS CURRENTLY NOT EXECUTED AT A PARENT LEVEL
+                    for (var i=0; i<fn.length; i++){  //then we can run again and update the if/show blocks
+                      // if (fn[i].type === 'qs-if'){
+                      //     if (myEval(fn[i].expression) === false){
+                      //         //Remove dom element from template
+                      //         fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
+                      //         this.compiledHTML = this.compiledHTML.replace(fn[i]['htmlItem'], '');
+                      //     }
+                      //}else
+                      if (fn[i].type === 'qs-show'){
+                          var show = (myEval(fn[i].expression) === true)? 'initial' : 'none';
+                          fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
+                          if(this.compiledHTML.indexOf(fn[i]['htmlItem'])!=-1){
+                            var str = fn[i]['htmlItem'].replace('qs-show', 'style="display:'+show+'" qs-done');
                             this.compiledHTML = this.compiledHTML.replace(fn[i]['htmlItem'], str);
-
-                        }else if (fn[i].type === 'qs-repeat'){
-                            var repeatBlokHTML = '';
-                            var oriString = fn[i]['htmlItem'];
-                            //if(this.compiledHTML.indexOf(oriString) !== -1){
-                                for (var t in data[fn[i]['dimension']]){
-                                    repeatBlokHTML += getRepeatBlock.call(that, fn[i], t, data[fn[i]['dimension']][t]);
-                                }
-                                this.compiledHTML = this.compiledHTML.replace(oriString, repeatBlokHTML);
-                            //}
-                        }
+                          }
+                      }
+                      else  if (fn[i].type === 'qs-hide'){
+                          var show = (myEval(fn[i].expression) === true)? 'none' : 'initial';
+                          fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
+                          if(this.compiledHTML.indexOf(fn[i]['htmlItem'])!=-1){
+                            var str = fn[i]['htmlItem'].replace('qs-hide', 'style="display:'+show+'" qs-done');
+                            this.compiledHTML = this.compiledHTML.replace(fn[i]['htmlItem'], str);
+                          }
+                      }
                     }
                 }
                 //if (!this.pieces){
@@ -161,7 +324,9 @@ var Templater = (function(){
                       for (var p in props){
                         result = result[props[p]];
                       }
-                      this.compiledHTML = this.compiledHTML.replace(this.pieces[i].what, result);
+                      if(result){
+                        this.compiledHTML = this.compiledHTML.replace(this.pieces[i].what, result);
+                      }
                     }
                     catch(err){
                         console.log("error", data.toString());
@@ -172,6 +337,19 @@ var Templater = (function(){
         }
 
     });
+
+    function repeat(compiledHTML, oriString, fn, data, iteration){
+      iteration++;
+      var repeatBlokHTML = '';
+      var oriString = fn['htmlItem'];
+      if(compiledHTML.indexOf(oriString) !== -1){
+          for (var t in data){
+              repeatBlokHTML += getRepeatBlock.call(this, fn, t, data[t], iteration);
+          }
+          return compiledHTML.replace(oriString, repeatBlokHTML);
+      }
+      return "";
+    }
 
     function getHTMLString(node){
         if(!node || !node.tagName) return '';
@@ -190,6 +368,33 @@ var Templater = (function(){
       }
       return text;
     };
+
+    function withinRange(page, current, max, range){
+      var minPage, maxPage;
+      if(max==1){
+        return false;
+      }
+      else if(current <= 2){
+        minPage = 1;
+        maxPage = range
+      }
+      else if (current >= max - 2) {
+        minPage = max - range;
+        maxPage = max;
+      }
+      else{
+        minPage = current - 2;
+        maxPage = current + 2;
+      }
+      return (page >= minPage && page <= maxPage);
+    };
+
+    var monthNames = [
+      "Jan", "Feb", "Mar",
+      "Apr", "May", "Jun", "Jul",
+      "Aug", "Sep", "Oct",
+      "Nov", "Dec"
+    ];
 
     return Templater;
 

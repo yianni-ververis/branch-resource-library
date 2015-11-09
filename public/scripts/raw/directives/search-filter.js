@@ -1,4 +1,4 @@
-app.directive("searchFilter", ["searchExchange", function(searchExchange){
+app.directive("searchFilter", [function(){
   return {
     restrict: "E",
     replace: true,
