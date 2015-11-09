@@ -9,6 +9,7 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
     host: "qtdevrelations",
     prefix: "/anon",
     isSecure: true,
+    appname: 'a4e123af-4a5d-4d89-ac81-62ead61db33a',
     rejectUnauthorized: false
   };
 
