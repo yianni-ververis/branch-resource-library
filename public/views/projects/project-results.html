@@ -1,6 +1,6 @@
 <ul class="project-list plainlist">
   <li ng-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
-    <div class="col-md-8">
+    <div class="col-md-9">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}"/>
       </div>
@@ -20,9 +20,6 @@
         <li><i>{{project.commentcount}}</i> Comments</li>
         <li>Last Update: <i>{{project.last_updated_num | date : 'dd MMM y'}}</i></li>
       </ul>
-    </div>
-    <div class="col-md-1">
-      <moderation entity="'project'" entityid="project.projectId" approved="project.approved" size="'medium'" flagged="flagged[project.projectId]" flagcount="project.flagcount" editable="false"></moderation>
     </div>
   </li>
 </ul>

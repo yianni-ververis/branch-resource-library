@@ -1,0 +1,27 @@
+<ul class="plainlist user-projects">
+  <li ng-repeat="blog in items" id="{{blog.blogId}}" ng-hide="isHidden(blog.projectId)">
+    <div class="row">
+      <div class="col-md-1">
+        <span class="list-index">{{$index+1}}</span>
+      </div>
+      <div class="col-md-8">
+        <span class="list-title"><a href="#blog/{{blog.blogId}}" ng-bind-html="highlightText(blog.title)"></a></span>
+        <span ng-bind-html="highlightText(blog.short_description)"></span>
+      </div>
+      <div class="col-md-3">
+        <ul class="plainlist">
+          <li>Created</li>
+          <li>{{blog.createdate_num | date:'MMM dd, yyyy'}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-1">
+
+      </div>
+      <div class="col-md-11">
+        <span class="emphasize">Tags:</span><span ng-bind-html="highlightText(blog.tags)"></span>
+      </div>
+    </div>
+  </li>
+</ul>

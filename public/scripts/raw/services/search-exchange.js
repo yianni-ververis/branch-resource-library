@@ -1,16 +1,16 @@
 app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "publisher", function($rootScope, $stateParams, userManager, publisher){
   var that = this;
-  // var config = {
-  //   host: "10.211.55.3:8080/anon",
-  //   isSecure: false,
-  //   rejectUnauthorized: false
-  // };
   var config = {
-    host: "qtdevrelations",
-    prefix: "/anon",
-    isSecure: true,
+    host: "10.211.55.3:8080/anon",
+    isSecure: false,
     rejectUnauthorized: false
   };
+  // var config = {
+  //   host: "qtdevrelations",
+  //   prefix: "/anon",
+  //   isSecure: true,
+  //   rejectUnauthorized: false
+  // };
 
   this.seqId = 0;
 
@@ -38,15 +38,19 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
 
   this.publish = function(eventName, handles, data){
     if(that.catalog[eventName]){
+      var ind = 0;
       for(var sub in that.catalog[eventName]){
-        that.catalog[eventName][sub].fn.call(null, data);
+        that.catalog[eventName][sub].fn.call(null, handles, data);
+        ind++;
       }
+      console.log('published to '+ind);
     }
   };
 
   $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
     if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
       that.state = null;
+      that.clear();
     }
   });
 
@@ -65,16 +69,18 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
   var senseApp;
 
   qsocks.Connect(config).then(function(global){
-    //global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
-    global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
+    global.openDoc("bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1").then(function(app){
+    //global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
       senseApp = app;
       that.seqId = senseApp.connection.seqid;
-      $rootScope.$broadcast("senseready", app);
+      //$rootScope.$broadcast("senseready", app);
+      that.online = true;
+      that.publish('online');
     }, function(error) {
         if (error.code == "1002") { //app already opened on server
             global.getActiveDoc().then(function(app){
               senseApp = app;
-              $rootScope.$broadcast("senseready", app);
+              //$rootScope.$broadcast("senseready", app);
             });
         } else {
             console.log(error)
@@ -98,15 +104,14 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
             if(index==defaultSelections.length-1){
               that.lockSelections(function(result){
                 console.log('lock change');
-                //$rootScope.$broadcast("update");
-                that.executeQueue();
+                that.executePriority();
               })
             }
           }, true);
         });
     }
     else{
-      that.executeQueue();
+      that.executePriority();
     }
   };
 
@@ -117,14 +122,14 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
         if(i==that.queue.length-1){
           that.queue = [];
           console.log('update after queue');
-          $rootScope.$broadcast("update");
-          //publisher.publish("update");
+          //$rootScope.$broadcast("update");
+          that.publish("cleared");
         }
       }
     }
     else {
-      //publisher.publish("update");
-      $rootScope.$broadcast("update");
+      that.publish("cleared");
+      //$rootScope.$broadcast("update");
     }
   };
 
@@ -146,6 +151,7 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
   this.clear = function(unlock){
     console.log('clearing state');
     console.log(that.state);
+    var handles;
     if(that.state && that.state.searchText){
       that.state.searchText = null;
     }
@@ -154,11 +160,13 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
     }
     if(senseApp){
       if(unlock && unlock==true){
-        that.ask(senseApp.handle, "UnlockAll", [], function(){
+        that.ask(senseApp.handle, "UnlockAll", [], function(result){
+          console.log(result);
           that.ask(senseApp.handle, "ClearAll", [],function(result){
             console.log('clear change');
             console.log(result);
-            $rootScope.$broadcast("cleared");
+            //$rootScope.$broadcast("cleared");
+            that.publish('cleared');
           });
         });
       }
@@ -166,18 +174,21 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
         that.ask(senseApp.handle, "ClearAll", [],function(result){
           console.log('clear change');
           console.log(result);
-          $rootScope.$broadcast("cleared");
+          //$rootScope.$broadcast("cleared");
+          that.publish('cleared');
         });
       }
     }
     else{
-      $rootScope.$broadcast("cleared");
+      //$rootScope.$broadcast("cleared");
+      that.publish('cleared');
     }
   };
 
   this.render = function(){
     console.log('exchange render called');
-    $rootScope.$broadcast("update");
+    //$rootScope.$broadcast("update");
+    that.publish('update');
   }
   this.fresh = function(){
       this.search("");
@@ -195,17 +206,13 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
     that.pendingSearch = that.seqId;
     senseApp.connection.ask(senseApp.handle, "SearchAssociations", [{qContext: "LockedFieldsOnly", qSearchFields: searchFields}, that.terms, {qOffset: 0, qCount: 5, qMaxNbrFieldMatches: 5}], that.seqId).then(function(response){
       if(response.id == that.pendingSearch){
-        if(response.result.qResults.qTotalSearchResults > 0){
-          //senseApp.selectAssociations({qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0 ).then(function(results){
-          that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
-            console.log('update from search with data');
-            $rootScope.$broadcast('update', true);
-          });
-        }
-        else{
-          console.log('update from search without data');
-          $rootScope.$broadcast('update', false)
-        }
+        //senseApp.selectAssociations({qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0 ).then(function(results){
+        that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
+          console.log('update from search with data');
+          console.log(response);
+          //$rootScope.$broadcast('update', true);
+          that.publish('update', response.change);
+        });
       }
     });
   };
@@ -277,8 +284,8 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
     else{
       fn = function(){
         that.ask(senseApp.handle, "GetField" ,[options.field], function(response){
-          that.objects[options.field] = response.qReturn.qHandle;
-          that.ask(response.qReturn.qHandle, "SelectValues", [options.values], function(response){
+          that.objects[options.field] = response.result.qReturn.qHandle;
+          that.ask(response.result.qReturn.qHandle, "SelectValues", [options.values], function(response){
             callbackFn.call(null, response);
           });
         });
@@ -288,12 +295,7 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
       fn.call();
     }
     else{
-      if(priority){
-        that.priority.push(fn);
-      }
-      else{
-        that.queue.push(fn);
-      }
+      that.subscribe('online', options.field, fn);
     }
   };
 
@@ -307,64 +309,43 @@ app.service('searchExchange', ["$rootScope", "$stateParams", "userManager", "pub
       fn.call();
     }
     else{
-      if(priority){
-        that.priority.push(fn);
-      }
-      else{
-        that.queue.push(fn);
-      }
+      that.subscribe('online', 'lock', fn);
     }
   }
 
   //this.addResults = function(fields, pageSize, sorting, defaultSort, callbackFn, priority){
   this.addResults = function(options, callbackFn, priority){
-    var fn;
     if(that.objects[options.id]){
-      fn = function(){
-        callbackFn.call(null, {handle:that.objects[options.id]});
-      }
+      callbackFn.call(null, {handle:that.objects[options.id]});
     }
     else{
       console.log('creating results for '+options.id);
       //create a new session object
-      fn = function(){
-        var hDef = {
-          "qInfo" : {
-              "qType" : "table"
-          },
-          "qHyperCubeDef": {
-            "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
-            "qMeasures": buildMeasureDefs(options.fields),
-          	"qSuppressZero": false,
-          	"qSuppressMissing": true,
-          	"qInterColumnSortOrder": options.defaultSort
-          }
+      var hDef = {
+        "qInfo" : {
+            "qType" : "table"
+        },
+        "qHyperCubeDef": {
+          "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
+          "qMeasures": buildMeasureDefs(options.fields),
+        	"qSuppressZero": false,
+        	"qSuppressMissing": true,
+        	"qInterColumnSortOrder": options.defaultSort
         }
-        that.seqId++;
-        senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
-          // that.seqId++;
-          // senseApp.connection.ask(response.result.qReturn.qHandle, "GetObject", [], that.seqId).then(function(response){
-          //   that.objects[options.id] = response.result.qLayout;
-          //   callbackFn.call(null, {object:response.result});
-          // });
-          that.objects[options.id] = response.result.qReturn.qHandle;
-          console.log(that.objects);
-          callbackFn.call(null, {handle:response.result.qReturn.qHandle});
-        });
       }
+      that.seqId++;
+      senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
+        that.objects[options.id] = response.result.qReturn.qHandle;
+        console.log(that.objects);
+        callbackFn.call(null, {handle:response.result.qReturn.qHandle});
+      });
     }
-    if(that.online){
-      fn.call();
-    }
-    else{
-      that.queue.push(fn);
-    }
-  }
+  };
 
   this.ask = function(handle, method, args, callbackFn){
     that.seqId++;
     senseApp.connection.ask(handle, method, args, that.seqId).then(function(response){
-      callbackFn.call(null, response.result);
+      callbackFn.call(null, response);
     });
   }
 

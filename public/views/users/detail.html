@@ -22,18 +22,13 @@
           <a ng-click="setTab(1)">Blog ({{blogCount}})</a>
         </li>
       </ul>
-      <search-input data-config="user-projects"></search-input>
       <div ng-show="activeTab==0">
+        <search-input data-config="user-projects"></search-input>
         <search-results id="userProjectResultList" data-config="user-projects"></search-results>
       </div>
       <div ng-show="activeTab==1">
-
-      </div>
-      <div ng-show="activeTab==2">
-
-      </div>
-      <div ng-show="activeTab==3">
-
+        <search-input data-config="user-blogs"></search-input>
+        <search-results id="userBlogResultList" data-config="user-blogs"></search-results>
       </div>
     </div>
     <div class="col-md-3">

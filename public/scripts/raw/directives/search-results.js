@@ -18,17 +18,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
         }
 
-        //add additional sorting for moderators and admins
-        if(userManager.canApprove($scope.config.entity)){
-          $scope.sortOptions["flagged"] = {
-            "id": "flagged",
-            "name": "Flagged",
-            "order": -1,
-            "field": "flagcount",
-            "sortType": "qSortByNumeric"
-          };
-        }
-
         $scope.highlightText = function(text){
           if(searchExchange.state && searchExchange.state.searchText){
             var terms = searchExchange.state.searchText.split(" ");
@@ -121,7 +110,39 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           $scope.pageTop = 0;
         });
 
-        // searchExchange.subscribe("update", $attrs.id, function(){
+        searchExchange.subscribe("update", $attrs.id, function(handles, data){
+          if(searchExchange.state && searchExchange.state.sort){
+            $scope.sort = searchExchange.state.sort;
+          }
+          if(searchExchange.state && searchExchange.state.page){
+            $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
+          }
+          console.log('on update handle is '+$scope.handle);
+          if($scope.handle){
+            if(handles){
+              if(handles.indexOf($scope.handle)!=-1){
+                  $scope.render();
+              };
+            }
+            else{
+              $scope.render();
+            }
+          }
+          else{
+            $scope.postponed = function(){
+              if(handles){
+                if(handles.indexOf($scope.handle)!=-1){
+                    $scope.render();
+                };
+              }
+              else{
+                $scope.render();
+              }
+            }
+          }
+        });
+
+        // $scope.$root.$on("update", function(){
         //   if(searchExchange.state && searchExchange.state.sort){
         //     $scope.sort = searchExchange.state.sort;
         //   }
@@ -138,24 +159,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         //     }
         //   }
         // });
-
-        $scope.$root.$on("update", function(){
-          if(searchExchange.state && searchExchange.state.sort){
-            $scope.sort = searchExchange.state.sort;
-          }
-          if(searchExchange.state && searchExchange.state.page){
-            $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
-          }
-          console.log('on update handle is '+$scope.handle);
-          if($scope.handle){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
-              $scope.render();
-            }
-          }
-        });
 
         $scope.showItem = function(approved, entity){
           return approved=='True' || userManager.canApprove(entity);
@@ -195,10 +198,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         $scope.render = function(){
           console.log('result list handle is - '+$scope.handle);
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
-            var layout = response.qLayout;
+            var layout = response.result.qLayout;
             $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
             searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
-              var data = response.qDataPages;
+              var data = response.result.qDataPages;
               var items = [];
               $scope.$apply(function(){
                 $scope.loading = false;
@@ -230,8 +233,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
+
+                //$scope.$apply(function(){
                   $scope.items = items;
-                  //$scope.$apply();
+                //});
               });
             });
           });
@@ -327,20 +332,16 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           }
         });
 
-        searchExchange.addResults({
-            id: $attrs.id,
-            fields: $scope.fields,
-            sortOptions: $scope.sortOptions,
-            defaultSort: getFieldIndex($scope.sort.field, false)
-          }, function(result){
-            $scope.handle = result.handle;
-            if($scope.postponed){
-              console.log('execute postponed');
-              $scope.postponed.call(null);
-            }
-            $scope.$apply();
-
-          });
+        searchExchange.subscribe('online', $attrs.id, function(){
+          searchExchange.addResults({
+              id: $attrs.id,
+              fields: $scope.fields,
+              sortOptions: $scope.sortOptions,
+              defaultSort: getFieldIndex($scope.sort.field, false)
+            }, function(result){
+              $scope.handle = result.handle;
+            });
+        });
 
       }});
     },

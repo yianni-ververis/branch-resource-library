@@ -47,9 +47,9 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confi
         scope.activeSuggestion = 0;
 
         scope.cursorPosition = 0;
-        scope.$on('senseready', function(params){
-          console.log('sense is ready');
-        });
+        // scope.$on('senseready', function(params){
+        //   console.log('sense is ready');
+        // });
 
         scope.$on('searchResults', function(event, results){
 
@@ -61,7 +61,8 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confi
           scope.showSuggestion();
         });
 
-        scope.$on('cleared', function(results){
+        //scope.$on('cleared', function(results){
+        searchExchange.subscribe('cleared', 'input', function(){
           scope.searchText = "";
           scope.cursorPosition = 0;
           scope.suggestions = [];
@@ -70,6 +71,7 @@ app.directive('searchInput', ['searchExchange', '$state', '$interpolate', "confi
           scope.ghostPart = "";
           scope.ghostQuery = "";
           scope.ghostDisplay = "";
+          scope.preSearch();
         });
 
 

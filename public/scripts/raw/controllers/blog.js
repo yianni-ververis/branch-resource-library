@@ -12,7 +12,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   var defaultSelection;
 
   $scope.$root.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
+    //searchExchange.init(defaultSelection);
   });
 
   $scope.blogTypes;
@@ -230,7 +230,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
         }
         else{
           console.log('no state so clear');
-          searchExchange.clear(true);
+          //searchExchange.clear(true);
         }
       });
     }
@@ -247,7 +247,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
       }
       else{
         console.log('no state so clear');
-        searchExchange.clear(true);
+        //searchExchange.clear(true);
       }
     }
   }

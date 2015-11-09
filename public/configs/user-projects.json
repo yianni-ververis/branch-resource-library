@@ -17,6 +17,10 @@
       "suppressNull": true
     },
     {
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
       "dimension": "short_description",
       "suppressNull": false
     },

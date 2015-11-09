@@ -1,0 +1,78 @@
+{
+  "fields":[
+    {
+      "dimension": "blogId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "short_description",
+      "suppressNull": false
+    },
+    {
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
+      "dimension": "userId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "username",
+      "suppressNull": true
+    },
+    {
+      "dimension": "createdate_num",
+      "suppressNull": false
+    },
+    {
+      "dimension": "approved",
+      "suppressNull": false
+    },
+    {
+      "dimension": "image",
+      "suppressNull": false
+    },
+    {
+      "measure": "sum(viewNum)",
+      "label": "views"
+    },
+    {
+      "measure" : "count(DISTINCT commentId)",
+      "label" : "commentcount"
+    }
+  ],
+  "template": "/views/users/blog-results.html",
+  "sorting":{
+    "createdate_num": {
+      "id": "createdate_num",
+      "name": "Newest",
+      "order": -1,
+      "field": "createdate_num",
+      "senseType": "qSortByNumeric"
+    },
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "blogTitle",
+      "senseType": "qSortByAscii"
+    },
+    "username": {
+      "id": "username",
+      "name": "User",
+      "order": 1,
+      "field": "username",
+      "senseType": "qSortByAscii"
+    }
+  },
+  "defaultSort": "createdate_num",
+  "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags"],
+  "nullSuppressor": 0,
+  "entity": "blog",
+  "pagesize" : 20
+}

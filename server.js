@@ -17,8 +17,8 @@ qrs.config = {
 config = require('config');
 console.log(config);
 
-mongoose.connect('mongodb://qtdevrelations:27017/branch');
-//mongoose.connect('mongodb://localhost:27017/branch');
+//mongoose.connect('mongodb://qtdevrelations:27017/branch');
+mongoose.connect('mongodb://localhost:27017/branch');
 
 //load the models
 require('./server/models/project.js');

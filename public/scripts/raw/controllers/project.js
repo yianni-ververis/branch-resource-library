@@ -6,14 +6,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var Rating = $resource("api/rating");
   var MyRating = $resource("api/rating/rating/my");
 
-  $scope.$on('searchResults', function(){
-    $scope.senseOnline = true;
-  });
   var defaultSelection;
-
-  $scope.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  });
 
   $scope.dirtyThumbnail = false;
 
@@ -345,7 +338,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.clear();
   };
 
-  $scope.$on("$stateChangeSuccess", function(){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
     //only load the project if we have a valid projectId or we are in list view
     if($state.current.name=="projects.detail"){
       if(searchExchange.state){
@@ -392,46 +385,34 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     }
     else{ //this should be the list page
-      if(!userManager.hasUser()){
-        userManager.refresh(function(hasUser){
-          if(!hasUser){
-            defaultSelection = [{
-              field: "approved",
-              values: [{qText: "True"}]
-            }]
-          }
-          else{
-            if(!userManager.canApprove('project')){
+      if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
+        if(!userManager.hasUser()){
+          userManager.refresh(function(hasUser){
+            if(!hasUser){
               defaultSelection = [{
                 field: "approved",
                 values: [{qText: "True"}]
               }]
             }
-          }
-          //this effectively initiates the results
-          if(searchExchange.state){
-            //no action necessary, handled by search components
-          }
-          else{
-            console.log('no state so clear');
-            searchExchange.clear(true);
-          }
-        });
-      }
-      else{
-        if(!userManager.canApprove('project')){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components          
+            else{
+              if(!userManager.canApprove('project')){
+                defaultSelection = [{
+                  field: "approved",
+                  values: [{qText: "True"}]
+                }]
+              }
+            }
+            searchExchange.init(defaultSelection);
+          });
         }
         else{
-          console.log('no state so clear');
-          searchExchange.clear(true);
+          if(!userManager.canApprove('project')){
+            defaultSelection = [{
+              field: "approved",
+              values: [{qText: "True"}]
+            }]
+          }
+          searchExchange.init(defaultSelection);
         }
       }
     }

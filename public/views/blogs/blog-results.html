@@ -4,14 +4,14 @@
       <img src="{{blog.image}}"/>
     </div>
     <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-10">
         <div class="blog-summary">
           <h1><a href="#blog/{{blog.blogId}}" ng-bind-html="highlightText(blog.title)"></a></h1>
           <p ng-bind-html="highlightText(blog.short_description)"></p>
           <span>Posted {{blog.createdate_num | date : 'dd MMM y at H:mm'}} by <a class="user-link" href="#user/{{blog.userId}}" ng-bind-html="highlightText(blog.username)"></a></span>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-3">
         <ul class="stats plainlist">
           <li class="rating">
             <span ng-show="blog.rating=='-'">Not yet rated</span>
@@ -20,9 +20,6 @@
           <li><i>{{blog.views || 0}}</i> Views</li>
           <li><i>{{blog.replycount || 0}}</i> Comments</li>
         </ul>
-      </div>
-      <div class="col-md-1">
-        <moderation entity="'blog'" entityid="blog.blogId" approved="blog.approved" size="'medium'" flagged="flagged[blog.blogId]" flagcount="blog.flagcount" editable="false"></moderation>
       </div>
     </div>
   </li>
