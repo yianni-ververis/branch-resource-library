@@ -1,3 +1,71 @@
+ul.project-listing {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  
+  
+  li.project-item {
+    flex: 1;
+    display: flex;
+    height: 160px;
+    background: #fff;
+    border: 1px solid @content-border;
+    margin-bottom: 10px;
+    
+    .project-info {
+      flex: 4;
+      display: flex;
+      
+      .thumb-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        img {
+          
+        }
+        
+      }
+      
+      .project-summary {
+        flex: 2;
+        padding: 10px;
+        
+        .list-title {
+          font-size: 24px;
+        }
+        
+      }
+      
+    }
+    
+    .project-details {
+      flex: 1;
+    }
+    
+    .mod {
+      flex: 0 0 100px;
+    }
+    
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .project-summary, .project-detail-summary{
   label{
     font-weight: normal;
