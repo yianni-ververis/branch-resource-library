@@ -51,16 +51,6 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
         //   console.log('sense is ready');
         // });
 
-        scope.$on('searchResults', function(event, results){
-
-        });
-
-        scope.$on('suggestResults', function(event, results){
-
-          scope.suggestions = results.qSuggestions;
-          scope.showSuggestion();
-        });
-
         //scope.$on('cleared', function(results){
         searchExchange.subscribe('cleared', 'input', function(){
           scope.searchText = "";
@@ -232,6 +222,12 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           searchExchange.clear();
         };
 
+        scope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+          if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+            searchExchange.clear(true);
+          }
+        });
+
         scope.$root.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
           //if there is an existing state we should update the pageTop property on the scope
           //and apply patches to the object for sorting
@@ -252,10 +248,11 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           },0);
         });
 
-        scope.$on("update", function(){
+        searchExchange.subscribe("update", "input", function(){
           if(!scope.searchText){
             if(searchExchange.state && searchExchange.state.searchText){
               scope.searchText = searchExchange.state.searchText;
+              //document.getElementById("branch-search-input").value = scope.searchText;
             }
           }
         });

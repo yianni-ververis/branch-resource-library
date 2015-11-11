@@ -9,6 +9,7 @@ var discussionSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  createdate_num: Number,
   last_updated: Date,
   last_updated_num: Number,
   userid: {

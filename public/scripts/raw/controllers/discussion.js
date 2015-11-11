@@ -1,4 +1,4 @@
-app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, notifications, picklistService){
+app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Discussion = $resource("api/discussion/:discussionId", {discussionId: "@discussionId"});
   $scope.pageSize = 20;
   $scope.query = {};
@@ -10,10 +10,6 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   $scope.isNew = $stateParams.discussionId=="new";
 
   var defaultSelection;
-
-  $scope.$root.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  })
 
   if($stateParams.discussionId == 'new'){
     $scope.discussions = [{}];
@@ -148,14 +144,11 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
             }]
           }
         }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components
-        }
-        else{
-          console.log('no state so clear');
-          searchExchange.clear(true);
-        }
+        searchExchange.subscribe('cleared', "discussionController", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('cleared', "discussionController");
+        });
+        //searchExchange.init(defaultSelection);
       });
     }
     else{
@@ -165,14 +158,11 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
           values: [{qText: "True"}]
         }]
       }
-      //this effectively initiates the results
-      if(searchExchange.state){
-        //no action necessary, handled by search components
-      }
-      else{
-        console.log('no state so clear');
-        searchExchange.clear(true);
-      }
+      searchExchange.subscribe('cleared', "discussionController", function(){
+        searchExchange.init(defaultSelection);
+        searchExchange.unsubscribe('cleared', "discussionController");
+      });
+      //searchExchange.init(defaultSelection);
     }
   }
 

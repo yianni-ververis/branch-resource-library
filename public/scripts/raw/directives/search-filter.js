@@ -39,15 +39,17 @@ app.directive("searchFilter", [function(){
         }
       });
 
-      $scope.$on("update", function(params){
-        if($scope.handle){
-          $scope.render();
-        }
-        else{
-          $scope.postponed = function(){
+      searchExchange.subscribe("update", $(element).attr("id"), function(params){
+        setTimeout(function(){
+          if($scope.handle){
             $scope.render();
           }
-        }
+          else{
+            $scope.postponed = function(){
+              $scope.render();
+            }
+          }
+        },0);
       });
       $scope.$on('cleared', function(){
         if($scope.handle){
@@ -62,9 +64,9 @@ app.directive("searchFilter", [function(){
 
       $scope.render = function(){
         searchExchange.ask($scope.handle, "GetLayout", [], function(response){
-          var layout = response.qLayout;
+          var layout = response.result.qLayout;
           searchExchange.ask($scope.handle, "GetListObjectData", ["/qListObjectDef",[{qTop:0, qLeft:0, qHeight:layout.qListObject.qSize.qcy, qWidth: 1 }]], function(response){
-            var data = response.qDataPages;
+            var data = response.result.qDataPages;
             $scope.items = data[0].qMatrix;
             $scope.$apply();
           });

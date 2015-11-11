@@ -1,5 +1,5 @@
 <ul class="project-list plainlist">
-  <li qs-repeat="project in items" id="{{project.projectId}}">
+  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true">
     <div class="col-md-9">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}">

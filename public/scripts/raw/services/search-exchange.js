@@ -2,17 +2,17 @@ var SearchExchange = (function(){
 
   function SearchExchange(){
     var that = this;
-    var config = {
-      host: "10.211.55.3:8080/anon",
-      isSecure: false,
-      rejectUnauthorized: false
-    };
     // var config = {
-    //   host: "qtdevrelations",
-    //   prefix: "/anon",
-    //   isSecure: true,
+    //   host: "10.211.55.3:8080/anon",
+    //   isSecure: false,
     //   rejectUnauthorized: false
     // };
+    var config = {
+      host: "qtdevrelations",
+      prefix: "/anon",
+      isSecure: true,
+      rejectUnauthorized: false
+    };
 
     this.seqId = 0;
 
@@ -29,6 +29,8 @@ var SearchExchange = (function(){
 
     this.catalog = {};
 
+
+
     this.subscribe = function(eventName, id, callbackFn){
       if(!that.catalog[eventName]){
         that.catalog[eventName] = {};
@@ -36,6 +38,10 @@ var SearchExchange = (function(){
       if(!that.catalog[eventName][id]){
         that.catalog[eventName][id] = {fn: callbackFn};
       }
+    };
+
+    this.unsubscribe = function(eventName, id){
+      delete that.catalog[eventName][id];
     };
 
     this.publish = function(eventName, handles, data){
@@ -49,29 +55,9 @@ var SearchExchange = (function(){
       }
     };
 
-    // $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
-    //   if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
-    //     that.state = null;
-    //     if(that.online){
-    //       that.clear();
-    //     }
-    //     else{
-    //       that.subscribe('online', 'stateChangeStart', function(){
-    //         that.clear()
-    //       });
-    //     }
-    //   }
-    //   if(fromState.name.split(".")[0]=toState.name.split(".")[0]){
-    //       if(toParams.page){
-    //         if(!that.state){
-    //           that.state = {};
-    //         }
-    //         that.state.page = toParams.page;
-    //       }
-    //   }
-    // });
-
-
+    this.subscribe('online', 'clear', function(){
+      that.clear(true);
+    });
 
     this.setStateAttr = function(name, prop){
       if(!that.state){
@@ -85,8 +71,8 @@ var SearchExchange = (function(){
     var senseApp;
 
     qsocks.Connect(config).then(function(global){
-      global.openDoc("5f053fe1-e784-4e22-8150-c3814d557525").then(function(app){
-      //global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app)
+      //global.openDoc("5f053fe1-e784-4e22-8150-c3814d557525").then(function(app){
+      global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
         senseApp = app;
         that.seqId = senseApp.connection.seqid;
         //$rootScope.$broadcast("senseready", app);
@@ -140,11 +126,11 @@ var SearchExchange = (function(){
             console.log('update after queue');
             //$rootScope.$broadcast("update");
             if(that.online){
-              that.publish("cleared");
+              that.publish("update");
             }
             else{
               that.subscribe('online', 'queue', function(){
-                that.publish("cleared")
+                that.publish("update")
               });
             }
           }
@@ -152,11 +138,11 @@ var SearchExchange = (function(){
       }
       else {
         if(that.online){
-          that.publish("cleared");
+          that.publish("update");
         }
         else{
           that.subscribe('online', 'queue', function(){
-            that.publish("cleared")
+            that.publish("update")
           });
         }
         //$rootScope.$broadcast("update");
@@ -180,6 +166,7 @@ var SearchExchange = (function(){
 
     this.clear = function(unlock){
       console.log('clearing state');
+      console.trace();
       console.log(that.state);
       var handles;
       if(that.state && that.state.searchText){
@@ -211,7 +198,9 @@ var SearchExchange = (function(){
       }
       else{
         //$rootScope.$broadcast("cleared");
-        that.publish('cleared');
+        // that.subscribe('online', 'clear', function(){
+        //   that.clear(unlock);
+        // });
       }
     };
 
@@ -303,16 +292,12 @@ var SearchExchange = (function(){
         fn.call();
       }
       else{
-        if(priority){
-          that.priority.push(fn);
-        }
-        else{
-          that.queue.push(fn);
-        }
+        that.subscribe('online', options.field, fn);
       }
     };
 
     this.makeSelection = function(options, callbackFn, priority){
+      console.trace();
       if(f = that.objects[options.field]){
         fn = function(){
           that.ask(f, "SelectValues", [options.values], function(response){

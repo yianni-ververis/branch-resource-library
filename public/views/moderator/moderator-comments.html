@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="underline">
+      <h1>{{commentType}} Comments</h1>
+      <h2>{{commentsTitle}}</h2>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <ul class="plainlist">
+      <li qs-repeat="item in comments" class="content underline">
+        <span><a class="user-link" href="#user/{{item.userid._id}}">{{item.userid.username}}</a> on {{item.createdate_num:Date}} at {{item.createdate_num:Time}}</span>
+        <p class="grey emphasize">
+          {{item.comment}}
+        </p>
+      </li>
+    </ul>
+    <button class="branch-button" onclick="searchExchange.publish('closeComments')" name="button">Close</button>
+  </div>
+</div>

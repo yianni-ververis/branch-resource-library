@@ -70,6 +70,7 @@
     }
   },
   "defaultSort": "last_updated_num",
+  "primaryKey" : "projectId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags","category","product"],
   "nullSuppressor": 0,

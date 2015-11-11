@@ -213,7 +213,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
           else{
             return;
           }
-          console.log('result list handle is - '+$scope.handle);
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
             var layout = response.result.qLayout;
             $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
@@ -248,22 +247,22 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                       item.stars.push(k);
                     }
                   }
+                  item.hidden = $scope.isHidden(item[$scope.config.primaryKey]);
                   items.push( item );
                 }
                 if(items.length>0){
                   $scope.loading = false;
                   $scope.items = items;
-                  console.log('drawing test');
                   //$element.find(".result-list").html("test");
                   var terms = []
                   if(searchExchange.state && searchExchange.state.searchText){
                     terms = searchExchange.state.searchText.split(" ");
                   }
+                  document.getElementById($attrs.id+"_count_label").innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
                   document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms});
                   document.getElementById($attrs.id+"_paging").innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
                   document.getElementById($attrs.id+"_list_container").style.display = "block";
                   document.getElementById($attrs.id+"_no_results").style.display = "none";
-                  console.log('drawing test finished');
                 }
                 else{
                   $scope.loading = false;
@@ -284,7 +283,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         $scope.renderEmpty = function(){
           $scope.$apply(function(){
             $scope.loading = false;
-            document.getElementById($attrs.id+"_list_container").style.display = "none";
+            document.getElementById($attrs.id+"_loading").style.display = "none";
+            //document.getElementById($attrs.id+"_list_container").style.display = "none";
             document.getElementById($attrs.id+"_no_results").style.display = "block";
             $scope.items = [];
           });

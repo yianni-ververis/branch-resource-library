@@ -24,6 +24,12 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.projectLoading = !$scope.isNew;
   $scope.gitLoading = false;
 
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      searchExchange.clear(true);
+    }
+  });
+
   $scope.rating = {};
   $scope.getRate = {};
   $scope.query = {
@@ -339,14 +345,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
     //only load the project if we have a valid projectId or we are in list view
     if($state.current.name=="projects.detail"){
-      if(searchExchange.state){
-        $scope.$root.$broadcast('setCrumb', {
-              text: "back to Search Results",
-              link: "project"
-            });
-      }
       $scope.getProjectData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
         $scope.currentuserid = userManager.userInfo._id;
@@ -402,7 +403,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
                 }]
               }
             }
-            searchExchange.init(defaultSelection);
+            //searchExchange.init(defaultSelection);
+            searchExchange.subscribe('cleared', "projectController", function(){
+              searchExchange.init(defaultSelection);
+              searchExchange.unsubscribe('cleared', "projectController");
+            });
           });
         }
         else{
@@ -412,7 +417,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
               values: [{qText: "True"}]
             }]
           }
-          searchExchange.init(defaultSelection);
+          //searchExchange.init(defaultSelection);
+          searchExchange.subscribe('cleared', "projectController", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('cleared', "projectController");
+          });
         }
       }
     }

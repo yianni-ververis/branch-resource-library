@@ -122,15 +122,20 @@ var Templater = (function(){
                 var fields = params.repeatPieces[i].item.split('.');
                 var item = what;
                 if (fields[0] == params.repeater){
-                    fieldFormatter = fields[1].split(":");
+                    fieldFormatter = fields[fields.length-1].split(":");
                     var df = fieldFormatter[1] || null;
                     item = evalIterator;
                     if (fields.length > 1){
-                      var prop = fields[1];
-                      if(fields[1].indexOf(":")){
-                        prop = fields[1].split(":")[0];
+                      var item = data;
+                      for(var ii=1;ii<fields.length;ii++){
+                        prop = fields[ii];
+                        if(prop.indexOf(":")){
+                          prop = prop.split(":")[0];
+                        }
+                        item = item[prop];
                       }
-                      item = data[prop];
+
+                      //item = data[prop];
                     }
                     if(item){
                       if(df){
@@ -199,28 +204,42 @@ var Templater = (function(){
         };
 
         var fn = repeater(htmlString);
+        var fnAlt = repeater(htmlString);
         //hide/remove any items for the show/if conditions
-        for (var k=0; k<fn.length; k++){  //then we can run again and update the if/show blocks
+        for (var k=0; k<fn.length;k++){  //then we can run again and update the if/show blocks
+          //this is a test.
+          //if 2 of these exist in the same markup then only the first 1 runs
+          //this is because it changes the html and subsequently the replace doesn't work
+          //now we're keeping k at 0 and re-evaluating fn on each iteration
+          //in theory the array should reduce each time until we're done
           if (fn[k].type === 'qs-if'){
               if (myEval(fn[k].expression) === false){
                   //Remove dom element from template
                   fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
                   htmlString = htmlString.replace(fn[k]['htmlItem'], '');
               }
-          }else  if (fn[k].type === 'qs-show'){
-              var show = (myEval(fn[k].expression) === true)? 'initial' : 'none';
+              fn = repeater(htmlString);
+          }
+          else  if (fn[k].type === 'qs-show'){
+            var show = (myEval(fn[k].expression));
+            if(show === true){
               fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
               if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
-                var str = fn[k]['htmlItem'].replace('qs-show', 'style="display:'+show+'" qs-done');
+                var str = fn[k]['htmlItem'].replace('qs-show', 'style="display:inherit;" qs-done');
                 htmlString = htmlString.replace(fn[k]['htmlItem'], str);
               }
+              fn = repeater(htmlString);
+            }
           }
           else  if (fn[k].type === 'qs-hide'){
-              var show = (myEval(fn[k].expression) === true)? 'none' : 'initial';
-              fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
-              if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
-                var str = fn[k]['htmlItem'].replace('qs-hide', 'style="display:'+show+'" qs-done');
-                htmlString = htmlString.replace(fn[k]['htmlItem'], str);
+              var show = (myEval(fn[k].expression));
+              if(show === true){
+                fn[k]['htmlItem'] = fn[k]['htmlItem'].replace(/&amp;/g, '&');
+                if(htmlString.indexOf(fn[k]['htmlItem'])!=-1){
+                  var str = fn[k]['htmlItem'].replace('qs-hide', 'style="display:none;" qs-done');
+                  htmlString = htmlString.replace(fn[k]['htmlItem'], str);
+                }
+                fn = repeater(htmlString);
               }
           }
           else  if (fn[k].type === 'qs-ref'){
@@ -233,15 +252,19 @@ var Templater = (function(){
                 var str = fn[k]['htmlItem'].replace('qs-ref', 'href='+loc+' qs-done');
                 htmlString = htmlString.replace(fn[k]['htmlItem'], str);
               }
+              fn = repeater(htmlString);
+          }
+          else{
+            //break;
           }
         }
 
         //check to see if we need to repeat again
-        if (fn && fn.length > iteration){
-          for (var j=iteration; j<fn.length; j++){
+        if (fnAlt && fnAlt.length > iteration){
+          for (var j=iteration; j<fnAlt.length; j++){
             //on the first pass we're just looking for repeat blocks
-            if (fn[j].type === 'qs-repeat'){
-                htmlString = repeat.call(this, htmlString, fn[j]['htmlItem'], fn[j], data[fn[j]['dimension']], j);
+            if (fnAlt[j].type === 'qs-repeat'){
+                htmlString = repeat.call(this, htmlString, fnAlt[j]['htmlItem'], fnAlt[j], data[fnAlt[j]['dimension']], j);
                 break;  //we break out of the loop after the first execution. The repeater block should handle embedded repeats
             }
           }
@@ -295,7 +318,7 @@ var Templater = (function(){
                       //     }
                       //}else
                       if (fn[i].type === 'qs-show'){
-                          var show = (myEval(fn[i].expression) === true)? 'initial' : 'none';
+                          var show = (myEval(fn[i].expression) === true)? 'inherit' : 'none';
                           fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
                           if(this.compiledHTML.indexOf(fn[i]['htmlItem'])!=-1){
                             var str = fn[i]['htmlItem'].replace('qs-show', 'style="display:'+show+'" qs-done');
@@ -303,7 +326,7 @@ var Templater = (function(){
                           }
                       }
                       else  if (fn[i].type === 'qs-hide'){
-                          var show = (myEval(fn[i].expression) === true)? 'none' : 'initial';
+                          var show = (myEval(fn[i].expression) === true)? 'none' : 'inherit';
                           fn[i]['htmlItem'] = fn[i]['htmlItem'].replace(/&amp;/g, '&');
                           if(this.compiledHTML.indexOf(fn[i]['htmlItem'])!=-1){
                             var str = fn[i]['htmlItem'].replace('qs-hide', 'style="display:'+show+'" qs-done');
@@ -363,9 +386,11 @@ var Templater = (function(){
     }
 
     function highlightText(text, terms){
-      for (var i=0;i<terms.length;i++){
-        text = text.replace(new RegExp(terms[i], "i"), "<span class='highlight"+i+"'>"+terms[i]+"</span>")
-      }
+      if(terms){
+        for (var i=0;i<terms.length;i++){
+          text = text.replace(new RegExp(terms[i], "i"), "<span class='highlight"+i+"'>"+terms[i]+"</span>")
+        }
+      }      
       return text;
     };
 

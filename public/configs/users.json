@@ -13,11 +13,11 @@
       "suppressNull": true
     },
     {
-      "dimension" : "lastvisit",
+      "dimension" : "lastvisit_num",
       "suppressNull": false
     },
     {
-      "dimension" : "role",
+      "dimension" : "rolename",
       "suppressNull": false
     }
   ],
@@ -32,6 +32,7 @@
     }
   },
   "defaultSort": "username",
+  "primaryKey" : "userId",
   "entity": "userprofile",
   "searchFields": ["usersearch"],
   "suggestFields": ["title","username","tags","category","product"],

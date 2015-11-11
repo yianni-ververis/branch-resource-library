@@ -17,7 +17,7 @@
       "suppressNull": true
     },
     {
-      "dimension": "createdate",
+      "dimension": "createdate_num",
       "suppressNull": false
     },
     {
@@ -31,15 +31,23 @@
     {
       "dimension": "forumStatus",
       "suppressNull": false
+    },
+    {
+      "measure": "sum(viewNum)",
+      "label": "views"
+    },
+    {
+      "measure" : "count(DISTINCT commentId)",
+      "label" : "commentcount"
     }
   ],
   "template": "/views/forum/forum-results.html",
   "sorting":{
-    "createdate": {
-      "id": "createdate",
+    "createdate_num": {
+      "id": "createdate_num",
       "name": "Newest",
       "order": -1,
-      "field": "createdate",
+      "field": "createdate_num",
       "senseType": "qSortByNumeric"
     },
     "title": {
@@ -57,7 +65,8 @@
       "senseType": "qSortByAscii"
     }
   },
-  "defaultSort": "createdate",
+  "defaultSort": "createdate_num",
+  "primaryKey" : "discussionId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,

@@ -88,6 +88,7 @@
       "sortType": "qSortByNumeric"
     }
   },
+  "primaryKey" : "projectId",
   "defaultSort": "last_updated_num",
   "entity": "project",
   "nullSuppressor": 0,

@@ -13,6 +13,7 @@ var viewSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  createdate_num: Number,
   ip: String,
   viewNum: {
     type: Number,

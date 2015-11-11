@@ -10,6 +10,7 @@ var ratingSchema = new Schema({
     ref: 'userprofiles'
   },
   createdate: Date,
+  createdate_num: Number,
   rating: Number
 });
 

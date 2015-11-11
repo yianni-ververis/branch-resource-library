@@ -37,6 +37,12 @@
       "suppressNull": false
     },
     {
+      "measure": "avg(rating)",
+      "label": "rating",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
+    },
+    {
       "measure": "sum(viewNum)",
       "label": "views"
     },
@@ -70,6 +76,7 @@
     }
   },
   "defaultSort": "createdate_num",
+  "primaryKey" : "blogId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,

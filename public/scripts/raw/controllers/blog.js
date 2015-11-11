@@ -1,4 +1,4 @@
-app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, notifications, picklistService){
+app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
   $scope.pageSize = 20;
   $scope.query = {};
@@ -11,11 +11,11 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   var defaultSelection;
 
-  $scope.$root.$on("cleared", function(){
-    //searchExchange.init(defaultSelection);
-  });
-
   $scope.blogTypes;
+
+  searchExchange.subscribe('cleared', "blogController", function(){
+    searchExchange.init(defaultSelection);
+  });
 
   if($stateParams.blogId){
     $scope.query.blogId = $stateParams.blogId;
@@ -105,7 +105,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     var errors = [];
     //Verify the blog has a name
     if(!$scope.blogs[0].title || $scope.blogs[0].title==""){
-      errors.push("Please specify a Title");
+      errors.push("Please specify a title");
+    }
+    if(!$scope.blogs[0].short_description || $scope.blogs[0].short_description==""){
+      errors.push("Please specify a short description");
     }
     //Verify the blog has a type
     if(!$scope.blogs[0].blogType){
@@ -168,12 +171,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   if($state.current.name=="blogs.detail"){
     $scope.getBlogData($scope.query); //get initial data set
-    if(searchExchange.state){
-      $scope.$root.$broadcast('setCrumb', {
-            text: "back to Search Results",
-            link: "blog"
-          });
-    }
     userManager.refresh(function(hasUser){
       $scope.currentuserid = userManager.userInfo._id;
     });
@@ -224,14 +221,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
             }]
           }
         }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components
-        }
-        else{
-          console.log('no state so clear');
-          //searchExchange.clear(true);
-        }
+        //searchExchange.init(defaultSelection);
       });
     }
     else{
@@ -241,14 +231,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           values: [{qText: "True"}]
         }]
       }
-      //this effectively initiates the results
-      if(searchExchange.state){
-        //no action necessary, handled by search components
-      }
-      else{
-        console.log('no state so clear');
-        //searchExchange.clear(true);
-      }
+      //searchExchange.init(defaultSelection);
     }
   }
 

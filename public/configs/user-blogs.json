@@ -70,6 +70,7 @@
     }
   },
   "defaultSort": "createdate_num",
+  "primaryKey" : "blogId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,

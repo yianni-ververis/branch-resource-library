@@ -1,5 +1,5 @@
 <ul class="plainlist user-projects">
-  <li ng-repeat="item in items" id="{{item.entityId}}" ng-hide="isHidden(project.projectId)">
+  <li qs-repeat="item in items" id="{{item.entityId}}">
     <div class="row">
       <div class="col-md-3">
         <span class="list-title"><a href="#{{item.DocType}}/{{item.entityId}}">{{item.title}}</a></span>
@@ -8,7 +8,7 @@
       <div class="col-md-2">
         <ul class="plainlist">
           <li>Updated</li>
-          <li>{{item.last_updated_num | date:'MMM dd, yyyy'}}</li>
+          <li>{{item.last_updated_num:Date}}</li>
         </ul>
       </div>
       <div class="col-md-2">
@@ -19,12 +19,12 @@
       </div>
       <div class="col-md-3">
         <ul class="plainlist">
-          <li>Flagged {{item.flagCount || 0}} times</li>
-          <li><a class="orange emphasize" ng-click="broadcast('viewComments', item)">View Comments</a></li>
+          <li>Flagged {{item.flagCount}} times</li>
+          <li><a class="orange emphasize" onclick="searchExchange.publish('viewComments', ['flag','{{item.title}}'], '{{item.entityId}}')">View Comments</a></li>
         </ul>
       </div>
       <div class="col-md-1">
-        <button class="branch-button" name="button" ng-click="broadcast('clearFlags', item)">Clear</button>
+        <button class="branch-button" name="button" onclick="searchExchange.publish('clearFlags', 'flag', '{{item.entityId}}')">Clear</button>
       </div>
     </div>
   </li>
