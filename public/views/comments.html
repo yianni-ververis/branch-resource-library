@@ -13,7 +13,7 @@
       <ul class="plainlist comment-list">
         <li ng-repeat="comment in comments" ng-class="{'author-comment': comment.userid._id==parent.userid._id}">
           <div class="comment-header">
-            <span><a href="#users/{{comment.userid.username}}">{{comment.userid.username}}</a></span><span>{{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
+            <span><a href="#/user/{{comment.userid._id}}">{{comment.userid.username}}</a></span><span>{{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
           </div>
           <div class="thumb-container">
             <img src="{{comment.userid.thumbnail}}"/>

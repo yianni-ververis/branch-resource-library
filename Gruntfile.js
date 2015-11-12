@@ -22,15 +22,39 @@ module.exports = function(grunt) {
     watch: {
       styles: {
         files: ['public/styles/less/**/*.less', 'public/scripts/raw/**/*.js'], // which files to watch
-        tasks: ['less','includes'],
+        tasks: ['less','includes','postcss'],
         options: {
-          nospawn: true
+          nospawn: true,
+          livereload: true
         }
+      },
+      views: {
+        files: ['public/views/**/*.html'],
+        options: {
+          nospawn: true,
+          livereload: true
+        }       
+      }
+    },
+    postcss: {
+      options: {
+        map: {
+          inline: false,
+          annotation: 'public/styles/maps/'
+        },
+        processors: [
+          require('autoprefixer')({browsers: 'last 2 versions'}), // add vendor prefixes
+          require('cssnano')() // minify the result
+        ]
+      },
+      dist: {
+        src: 'public/styles/css/main.css'
       }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-includes');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.registerTask('default', ['includes','less', 'watch']);
+  grunt.loadNpmTasks('grunt-postcss');
+  grunt.registerTask('default', ['includes','less','postcss','watch']);
 };
