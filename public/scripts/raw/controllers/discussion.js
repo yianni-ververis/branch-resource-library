@@ -22,6 +22,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   }
   else{
     $scope.discussionId = $stateParams.discussionId;
+    $scope.query.discussionId = $scope.discussionId;
   }
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
