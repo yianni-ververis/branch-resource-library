@@ -65,7 +65,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-    //searchExchange.clear();
+    searchExchange.clear();
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){

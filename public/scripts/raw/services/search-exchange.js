@@ -56,8 +56,7 @@ var SearchExchange = (function(){
             if(sub.indexOf(that.view)!=-1){
               that.catalog[eventName][sub].fn.call(null, handles, data);
             }
-          }
-          that.catalog[eventName][that.view].fn.call(null, handles, data);
+          }        
         }
         else{
           console.log('publishing to all');
