@@ -24,12 +24,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   $scope.projectLoading = !$scope.isNew;
   $scope.gitLoading = false;
 
-  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
-      searchExchange.clear(true);
-    }
-  });
-
   $scope.rating = {};
   $scope.getRate = {};
   $scope.query = {
@@ -409,7 +403,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
               searchExchange.init(defaultSelection);
               searchExchange.unsubscribe('reset', "projects");
             });
-            if(fromState.name=="loginsignup"){
+            if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
               searchExchange.clear(true);
             }
           });
@@ -426,7 +420,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             searchExchange.init(defaultSelection);
             searchExchange.unsubscribe('reset', "projects");
           });
-          if(fromState.name=="loginsignup"){
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
             searchExchange.clear(true);
           }
         }

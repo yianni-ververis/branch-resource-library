@@ -55,7 +55,7 @@ var SearchExchange = (function(){
           for(var sub in that.catalog[eventName]){
             if(sub.indexOf(that.view)!=-1){
               that.catalog[eventName][sub].fn.call(null, handles, data);
-            }            
+            }
           }
           that.catalog[eventName][that.view].fn.call(null, handles, data);
         }
@@ -67,7 +67,6 @@ var SearchExchange = (function(){
             ind++;
           }
         }
-        console.log('published to '+ind);
       }
     };
 
@@ -106,34 +105,27 @@ var SearchExchange = (function(){
           }
       });
     });
-    // $rootScope.$on("senseready", function(params){
-    //   that.executePriority();
-    //   that.online = true;
-    // });
-    // $rootScope.$on("senseoffline", function(params){
-    //   that.online = false;
-    // });
 
     this.init = function(defaultSelections){
-      //$rootScope.$broadcast("initialising");
-      var fn = function(){
-        if(defaultSelections && defaultSelections.length > 0){
-          defaultSelections.forEach(function(selection, index){
-            that.makeSelection(selection, function(result) {
-              if(index==defaultSelections.length-1){
-                that.lockSelections(function(result){
-                  console.log('lock change');
-                  that.executePriority();
-                })
-              }
-            }, true);
-          });
-        }
-        else{
-          that.executePriority();
-        }
+      if(defaultSelections && defaultSelections.length > 0){
+        console.log('applying default selections for '+that.view);
+        defaultSelections.forEach(function(selection, index){
+          that.makeSelection(selection, function(result) {
+            console.log('selection applied in '+selection.field);
+            if(index==defaultSelections.length-1){
+              that.lockSelections(function(result){
+                console.log('selection locked in '+selection.field);
+                console.log('selections locked for '+that.view);
+                that.executePriority();
+              })
+            }
+          }, true);
+        });
       }
-      fn.call();
+      else{
+        console.log('why the fuck are we here?????');
+        that.executePriority();
+      }
     };
 
     this.executeQueue = function(){
@@ -142,8 +134,6 @@ var SearchExchange = (function(){
           that.queue[i].call();
           if(i==that.queue.length-1){
             that.queue = [];
-            console.log('update after queue');
-            //$rootScope.$broadcast("update");
             if(that.online){
               that.publish("update");
             }
@@ -185,9 +175,6 @@ var SearchExchange = (function(){
 
     this.clear = function(unlock){
       this.clearing = true;
-      console.log('clearing state');
-      console.trace();
-      console.log(that.state);
       var handles;
       if(that.state && that.state.searchText){
         that.state.searchText = null;
@@ -198,32 +185,21 @@ var SearchExchange = (function(){
       if(senseApp){
         if(unlock && unlock==true){
           that.ask(senseApp.handle, "UnlockAll", [], function(result){
-            console.log(result);
             that.ask(senseApp.handle, "ClearAll", [],function(result){
-              console.log('clear change');
-              console.log(result);
-              //$rootScope.$broadcast("cleared");
               this.clearing = false;
               that.publish('reset');
-              //that.publish('cleared');
             });
           });
         }
         else{
           that.ask(senseApp.handle, "ClearAll", [],function(result){
-            console.log('clear change');
-            console.log(result);
-            //$rootScope.$broadcast("cleared");
             this.clearing = false;
             that.publish('cleared');
           });
         }
       }
       else{
-        //$rootScope.$broadcast("cleared");
-        // that.subscribe('online', 'clear', function(){
-        //   that.clear(unlock);
-        // });
+        console.log('YOU SHOULDNT BE HERE');
       }
     };
 
@@ -256,9 +232,6 @@ var SearchExchange = (function(){
         if(response.id == that.pendingSearch){
           if(searchText=="" || response.result.qResults.qTotalSearchResults>0){
             that.ask(senseApp.handle, "SelectAssociations", [{qContext: "LockedFieldsOnly", qSearchFields:searchFields}, that.terms, 0], function(response){
-              console.log('update from search with data');
-              console.log(response);
-              //$rootScope.$broadcast('update', true);
               that.publish('update', response.change);
             });
           }
@@ -304,8 +277,6 @@ var SearchExchange = (function(){
           };
           that.seqId++;
           senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [lbDef], that.seqId).then(function(response){
-            //callbackFn.call(null, {handle: response.handle, object: new qsocks.GenericObject(response.connection, response.handle)});
-            console.log('adding filter for '+ options.field+' with handle '+response.result.qReturn.qHandle);
             that.objects[options.id] = response.result.qReturn.qHandle;
             callbackFn.call(null, {handle: response.result.qReturn.qHandle});
           });
@@ -320,7 +291,6 @@ var SearchExchange = (function(){
     };
 
     this.makeSelection = function(options, callbackFn, priority){
-      console.trace();
       if(f = that.objects[options.field]){
         fn = function(){
           that.ask(f, "SelectValues", [options.values], function(response){
@@ -368,8 +338,6 @@ var SearchExchange = (function(){
       }
       else{
         fn = function(){
-          console.log('creating results for '+options.id);
-          //create a new session object
           var hDef = {
             "qInfo" : {
                 "qType" : "table"
@@ -385,7 +353,6 @@ var SearchExchange = (function(){
           that.seqId++;
           senseApp.connection.ask(senseApp.handle, "CreateSessionObject", [hDef], that.seqId).then(function(response){
             that.objects[options.id] = response.result.qReturn.qHandle;
-            console.log(that.objects);
             callbackFn.call(null, {handle:response.result.qReturn.qHandle});
           });
         };
@@ -416,10 +383,7 @@ var SearchExchange = (function(){
             qNullSuppression: fields[i].suppressNull
       		}
           if(sorting[fields[i].dimension]){
-            var sort = {
-              //"autoSort": false
-              //"qSortByLoadOrder" : 1
-            };
+            var sort = {};
             sort[sorting[fields[i].dimension].sortType] = sorting[fields[i].dimension].order;
             def["qDef"]["qSortCriterias"] = [sort];
           }

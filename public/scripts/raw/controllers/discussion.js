@@ -25,12 +25,6 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
     $scope.query.discussionId = $scope.discussionId;
   }
 
-  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
-      searchExchange.clear(true);
-    }
-  });
-
   $scope.markAnswered = function(id){
     var status = $scope.getStatusId("Answered");
     if(status){
@@ -196,42 +190,44 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
       }
     }
     else{ //this should be the list page
-      if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
-        if(!userManager.hasUser()){
-          userManager.refresh(function(hasUser){
-            if(!hasUser){
-              defaultSelection = [{
-                field: "approved",
-                values: [{qText: "True"}]
-              }]
-            }
-            else{
-              if(!userManager.canApprove('discussion')){
-                defaultSelection = [{
-                  field: "approved",
-                  values: [{qText: "True"}]
-                }]
-              }
-            }
-            searchExchange.subscribe('cleared', "discussionController", function(){
-              searchExchange.init(defaultSelection);
-              searchExchange.unsubscribe('cleared', "discussionController");
-            });
-            //searchExchange.init(defaultSelection);
-          });
-        }
-        else{
-          if(!userManager.canApprove('discussion')){
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
-          searchExchange.subscribe('cleared', "discussionController", function(){
+          else{
+            if(!userManager.canApprove('discussion')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          searchExchange.subscribe('reset', "forum", function(){
             searchExchange.init(defaultSelection);
-            searchExchange.unsubscribe('cleared', "discussionController");
+            searchExchange.unsubscribe('reset', "forum");
           });
-          //searchExchange.init(defaultSelection);
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
+        });
+      }
+      else{
+        if(!userManager.canApprove('discussion')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
+        }
+        searchExchange.subscribe('reset', "forum", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "forum");
+        });
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+          searchExchange.clear(true);
         }
       }
     }

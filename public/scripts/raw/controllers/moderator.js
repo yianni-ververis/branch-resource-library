@@ -28,12 +28,6 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
     });
   }
 
-  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
-      searchExchange.clear(true);
-    }
-  });
-
   var defaultSelection;
 
   $scope.setTab = function(index){
@@ -92,7 +86,7 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
           searchExchange.init(defaultSelection);
           searchExchange.unsubscribe('reset', "moderator");
         });
-        if(fromState.name=="loginsignup"){
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
           searchExchange.clear(true);
         }
       });
@@ -111,7 +105,7 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
         searchExchange.init(defaultSelection);
         searchExchange.unsubscribe('reset', "moderator");
       });
-      if(fromState.name=="loginsignup"){
+      if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
         searchExchange.clear(true);
       }
     }

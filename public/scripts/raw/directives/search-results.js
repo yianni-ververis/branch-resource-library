@@ -254,6 +254,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   item.hidden = $scope.isHidden(item[$scope.config.primaryKey]);
                   items.push( item );
                 }
+                console.log($attrs.view + ' has '+items.length+ ' items');
                 if(items.length>0){
                   $scope.loading = false;
                   $scope.items = items;

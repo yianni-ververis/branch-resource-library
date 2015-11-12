@@ -13,12 +13,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.blogTypes;
 
-  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
-      searchExchange.clear(true);
-    }
-  });
-
   if($stateParams.blogId){
     $scope.query.blogId = $stateParams.blogId;
     $scope.blogId = $stateParams.blogId;
@@ -171,80 +165,86 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
   };
 
-  if($state.current.name=="blogs.detail"){
-    $scope.getBlogData($scope.query); //get initial data set
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-    });
-  }
-  else if($state.current.name=="blogs.addedit"){
-    $("#blogContent").summernote({
-      height: 400
-    });
-    picklistService.getPicklistItems("Blog Type", function(items){
-      $scope.blogTypes = items;
-    });
-    if($stateParams.blogId=="new"){
-      $scope.blogs = [{}];
-    }
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
+    if($state.current.name=="blogs.detail"){
+      $scope.getBlogData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=blog/"+$stateParams.blogId+"/edit"
-        }
-        else{
-          if($stateParams.blogId!="new"){
-            $scope.getBlogData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
       });
     }
-    else{
-      if($stateParams.blogId!="new"){
-        $scope.getBlogData($scope.query); //get initial data set
+    else if($state.current.name=="blogs.addedit"){
+      $("#blogContent").summernote({
+        height: 400
+      });
+      picklistService.getPicklistItems("Blog Type", function(items){
+        $scope.blogTypes = items;
+      });
+      if($stateParams.blogId=="new"){
+        $scope.blogs = [{}];
+      }
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=blog/"+$stateParams.blogId+"/edit"
+          }
+          else{
+            if($stateParams.blogId!="new"){
+              $scope.getBlogData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.blogId!="new"){
+          $scope.getBlogData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        else{
-          if(!userManager.canApprove('blog')){
+    else{ //this should be the list page
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
-        }
-        searchExchange.subscribe('cleared', "blogController", function(){
-          searchExchange.init(defaultSelection);
-          searchExchange.unsubscribe('cleared', "blogController");
+          else{
+            if(!userManager.canApprove('blog')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          searchExchange.subscribe('reset', "blogs", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('reset', "blogs");
+          });
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
         });
-      });
-    }
-    else{
-      if(!userManager.canApprove('blog')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
       }
-      searchExchange.subscribe('reset', "blogController", function(){
-        searchExchange.init(defaultSelection);
-        searchExchange.unsubscribe('reset', "blogController");
-      });
-      if(fromState.name=="loginsignup"){
-        searchExchange.clear(true);
+      else{
+        if(!userManager.canApprove('blog')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
+        }
+        searchExchange.subscribe('reset', "blogs", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "blogs");
+        });
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
       }
     }
-  }
+  });
 
   function convertToPlainText(text){
     console.log(text);
