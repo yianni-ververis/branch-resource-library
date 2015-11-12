@@ -23,11 +23,11 @@
         </li>
       </ul>
       <div ng-show="activeTab==0">
-        <search-input data-config="user-projects"></search-input>
+        <search-input data-view="users.projects" data-config="user-projects"></search-input>
         <search-results id="userProjectResultList" data-view="users.projects" data-config="user-projects"></search-results>
       </div>
       <div ng-show="activeTab==1">
-        <search-input data-config="user-blogs"></search-input>
+        <search-input data-view="users.blogs" data-config="user-blogs"></search-input>
         <search-results id="userBlogResultList" data-view="users.blogs" data-config="user-blogs"></search-results>
       </div>
     </div>
