@@ -19,6 +19,8 @@ var SearchExchange = (function(){
     this.objects = {};
     this.online = false;
 
+    this.clearing = false;
+
     this.priority = [];
     this.queue = [];
 
@@ -26,6 +28,8 @@ var SearchExchange = (function(){
     this.pendingSuggest;
 
     this.state;
+
+    this.view;
 
     this.catalog = {};
 
@@ -35,9 +39,10 @@ var SearchExchange = (function(){
       if(!that.catalog[eventName]){
         that.catalog[eventName] = {};
       }
-      if(!that.catalog[eventName][id]){
-        that.catalog[eventName][id] = {fn: callbackFn};
+      if(that.catalog[eventName][id]){
+        delete that.catalog[eventName][id];
       }
+      that.catalog[eventName][id] = {fn: callbackFn};
     };
 
     this.unsubscribe = function(eventName, id){
@@ -46,10 +51,21 @@ var SearchExchange = (function(){
 
     this.publish = function(eventName, handles, data){
       if(that.catalog[eventName]){
-        var ind = 0;
-        for(var sub in that.catalog[eventName]){
-          that.catalog[eventName][sub].fn.call(null, handles, data);
-          ind++;
+        if(that.view){
+          for(var sub in that.catalog[eventName]){
+            if(sub.indexOf(that.view)!=-1){
+              that.catalog[eventName][sub].fn.call(null, handles, data);
+            }            
+          }
+          that.catalog[eventName][that.view].fn.call(null, handles, data);
+        }
+        else{
+          console.log('publishing to all');
+          var ind = 0;
+          for(var sub in that.catalog[eventName]){
+            that.catalog[eventName][sub].fn.call(null, handles, data);
+            ind++;
+          }
         }
         console.log('published to '+ind);
       }
@@ -100,7 +116,8 @@ var SearchExchange = (function(){
 
     this.init = function(defaultSelections){
       //$rootScope.$broadcast("initialising");
-      if(defaultSelections && defaultSelections.length > 0){
+      var fn = function(){
+        if(defaultSelections && defaultSelections.length > 0){
           defaultSelections.forEach(function(selection, index){
             that.makeSelection(selection, function(result) {
               if(index==defaultSelections.length-1){
@@ -111,10 +128,12 @@ var SearchExchange = (function(){
               }
             }, true);
           });
+        }
+        else{
+          that.executePriority();
+        }
       }
-      else{
-        that.executePriority();
-      }
+      fn.call();
     };
 
     this.executeQueue = function(){
@@ -165,6 +184,7 @@ var SearchExchange = (function(){
     };
 
     this.clear = function(unlock){
+      this.clearing = true;
       console.log('clearing state');
       console.trace();
       console.log(that.state);
@@ -183,7 +203,9 @@ var SearchExchange = (function(){
               console.log('clear change');
               console.log(result);
               //$rootScope.$broadcast("cleared");
-              that.publish('cleared');
+              this.clearing = false;
+              that.publish('reset');
+              //that.publish('cleared');
             });
           });
         }
@@ -192,6 +214,7 @@ var SearchExchange = (function(){
             console.log('clear change');
             console.log(result);
             //$rootScope.$broadcast("cleared");
+            this.clearing = false;
             that.publish('cleared');
           });
         }

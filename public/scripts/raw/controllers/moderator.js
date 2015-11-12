@@ -28,11 +28,17 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
     });
   }
 
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      searchExchange.clear(true);
+    }
+  });
+
   var defaultSelection;
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-    searchExchange.clear(true);
+    searchExchange.clear();
   };
 
   searchExchange.subscribe('clearFlags', "moderatorController", function(flagType, id){
@@ -60,7 +66,7 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
     document.getElementById("moderator_comments_container").style.display = "none";
   });
 
-  $scope.$on("$stateChangeSuccess", function(){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
     defaultSelection = [];
     if(!userManager.hasUser()){
       userManager.refresh(function(hasUser){
@@ -82,11 +88,32 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
             window.location = "#/";
         }
         //this effectively initiates the results
-        searchExchange.subscribe('cleared', "moderatorController", function(){
+        searchExchange.subscribe('reset', "moderator", function(){
           searchExchange.init(defaultSelection);
-          searchExchange.unsubscribe('cleared', "moderatorController");
+          searchExchange.unsubscribe('reset', "moderator");
         });
+        if(fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
       });
+    }
+    else{
+      for(var i=0;i<entities.length;i++){
+        if(userManager.canApprove(entities[i])){
+          $scope.isModerator = true;
+          defaultSelection = [{
+            field: "DocType",
+            values: [{qText: entities[i]}]
+          }]
+        }
+      }
+      searchExchange.subscribe('reset', "moderator", function(){
+        searchExchange.init(defaultSelection);
+        searchExchange.unsubscribe('reset', "moderator");
+      });
+      if(fromState.name=="loginsignup"){
+        searchExchange.clear(true);
+      }
     }
   });
 

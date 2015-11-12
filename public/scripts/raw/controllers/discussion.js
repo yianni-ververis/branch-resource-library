@@ -161,47 +161,64 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
     }
   };
 
-  //only load the discussion if we have a valid discussionId or we are in list view
-  if($state.current.name=="forum.detail"){
-    picklistService.getPicklistItems("Discussion Status", function(items){
-      $scope.discussionStatus = items;
-    });
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-      $scope.getDiscussionData($scope.query); //get initial data set
-    });
-  }
-  else if($state.current.name=="forum.addedit"){
-    picklistService.getPicklistItems("Discussion Status", function(items){
-      $scope.discussionStatus = items;
-    });
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
+    if($state.current.name=="forum.detail"){
+      picklistService.getPicklistItems("Discussion Status", function(items){
+        $scope.discussionStatus = items;
+      });
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=forum/"+$stateParams.discussionId+"/edit"
-        }
-        else{
-          if($stateParams.discussionId!="new"){
-            $scope.getDiscussionData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
+        $scope.getDiscussionData($scope.query); //get initial data set
       });
     }
-    else{
-      if($stateParams.discussionId!="new"){
-        $scope.getDiscussionData($scope.query); //get initial data set
+    else if($state.current.name=="forum.addedit"){
+      picklistService.getPicklistItems("Discussion Status", function(items){
+        $scope.discussionStatus = items;
+      });
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=forum/"+$stateParams.discussionId+"/edit"
+          }
+          else{
+            if($stateParams.discussionId!="new"){
+              $scope.getDiscussionData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.discussionId!="new"){
+          $scope.getDiscussionData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
+    else{ //this should be the list page
+      if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
+        if(!userManager.hasUser()){
+          userManager.refresh(function(hasUser){
+            if(!hasUser){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+            else{
+              if(!userManager.canApprove('discussion')){
+                defaultSelection = [{
+                  field: "approved",
+                  values: [{qText: "True"}]
+                }]
+              }
+            }
+            searchExchange.subscribe('cleared', "discussionController", function(){
+              searchExchange.init(defaultSelection);
+              searchExchange.unsubscribe('cleared', "discussionController");
+            });
+            //searchExchange.init(defaultSelection);
+          });
         }
         else{
           if(!userManager.canApprove('discussion')){
@@ -210,28 +227,15 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
               values: [{qText: "True"}]
             }]
           }
+          searchExchange.subscribe('cleared', "discussionController", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('cleared', "discussionController");
+          });
+          //searchExchange.init(defaultSelection);
         }
-        searchExchange.subscribe('cleared', "discussionController", function(){
-          searchExchange.init(defaultSelection);
-          searchExchange.unsubscribe('cleared', "discussionController");
-        });
-        //searchExchange.init(defaultSelection);
-      });
-    }
-    else{
-      if(!userManager.canApprove('discussion')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
       }
-      searchExchange.subscribe('cleared', "discussionController", function(){
-        searchExchange.init(defaultSelection);
-        searchExchange.unsubscribe('cleared', "discussionController");
-      });
-      //searchExchange.init(defaultSelection);
     }
-  }
+  });
 
   function _arrayBufferToBase64( buffer ) {
     var binary = '';

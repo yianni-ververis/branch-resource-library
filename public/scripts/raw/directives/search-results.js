@@ -106,21 +106,25 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
           return false;
         };
 
-        searchExchange.subscribe("searching", $attrs.id, function(){
+        searchExchange.subscribe("searching", $attrs.view, function(){
           $scope.loading = true;
           $scope.pageTop = 0;
-          if(el = document.getElementById($attrs.id)){
+          if(el = document.getElementById($attrs.id+"_loading")){
             document.getElementById($attrs.id+"_loading").style.display = "block";
+          }
+          if(el = document.getElementById($attrs.id+"_list_container")){
             document.getElementById($attrs.id+"_list_container").style.display = "none";
+          }
+          if(el = document.getElementById($attrs.id+"_no_results")){
             document.getElementById($attrs.id+"_no_results").style.display = "none";
           }
         });
 
-        searchExchange.subscribe("noresults", $attrs.id, function(handles, data){
+        searchExchange.subscribe("noresults", $attrs.view, function(handles, data){
           $scope.renderEmpty();
         });
 
-        searchExchange.subscribe("update", $attrs.id, function(handles, data){
+        searchExchange.subscribe("update", $attrs.view, function(handles, data){
           console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
             if(searchExchange.state && searchExchange.state.sort){

@@ -25,15 +25,15 @@
     <div class="col-md-12">
       <div ng-show="activeTab==0">
         <search-input data-config="moderator-unapproved"></search-input>
-        <search-results id="moderatorUnapprovedResultList" data-config="moderator-unapproved"></search-results>
+        <search-results id="moderatorUnapprovedResultList" data-view="moderator.hidden" data-config="moderator-unapproved"></search-results>
       </div>
       <div ng-show="activeTab==1">
         <search-input data-config="moderator-flagged"></search-input>
-        <search-results id="moderatorFlaggedResultList" data-config="moderator-flagged"></search-results>
+        <search-results id="moderatorFlaggedResultList" data-view="moderator.flag" data-config="moderator-flagged"></search-results>
       </div>
       <div ng-show="activeTab==2">
         <search-input data-config="moderator-spammed"></search-input>
-        <search-results id="moderatorSpammedResultList" data-config="moderator-spammed"></search-results>
+        <search-results id="moderatorSpammedResultList" data-view="moderator.spam" data-config="moderator-spammed"></search-results>
       </div>
     </div>
   </div>

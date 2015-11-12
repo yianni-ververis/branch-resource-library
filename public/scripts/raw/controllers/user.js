@@ -11,6 +11,12 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.userLoading = true;
 
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      searchExchange.clear(true);
+    }
+  });
+
   var defaultSelection = [];
 
   if($stateParams.userId){
@@ -92,11 +98,13 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
           values: [{qText: $stateParams.userId}]
         });
         console.log('firing search init');
-        searchExchange.init(defaultSelection);
-        searchExchange.subscribe('cleared', "userController", function(){
+        searchExchange.subscribe('reset', "users", function(){
           searchExchange.init(defaultSelection);
-          searchExchange.unsubscribe('cleared', "userController");
+          searchExchange.unsubscribe('reset', "users");
         });
+        if(fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
       });
       $scope.getUserData($scope.query);
     }

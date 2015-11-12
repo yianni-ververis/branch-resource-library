@@ -386,6 +386,8 @@ var Templater = (function(){
     }
 
     function highlightText(text, terms){
+      //NOTE THIS FUNCTION ALSO STRIPS OUT ANY HTML TAGS
+      text = text.replace(/<\/?[^>]+(>|$)/g, "");
       if(terms){
         for (var i=0;i<terms.length;i++){
           text = text.replace(new RegExp(terms[i], "i"), "<span class='highlight"+i+"'>"+terms[i]+"</span>")

@@ -386,7 +386,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     }
     else{ //this should be the list page
-      if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
+      //if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
         if(!userManager.hasUser()){
           userManager.refresh(function(hasUser){
             if(!hasUser){
@@ -404,10 +404,14 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
               }
             }
             //searchExchange.init(defaultSelection);
-            searchExchange.subscribe('cleared', "projectController", function(){
+            searchExchange.subscribe('reset', "projects", function(){
+              console.trace();
               searchExchange.init(defaultSelection);
-              searchExchange.unsubscribe('cleared', "projectController");
+              searchExchange.unsubscribe('reset', "projects");
             });
+            if(fromState.name=="loginsignup"){
+              searchExchange.clear(true);
+            }
           });
         }
         else{
@@ -418,12 +422,15 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             }]
           }
           //searchExchange.init(defaultSelection);
-          searchExchange.subscribe('cleared', "projectController", function(){
+          searchExchange.subscribe('reset', "projects", function(){
             searchExchange.init(defaultSelection);
-            searchExchange.unsubscribe('cleared', "projectController");
+            searchExchange.unsubscribe('reset', "projects");
           });
+          if(fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
         }
-      }
+
     }
   });
 

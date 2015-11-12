@@ -236,10 +236,13 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           values: [{qText: "True"}]
         }]
       }
-      searchExchange.subscribe('cleared', "blogController", function(){
+      searchExchange.subscribe('reset', "blogController", function(){
         searchExchange.init(defaultSelection);
-        searchExchange.unsubscribe('cleared', "blogController");
+        searchExchange.unsubscribe('reset', "blogController");
       });
+      if(fromState.name=="loginsignup"){
+        searchExchange.clear(true);
+      }
     }
   }
 

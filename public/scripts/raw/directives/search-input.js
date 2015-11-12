@@ -226,7 +226,10 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
         };
 
         scope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
-          if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+          if(toState.name!="loginsignup"){
+            searchExchange.view = toState.name.split(".")[0];
+          }
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || toState.name!="loginsignup"){ //then we should clear the search state
             searchExchange.clear(true);
           }
         });
