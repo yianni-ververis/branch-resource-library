@@ -3,6 +3,9 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   $scope.pageSize = 20;
   $scope.query = {};
 
+  $scope.canAnswer = false;
+  $scope.canReopen = false;
+
   $scope.discussions = [];
 
   $scope.discussionLoading = $stateParams.discussionId!="new";
@@ -20,6 +23,61 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   else{
     $scope.discussionId = $stateParams.discussionId;
   }
+
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      searchExchange.clear(true);
+    }
+  });
+
+  $scope.markAnswered = function(id){
+    var status = $scope.getStatusId("Answered");
+    if(status){
+      $scope.discussionLoading = true;
+      Discussion.save({discussionId:id}, {status: status}, function(result){
+        $scope.discussionLoading = false;
+        if(resultHandler.process(result)){
+          $scope.canAnswer = false;
+          $scope.canReopen = true;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
+        }
+      });
+    }
+    else{
+      notifications.notify("Could not mark discussion as answered. Please contact the Branch admin team.", null, {sentiment:"negative"});
+    }
+  };
+
+  $scope.reOpen = function(id){
+    var status = $scope.getStatusId("Unanswered");
+    if(status){
+      $scope.discussionLoading = true;
+      Discussion.save({discussionId:id}, {status: status}, function(result){
+        $scope.discussionLoading = false;
+        if(resultHandler.process(result)){
+          $scope.canAnswer = true;
+          $scope.canReopen = false;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
+        }
+      });
+    }
+    else{
+      notifications.notify("Could not reopen discussion. Please contact the Branch admin team.", null, {sentiment:"negative"});
+    }
+  };
+
+  $scope.getStatusId = function(name){
+    for (var i=0;i<$scope.discussionStatus.length;i++){
+      if($scope.discussionStatus[i].name==name){
+        return $scope.discussionStatus[i]._id;
+      }
+    }
+    return null;
+  };
 
   $scope.validateNewDiscussionData = function(){
     var errors = [];
@@ -85,6 +143,8 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
           //if this is the detail view we'll update the breadcrumbs
         }
         $scope.discussionInfo = result;
+        $scope.canAnswer = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Unanswered");
+        $scope.canReopen = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Answered");
         delete $scope.discussionInfo["data"];
       }
     });
@@ -102,12 +162,18 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
 
   //only load the discussion if we have a valid discussionId or we are in list view
   if($state.current.name=="forum.detail"){
-    $scope.getDiscussionData($scope.query); //get initial data set
+    picklistService.getPicklistItems("Discussion Status", function(items){
+      $scope.discussionStatus = items;
+    });
     userManager.refresh(function(hasUser){
       $scope.currentuserid = userManager.userInfo._id;
+      $scope.getDiscussionData($scope.query); //get initial data set
     });
   }
   else if($state.current.name=="forum.addedit"){
+    picklistService.getPicklistItems("Discussion Status", function(items){
+      $scope.discussionStatus = items;
+    });
     var hasUser = userManager.hasUser();
     if(!hasUser){
       userManager.refresh(function(hasUser){

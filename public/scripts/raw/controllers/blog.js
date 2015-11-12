@@ -13,8 +13,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.blogTypes;
 
-  searchExchange.subscribe('cleared', "blogController", function(){
-    searchExchange.init(defaultSelection);
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){ //then we should clear the search state
+      searchExchange.clear(true);
+    }
   });
 
   if($stateParams.blogId){
@@ -221,7 +223,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
             }]
           }
         }
-        //searchExchange.init(defaultSelection);
+        searchExchange.subscribe('cleared', "blogController", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('cleared', "blogController");
+        });
       });
     }
     else{
@@ -231,7 +236,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
           values: [{qText: "True"}]
         }]
       }
-      //searchExchange.init(defaultSelection);
+      searchExchange.subscribe('cleared', "blogController", function(){
+        searchExchange.init(defaultSelection);
+        searchExchange.unsubscribe('cleared', "blogController");
+      });
     }
   }
 

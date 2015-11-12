@@ -149,7 +149,7 @@ var Templater = (function(){
                             var output = day + ' ' + monthNames[monthIndex] + ' ' + year
                           }
                           if(df=="Time"){
-                            var output = date.getTime();
+                            var output = date.getHours() + ':' + date.getMinutes();
                           }
                           htmlString = htmlString.replace(what, output);
                         }
@@ -390,7 +390,7 @@ var Templater = (function(){
         for (var i=0;i<terms.length;i++){
           text = text.replace(new RegExp(terms[i], "i"), "<span class='highlight"+i+"'>"+terms[i]+"</span>")
         }
-      }      
+      }
       return text;
     };
 

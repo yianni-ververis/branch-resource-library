@@ -28,7 +28,7 @@
       "name": "A-Z",
       "order": 1,
       "field": "username",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
     }
   },
   "defaultSort": "username",

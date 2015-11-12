@@ -54,6 +54,9 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
         //scope.$on('cleared', function(results){
         searchExchange.subscribe('cleared', 'input', function(){
           scope.searchText = "";
+          if(el = document.getElementById("branch-search-input")){
+            el.value = "";
+          }
           scope.cursorPosition = 0;
           scope.suggestions = [];
           scope.suggesting = false;
@@ -127,7 +130,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
             return;
           }
           if(reservedKeys.indexOf(event.keyCode) == -1){
-            if(scope.searchText.length > 0){
+            if(scope.searchText && scope.searchText.length > 0){
               //we'll check here to make sure the latest term is at least 2 characters before searching
               if(scope.searchText.split(" ").pop().length>1){
                 scope.preSearch();

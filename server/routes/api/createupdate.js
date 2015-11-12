@@ -51,14 +51,6 @@ module.exports = function(req, res){
       query["createuser"]=user._id;
     }
     var record = data.standard || data;
-    console.log('create update record id');
-    console.log(record._id);
-    console.log('create update req params id');
-    console.log(req.params.id);
-    console.log('create update req query');
-    console.log(req.query);
-    console.log('create update req query has props');
-    console.log(hasProps(req.query));
     if(!record._id && !req.params.id && !hasProps(req.query)){
       //this is a new item
       isNew = true;
@@ -150,10 +142,12 @@ module.exports = function(req, res){
               MasterController.get({}, {_id: newrecord.entityId}, entities[newrecord.entity], function(parent){
                 if(!parent.errCode){
                   if(parent.data && parent.data[0]){
-                    Mailer.sendMail('create', "comment", {parent: parent.data[0], comment: newrecord}, function(){
-                      console.log('should now be sending email 2');
-                      Notifier.sendCommentNotification(parent.data[0]._id, {parent: parent.data[0], comment:newrecord});
-                    });
+                    if(parent.data[0].userid._id != newrecord.userid._id){
+                      Mailer.sendMail('create', "comment", {parent: parent.data[0], comment: newrecord}, function(){                        
+                        //Notifier.sendCommentNotification(parent.data[0]._id, {parent: parent.data[0], comment:newrecord});
+                      });
+                    }
+                    Notifier.sendCommentNotification(parent.data[0]._id, {parent: parent.data[0], comment:newrecord});
                   }
                 }
               });

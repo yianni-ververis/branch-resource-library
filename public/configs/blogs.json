@@ -58,21 +58,21 @@
       "name": "Newest",
       "order": -1,
       "field": "createdate_num",
-      "senseType": "qSortByNumeric"
+      "sortType": "qSortByNumeric"
     },
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
-      "field": "blogTitle",
-      "senseType": "qSortByAscii"
+      "field": "title",
+      "sortType": "qSortByAscii"
     },
     "username": {
       "id": "username",
       "name": "User",
       "order": 1,
       "field": "username",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
     }
   },
   "defaultSort": "createdate_num",

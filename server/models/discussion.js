@@ -20,7 +20,7 @@ var discussionSchema = new Schema({
   hide_comment: String,
   status: {
     type: Schema.ObjectId,
-    ref: "picklistitems",
+    ref: "picklistitem",
     default: "56378d4ca3367986771805a6"
   },
   edituser: {
