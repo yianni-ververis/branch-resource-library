@@ -5,10 +5,14 @@
         <img src="{{project.thumbnail}}"/>
       </div>
       <div class="project-summary">
-        <a href="#project/{{project.projectId}}" class="list-title" ng-bind-html="highlightText(project.title)"></a>
-        <a class="user-link" href="#user/{{project.userId}}" ng-bind-html="highlightText(project.username)"></a>
-        <p ng-bind-html="highlightText(project.short_description)"></p>
-        <span class="emphasize">Tags: </span><span ng-bind-html="highlightText(project.tags)"></span>
+        <div class="project-summary-heading">
+          <a href="#project/{{project.projectId}}" class="list-title" ng-bind-html="highlightText(project.title)"></a>
+          <span>by </span><a class="user-link" href="#user/{{project.userId}}" ng-bind-html="highlightText(project.username)"></a>
+          <p class="project-short-description" ng-bind-html="highlightText(project.short_description)"></p>          
+        </div>
+        <div class="project-bottom">
+          <span class="emphasize">Tags: </span><span ng-bind-html="highlightText(project.tags)"></span>
+        </div>
       </div>
     </div>
     <div class="project-details">
