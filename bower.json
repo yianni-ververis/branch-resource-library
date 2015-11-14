@@ -26,6 +26,7 @@
     "jquery": "~2.1.3",
     "ng-notifications-bar": "~0.0.15",
     "summernote": "~0.6.10",
-    "visualcaptcha.angular": "~0.0.7"
+    "visualcaptcha.angular": "~0.0.7",
+    "d3": "~3.5.8"
   }
 }
