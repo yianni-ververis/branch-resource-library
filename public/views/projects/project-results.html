@@ -16,7 +16,12 @@
       </div>
     </div>
     <div class="project-details">
-      <div>4.7</div>
+      <h1>{{project.rating === '-' ? 'n/a' : project.rating.slice(0,3)}}</h1>
+      <div class="mini-details">
+        <span>EYE {{project.views}}</span>
+        <span>BUBBLE {{project.commentcount}}</span>
+        <span>{{project.last_updated_num | date : 'dd MMM y'}}</span>
+      </div>
       <!--<ul class="stats plainlist">
         <li>
           <rating displaystar="project.rating" mode="'static'"></rating>
