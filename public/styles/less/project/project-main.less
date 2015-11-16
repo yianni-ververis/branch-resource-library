@@ -18,13 +18,15 @@ ul.project-listing {
       display: flex;
       
       .thumb-container {
-        flex: 1;
+        flex: 0 0 170px;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 10px;
         
         img {
-          
+          height: auto;
+          max-width: 100%;
         }
         
       }
@@ -61,13 +63,13 @@ ul.project-listing {
     .project-details {
       flex: 1;
       border-left: 1px solid @content-border;
-      background: #E8E8E8;
+      background: rgb(237,237,237);
       padding: 10px;
       
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-                    
+                
       h1 {
         flex: 1 1 100%;
         font-size: 50px;
@@ -75,10 +77,12 @@ ul.project-listing {
         margin: 0;
         align-self: flex-end;
         text-align: center;
+        
         &.na {
           font-size: 18px;
           color: @dark-grey;
         }
+        
       }
       
       .mini-details {
@@ -87,10 +91,21 @@ ul.project-listing {
         flex-direction: row;
         flex-wrap: nowrap;
         font-size: 10px;
+        justify-content: space-around;
         
-        span {
-          flex: 1;
+        div {
+          flex: 0 0 auto;
           align-self: flex-end;
+
+          p {
+            font-size: 14px;
+            margin: 0;
+          }
+          
+          span {
+            font-size: 8px;
+          }
+          
         }
         
       }

@@ -18,8 +18,9 @@
     <div class="project-details">
       <h1 ng-class="{na: project.rating === '-'}">{{project.rating === '-' ? 'not yet rated' : project.rating.slice(0,3)}}</h1>
       <div class="mini-details">
-        <span><i class="fa fa-eye"></i> {{project.views}}</span>
-        <span><i class="fa fa-comment-o"></i> {{project.commentcount}}</span>
+        <div><span>VIEWS</span><p>{{project.views}}</p></div>
+        <div><span>COMMENTS</span><p>{{project.commentcount}}</p></div>
+        <div><span>LAST UPDATED</span><p>{{project.last_updated_num | date : 'yyyy-MM-dd'}}</p></div>     
       </div>
       <!--<ul class="stats plainlist">
         <li>
