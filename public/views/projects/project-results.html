@@ -2,25 +2,25 @@
   <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true" class="project-item">
     <div class="project-info">
       <div class="thumb-container">
-        <img src="{{project.thumbnail}}"/>
+        <img src="{{project.thumbnail}}">
       </div>
       <div class="project-summary">
         <div class="project-summary-heading">
-          <a href="#project/{{project.projectId}}" class="list-title" ng-bind-html="highlightText(project.title)"></a>
-          <span>by </span><a class="user-link" href="#user/{{project.userId}}" ng-bind-html="highlightText(project.username)"></a>
-          <p class="project-short-description" ng-bind-html="highlightText(project.short_description)"></p>          
+          <a href="#project/{{project.projectId}}" class="list-title">{{project.title}}</a>
+          <a class="user-link" href="#user/{{project.userId}}">by {{project.username}}</a>
+          <p>{{project.short_description}}</p>        
         </div>
         <div class="project-bottom">
-          <span class="emphasize">Tags: </span><span ng-bind-html="highlightText(project.tags)"></span>
+          <span class="emphasize">Tags: </span><span>{{project.tags}}</span>
         </div>
       </div>
     </div>
     <div class="project-details">
-      <h1 ng-class="{na: project.rating === '-'}">{{project.rating === '-' ? 'Not yet rated' : project.rating.slice(0,3)}}</h1>
+      <h1 ng-class="{na: project.rating === '-'}">{{project.rating}}</h1>
       <div class="mini-details">
         <div><span>VIEWS</span><p>{{project.views}}</p></div>
         <div><span>COMMENTS</span><p>{{project.commentcount}}</p></div>
-        <div><span>LAST UPDATED</span><p>{{project.last_updated_num | date : 'yyyy-MM-dd'}}</p></div>     
+        <div><span>LAST UPDATED</span><p>{{project.last_updated_num:Date}}</p></div>     
       </div>
     </div>
   </li>
