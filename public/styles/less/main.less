@@ -51,10 +51,10 @@ label{
 }
 
 h1{
-  color: @green;
-  font-size: 20px;
+  color: @heading;
+  font-size: 26px;
   margin: 5px 0;
-  font-weight: lighter;
+  font-weight: bold;
 }
 
 h2{
@@ -104,7 +104,7 @@ img{
 }
 
 .main{
-  margin-top: 80px;
+  margin-top: 70px;
   padding-top: 20px;
 }
 
@@ -118,14 +118,17 @@ img{
 
 .paging, .sorting{
   text-align: right;
+  
   label, ul, select{
     display: inline-block;
   }
   select{
-    width: 120px;
+    width: 140px;
+    margin-left: 10px;
+    border: 1px solid @content-border;
+    border-radius: 0;
     box-shadow: none;
     -webkit-box-shadow: none;
-    border-color: white;
     font-size: 12px;
     height: initial;
   }
@@ -231,8 +234,9 @@ img{
 
 .search-header{
   position: fixed;
-  top: 80px;
+  top: 70px;
   padding-top: 20px;
+  background: @bodybackground;
   z-index: 100;
 }
 
@@ -287,3 +291,6 @@ img{
 //search
 @import "./search/search-input/search-input-main.less";
 @import "./search/search-input/search-suggestions-main.less";
+
+//disabling bootstrap styles
+@import "./disablecrapstrap.less";

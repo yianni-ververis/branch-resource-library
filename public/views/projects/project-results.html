@@ -1,6 +1,6 @@
-<ul class="project-list plainlist">
-  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true">
-    <div class="col-md-9">
+<ul class="project-listing">
+  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true" class="project-item">
+    <div class="project-info">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}">
       </div>
@@ -11,8 +11,9 @@
         <span class="emphasize">Tags: </span><span>{{project.tags}}</span>
       </div>
     </div>
-    <div class="col-md-3">
-      <ul class="stats plainlist">
+    <div class="project-details">
+      <div>4.7</div>
+      <!--<ul class="stats plainlist">
         <li>
           <ul class="plainlist rating">
             <li qs-repeat="star in stars" class="icon medium star filled"></li>
@@ -22,7 +23,10 @@
         <li><i>{{project.views}}</i> Views</li>
         <li><i>{{project.commentcount}}</i> Comments</li>
         <li>Last Update: <i>{{project.last_updated_num:Date}}</i></li>
-      </ul>
+      </ul>-->
     </div>
+    <!-- <div class="mod">
+      <moderation entity="'project'" entityid="project.projectId" approved="project.approved" size="'medium'" flagged="flagged[project.projectId]" flagcount="project.flagcount" editable="false"></moderation>
+    </div> -->
   </li>
 </ul>
