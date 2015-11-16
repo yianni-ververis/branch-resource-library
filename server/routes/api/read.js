@@ -22,9 +22,9 @@ module.exports = {
       if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
           || (!user)){
         //query["approved"]=false;
-        query.$or = [{approved:false}];
+        query["approved"] = false;
         if(user){
-          query.$or.push( {userid: {$ne: user["_id"] }});
+          query["userid"] = {$ne: user["_id"] };
         }
         MasterController.getIds(req.query, query, entity, function(results){
           console.log('hidden');
