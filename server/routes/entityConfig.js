@@ -41,7 +41,7 @@ module.exports = {
     discussion:{
       collection: "discussions",
       model: require("../models/discussion"),
-      populates: "userid",
+      populates: "userid status",
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,

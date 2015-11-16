@@ -17,10 +17,6 @@
       "suppressNull": true
     },
     {
-      "dimension": "createdate",
-      "suppressNull": false
-    },
-    {
       "dimension": "approved",
       "suppressNull": false
     },
@@ -29,35 +25,48 @@
       "suppressNull": false
     },
     {
+      "dimension": "createdate_num",
+      "suppressNull": false
+    },
+    {
       "dimension": "forumStatus",
       "suppressNull": false
+    },
+    {
+      "measure": "sum(viewNum)",
+      "label": "views"
+    },
+    {
+      "measure" : "count(DISTINCT commentId)",
+      "label" : "commentcount"
     }
   ],
   "template": "/views/forum/forum-results.html",
   "sorting":{
-    "createdate": {
-      "id": "createdate",
+    "createdate_num": {
+      "id": "createdate_num",
       "name": "Newest",
       "order": -1,
-      "field": "createdate",
-      "senseType": "qSortByNumeric"
+      "field": "createdate_num",
+      "sortType": "qSortByNumeric"
     },
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
-      "field": "blogTitle",
-      "senseType": "qSortByAscii"
+      "field": "title",
+      "sortType": "qSortByAscii"
     },
     "username": {
       "id": "username",
       "name": "User",
       "order": 1,
       "field": "username",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
     }
   },
-  "defaultSort": "createdate",
+  "defaultSort": "createdate_num",
+  "primaryKey" : "discussionId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,

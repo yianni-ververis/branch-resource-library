@@ -88,6 +88,10 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
     // if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
     //   query["createuser"]=user._id;
     // }
+    if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
+        || (!user)){
+      query["approved"]=true;
+    }
     MasterController.count(req.query, query, entity, function(results){
       res.json(results);
     });
@@ -265,7 +269,7 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
   else{
     if(userPermissions.allOwners!=true){
       query["createuser"]=user._id;
-    }    
+    }
     MasterController.delete(query, entities[entity], function(result){
       //need to delete any comments and flags
       res.json(result);

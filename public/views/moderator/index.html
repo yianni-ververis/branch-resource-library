@@ -24,40 +24,22 @@
     </div>
     <div class="col-md-12">
       <div ng-show="activeTab==0">
-        <search-input data-config="moderator-unapproved"></search-input>
-        <search-results id="moderatorUnapprovedResultList" data-config="moderator-unapproved"></search-results>
+        <search-input data-view="moderator.hidden" data-config="moderator-unapproved"></search-input>
+        <search-results id="moderatorUnapprovedResultList" data-view="moderator.hidden" data-config="moderator-unapproved"></search-results>
       </div>
       <div ng-show="activeTab==1">
-        <search-input data-config="moderator-flagged"></search-input>
-        <search-results id="moderatorFlaggedResultList" data-config="moderator-flagged"></search-results>
+        <search-input data-view="moderator.flag" data-config="moderator-flagged"></search-input>
+        <search-results id="moderatorFlaggedResultList" data-view="moderator.flag" data-config="moderator-flagged"></search-results>
       </div>
       <div ng-show="activeTab==2">
-        <search-input data-config="moderator-spammed"></search-input>
-        <search-results id="moderatorSpammedResultList" data-config="moderator-spammed"></search-results>
+        <search-input data-view="moderator.spam" data-config="moderator-spammed"></search-input>
+        <search-results id="moderatorSpammedResultList" data-view="moderator.spam" data-config="moderator-spammed"></search-results>
       </div>
     </div>
   </div>
-  <div class="smoke" ng-show="showComments">
-    <div class="flag-comment-container container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="underline">
-            <h1>{{commentType}} Comments</h1>
-            <h2>{{commentsTitle}}</h2>
-          </div>
-        </div>
-        <div class="col-md-12">
-          <ul class="plainlist">
-            <li ng-repeat="item in comments" class="content underline">
-              <span><a class="user-link" href="#user/{{item.userid._id}}">{{item.userid.username}}</a> on {{item.createdate |  date:'MMM dd, yyyy'}} at {{ item.createdate |  date:'HH:mm'}}</span>
-              <p class="grey emphasize">
-                {{item.comment}}
-              </p>
-            </li>
-          </ul>
-          <button class="branch-button" ng-click="closeComments()" name="button">Close</button>
-        </div>
-      </div>
+  <div class="smoke" style="display:none;" id="moderator_comments_container">
+    <div class="flag-comment-container container" id="moderator_comments">
+
     </div>
   </div>
 </div>

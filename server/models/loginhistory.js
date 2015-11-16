@@ -9,7 +9,8 @@ var loginhistorySchema = new Schema({
   createdate: {
     type: Date,
     default: Date.now
-  }
+  },
+  createdate_num: Number,
 });
 
 module.exports = mongoose.model('loginhistory', loginhistorySchema)

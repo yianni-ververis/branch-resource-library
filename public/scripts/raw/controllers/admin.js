@@ -1,7 +1,7 @@
-app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, confirm){
+app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm){
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-  var Article = $resource("api/article/:articleId", {articleId: "@articleId"});
+  var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
   var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
   var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
   var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
@@ -28,12 +28,6 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   ];
 
   var defaultSelection;
-
-  $scope.$on("cleared", function(){
-    searchExchange.init();
-  })
-
-  $scope.pageSize = 20;
 
   User.get({}, function(result){
     if(resultHandler.process(result)){
@@ -192,6 +186,11 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     $scope.setFeature(args[0]);
   });
 
+  searchExchange.subscribe('setFeature', 'adminConsole', function(handles, data){
+    //in this instance we're hijacking the handle paramter and using it to establish the entity
+    $scope.setFeature(handles, data);
+  });
+
   $scope.changeFeatureImage = function(){
     confirm.prompt("Would you like to upload an image or enter a url to link to?", {options:["Upload", "Link", "Cancel"]}, function(response){
       if(response.result==0){
@@ -209,18 +208,52 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     });
   };
 
-  $scope.setFeature = function(entity){
-    //$scope.features[$scope.activeFeature].entityId = entity.id;
-    $scope.currentFeature.entityId = entity.id;
-    $scope.currentFeature.title = entity.data.title;
-    $scope.currentFeature.comment = entity.data.short_description || entity.data.content;
-    $scope.currentFeature.image = entity.data.image=="-"? entity.data.thumbnail : entity.data.image;
-    $scope.currentFeature.userid = entity.data.user;
-    Feature.save({featureId: $scope.features[$scope.activeFeature]._id }, $scope.currentFeature, function(result){
-      if(resultHandler.process(result)){
-        $scope.setActiveFeature($scope.activeFeature);
-      }
+  $scope.setFeature = function(entity, id){
+    $scope.getItem(entity, id, function(result){
+      $scope.currentFeature.entityId = result._id;
+      $scope.currentFeature.title = result.title;
+      $scope.currentFeature.comment = result.short_description;
+      $scope.currentFeature.image = result.image == null ? result.thumbnail : result.image;
+      $scope.currentFeature.userid = result.userid._id;
+      Feature.save({featureId: $scope.currentFeature._id }, $scope.currentFeature, function(result){
+        if(resultHandler.process(result)){
+          $scope.setActiveFeature($scope.activeFeature);
+        }
+      });
     });
+  };
+
+  $scope.getItem = function(entity, id, callbackFn){
+    if(entity=="project"){
+      Project.get({projectId:id}, function(result){
+        if(resultHandler.process(result)){
+          if(result.data && result.data[0]){
+            callbackFn.call(null, result.data[0]);
+          }
+          else{
+            callbackFn.call(null, null);
+          }
+        }
+        else{
+          callbackFn.call(null, null);
+        }
+      });
+    }
+    else if(entity=="blog"){
+      Blog.get({blogId:id}, function(result){
+        if(resultHandler.process(result)){
+          if(result.data && result.data[0]){
+            callbackFn.call(null, result.data[0]);
+          }
+          else{
+            callbackFn.call(null, null);
+          }
+        }
+        else{
+          callbackFn.call(null, null);
+        }
+      });
+    }
   };
 
   $scope.saveFeature = function(){

@@ -1,7 +1,10 @@
-app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, notifications, picklistService){
+app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Discussion = $resource("api/discussion/:discussionId", {discussionId: "@discussionId"});
   $scope.pageSize = 20;
   $scope.query = {};
+
+  $scope.canAnswer = false;
+  $scope.canReopen = false;
 
   $scope.discussions = [];
 
@@ -11,10 +14,6 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
 
   var defaultSelection;
 
-  $scope.$root.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  })
-
   if($stateParams.discussionId == 'new'){
     $scope.discussions = [{}];
     $("#discussionContent").summernote({
@@ -23,7 +22,57 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   }
   else{
     $scope.discussionId = $stateParams.discussionId;
+    $scope.query.discussionId = $scope.discussionId;
   }
+
+  $scope.markAnswered = function(id){
+    var status = $scope.getStatusId("Answered");
+    if(status){
+      $scope.discussionLoading = true;
+      Discussion.save({discussionId:id}, {status: status}, function(result){
+        $scope.discussionLoading = false;
+        if(resultHandler.process(result)){
+          $scope.canAnswer = false;
+          $scope.canReopen = true;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
+        }
+      });
+    }
+    else{
+      notifications.notify("Could not mark discussion as answered. Please contact the Branch admin team.", null, {sentiment:"negative"});
+    }
+  };
+
+  $scope.reOpen = function(id){
+    var status = $scope.getStatusId("Unanswered");
+    if(status){
+      $scope.discussionLoading = true;
+      Discussion.save({discussionId:id}, {status: status}, function(result){
+        $scope.discussionLoading = false;
+        if(resultHandler.process(result)){
+          $scope.canAnswer = true;
+          $scope.canReopen = false;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
+        }
+      });
+    }
+    else{
+      notifications.notify("Could not reopen discussion. Please contact the Branch admin team.", null, {sentiment:"negative"});
+    }
+  };
+
+  $scope.getStatusId = function(name){
+    for (var i=0;i<$scope.discussionStatus.length;i++){
+      if($scope.discussionStatus[i].name==name){
+        return $scope.discussionStatus[i]._id;
+      }
+    }
+    return null;
+  };
 
   $scope.validateNewDiscussionData = function(){
     var errors = [];
@@ -89,6 +138,8 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
           //if this is the detail view we'll update the breadcrumbs
         }
         $scope.discussionInfo = result;
+        $scope.canAnswer = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Unanswered");
+        $scope.canReopen = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Answered");
         delete $scope.discussionInfo["data"];
       }
     });
@@ -104,77 +155,83 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
     }
   };
 
-  //only load the discussion if we have a valid discussionId or we are in list view
-  if($state.current.name=="forum.detail"){
-    $scope.getDiscussionData($scope.query); //get initial data set
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-    });
-  }
-  else if($state.current.name=="forum.addedit"){
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
+    if($state.current.name=="forum.detail"){
+      picklistService.getPicklistItems("Discussion Status", function(items){
+        $scope.discussionStatus = items;
+      });
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=forum/"+$stateParams.discussionId+"/edit"
-        }
-        else{
-          if($stateParams.discussionId!="new"){
-            $scope.getDiscussionData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
+        $scope.getDiscussionData($scope.query); //get initial data set
       });
     }
-    else{
-      if($stateParams.discussionId!="new"){
-        $scope.getDiscussionData($scope.query); //get initial data set
+    else if($state.current.name=="forum.addedit"){
+      picklistService.getPicklistItems("Discussion Status", function(items){
+        $scope.discussionStatus = items;
+      });
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=forum/"+$stateParams.discussionId+"/edit"
+          }
+          else{
+            if($stateParams.discussionId!="new"){
+              $scope.getDiscussionData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.discussionId!="new"){
+          $scope.getDiscussionData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        else{
-          if(!userManager.canApprove('discussion')){
+    else{ //this should be the list page
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
-        }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components
-        }
-        else{
-          console.log('no state so clear');
-          searchExchange.clear(true);
-        }
-      });
-    }
-    else{
-      if(!userManager.canApprove('discussion')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
-      }
-      //this effectively initiates the results
-      if(searchExchange.state){
-        //no action necessary, handled by search components
+          else{
+            if(!userManager.canApprove('discussion')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          searchExchange.subscribe('reset', "forum", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('reset', "forum");
+          });
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
+        });
       }
       else{
-        console.log('no state so clear');
-        searchExchange.clear(true);
+        if(!userManager.canApprove('discussion')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
+        }
+        searchExchange.subscribe('reset', "forum", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "forum");
+        });
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
       }
     }
-  }
+  });
 
   function _arrayBufferToBase64( buffer ) {
     var binary = '';

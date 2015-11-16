@@ -41,7 +41,9 @@ var userProfileSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  lastvisit: Number
+  createdate_num: Number,
+  lastvisit: Date,
+  lastvisit_num: Number
 });
 
 module.exports = mongoose.model('userprofiles', userProfileSchema);

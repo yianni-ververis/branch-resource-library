@@ -28,7 +28,6 @@ module.exports = {
     if(record.parent.approved==false){
       return;
     }
-    console.log('we made it here');
     //update notifications go to all users that have subscribed to the item
     MasterController.get({}, {entityId: entityId}, Subscriptions, function(list){
       if(list && list.data && list.data.length > 0){

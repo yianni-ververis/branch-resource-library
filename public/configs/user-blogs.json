@@ -37,12 +37,6 @@
       "suppressNull": false
     },
     {
-      "measure": "avg(rating)",
-      "label": "rating",
-      "sortType" : "qSortByNumeric",
-      "order" : -1
-    },
-    {
       "measure": "sum(viewNum)",
       "label": "views"
     },
@@ -51,7 +45,7 @@
       "label" : "commentcount"
     }
   ],
-  "template": "/views/blogs/blog-results.html",
+  "template": "/views/users/blog-results.html",
   "sorting":{
     "createdate_num": {
       "id": "createdate_num",
@@ -64,7 +58,7 @@
       "id": "title",
       "name": "A-Z",
       "order": 1,
-      "field": "title",
+      "field": "blogTitle",
       "sortType": "qSortByAscii"
     },
     "username": {

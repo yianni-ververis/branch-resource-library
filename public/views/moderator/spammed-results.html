@@ -20,11 +20,11 @@
       <div class="col-md-3">
         <ul class="plainlist">
           <li>Marked as spam {{item.spamCount || 0}} times</li>
-          <li><a class="orange" ng-click="broadcast('viewComments', item)">View Comments</a></li>
+          <li><a class="orange" onclick="searchExchange.publish('viewComments', ['spam', '{{item.title}}'], '{{item.entityId}}')">View Comments</a></li>
         </ul>
       </div>
       <div class="col-md-1">
-        <button class="branch-button" name="button" ng-click="broadcast('clearFlags', item)">Clear</button>
+        <button class="branch-button" name="button" onclick="searchExchange.publish('clearFlags', 'spam', '{{item.entityId}}')">Clear</button>
       </div>
     </div>
   </li>

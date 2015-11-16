@@ -9,6 +9,7 @@ var discussionSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  createdate_num: Number,
   last_updated: Date,
   last_updated_num: Number,
   userid: {
@@ -19,7 +20,7 @@ var discussionSchema = new Schema({
   hide_comment: String,
   status: {
     type: Schema.ObjectId,
-    ref: "picklistitems",
+    ref: "picklistitem",
     default: "56378d4ca3367986771805a6"
   },
   edituser: {

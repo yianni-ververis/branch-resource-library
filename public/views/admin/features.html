@@ -18,11 +18,11 @@
     <textarea rows="8" class="form-control" ng-blur="saveFeature()" ng-model="currentFeature.comment"></textarea>
   </div>
   <div ng-show="currentFeature.name=='article'">
-    <search-input data-config="admin-blogs"></search-input>
-    <search-results id="adminFeaturedBlogs" data-config="admin-blogs"></search-results>
+    <search-input data-view="admin.blogs" data-config="admin-blogs"></search-input>
+    <search-results id="adminFeaturedBlogs" data-view="admin.blogs" data-config="admin-blogs"></search-results>
   </div>
   <div ng-show="currentFeature.name=='project'">
-    <search-input data-config="admin-projects"></search-input>
-    <search-results id="adminFeaturedProjects" data-config="admin-projects"></search-results>
+    <search-input data-view="admin.projects" data-config="admin-projects"></search-input>
+    <search-results id="adminFeaturedProjects" data-view="admin.projects" data-config="admin-projects"></search-results>
   </div>
 </div>

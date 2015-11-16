@@ -60,6 +60,7 @@
     }
   },
   "defaultSort": "last_updated_num",
+  "primaryKey" : "entityId",
   "nullSuppressor": 0,
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags","category","product"],

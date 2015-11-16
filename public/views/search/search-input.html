@@ -1,7 +1,7 @@
 <div class="content search-input-container">
   <div class=''>
     <div class='input-bg' ng-bind-html="ghostDisplay"></div>
-    <input autofocus placeholder='Enter one or more search terms' type='text' autocorrect='off' autocomplete='off' autocapitalize='off' spellcheck='false' ng-model="searchText" ng-keyDown="keyDown($event)" ng-keyUp="keyUp($event)" />
+    <input id="branch-search-input" autofocus placeholder='Enter one or more search terms' type='text' autocorrect='off' autocomplete='off' autocapitalize='off' spellcheck='false' ng-model="searchText" ng-keyDown="keyDown($event)" ng-keyUp="keyUp($event)" />
     <div class='lozenge-container'></div>
     <button type='button' ng-click="clear()" class='btn btn-input-clear'></button>
   </div>
