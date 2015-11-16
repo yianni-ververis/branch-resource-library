@@ -156,6 +156,9 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
     defaultSelection = [];
     if($state.current.name=="forum.detail"){
       picklistService.getPicklistItems("Discussion Status", function(items){

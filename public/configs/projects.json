@@ -37,7 +37,7 @@
       "suppressNull": false
     },
     {
-      "measure": "avg(rating)",
+      "measure": "sum(points)",
       "label": "rating",
       "sortType" : "qSortByNumeric",
       "order" : -1

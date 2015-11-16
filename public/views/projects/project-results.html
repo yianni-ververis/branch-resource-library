@@ -12,7 +12,11 @@
       </div>
     </div>
     <div class="project-details">
-      <div>4.7</div>
+      <div>Rating: {{project.rating}}</div>
+      <div>Total: {{totals.rating}}</div>
+      <div>Max: {{max.rating}}</div>
+      <div>Min: {{min.rating}}</div>
+      <div qs-calc="{{max.rating}}/{{totals.rating}}"></div>
       <!--<ul class="stats plainlist">
         <li>
           <ul class="plainlist rating">

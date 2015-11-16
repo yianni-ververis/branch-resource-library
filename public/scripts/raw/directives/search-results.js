@@ -130,7 +130,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             if(searchExchange.state && searchExchange.state.sort){
               $scope.sort = searchExchange.state.sort;
             }
-            if(searchExchange.state && searchExchange.state.page){
+            if(searchExchange.state!=null && (searchExchange.state.page!=null)){
               $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
             }
             if($scope.handle){
@@ -234,6 +234,14 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   $scope.pages.push(i);
                 }
                 $scope.items = [];
+                var totals = {};
+                var max = {};
+                var min = {};
+                for(var i=0;i<layout.qHyperCube.qMeasureInfo.length;i++){
+                  max[layout.qHyperCube.qMeasureInfo[i].qFallbackTitle] = layout.qHyperCube.qMeasureInfo[i].qMax;
+                  min[layout.qHyperCube.qMeasureInfo[i].qFallbackTitle] = layout.qHyperCube.qMeasureInfo[i].qMin;
+                  totals[layout.qHyperCube.qMeasureInfo[i].qFallbackTitle] = layout.qHyperCube.qGrandTotalRow[i].qNum;
+                }
                 for(var i=0;i<data[0].qMatrix.length;i++){
                   var item = {}
                   //if the nullSuppressor field is null then we throw out the row
@@ -264,7 +272,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                     terms = searchExchange.state.searchText.split(" ");
                   }
                   document.getElementById($attrs.id+"_count_label").innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
-                  document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms});
+                  document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
                   document.getElementById($attrs.id+"_paging").innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
                   document.getElementById($attrs.id+"_list_container").style.display = "block";
                   document.getElementById($attrs.id+"_no_results").style.display = "none";
@@ -288,7 +296,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         $scope.renderEmpty = function(){
           $scope.$apply(function(){
             $scope.loading = false;
-            document.getElementById($attrs.id+"_loading").style.display = "none";
+            //document.getElementById($attrs.id+"_loading").style.display = "none";
             //document.getElementById($attrs.id+"_list_container").style.display = "none";
             document.getElementById($attrs.id+"_no_results").style.display = "block";
             $scope.items = [];

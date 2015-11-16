@@ -51,12 +51,12 @@ var SearchExchange = (function(){
 
     this.publish = function(eventName, handles, data){
       if(that.catalog[eventName]){
-        if(that.view){
+        if(that.view && eventName!="online"){
           for(var sub in that.catalog[eventName]){
             if(sub.indexOf(that.view)!=-1){
               that.catalog[eventName][sub].fn.call(null, handles, data);
             }
-          }        
+          }
         }
         else{
           console.log('publishing to all');
@@ -122,7 +122,6 @@ var SearchExchange = (function(){
         });
       }
       else{
-        console.log('why the fuck are we here?????');
         that.executePriority();
       }
     };
@@ -174,6 +173,7 @@ var SearchExchange = (function(){
 
     this.clear = function(unlock){
       this.clearing = true;
+      console.trace();
       var handles;
       if(that.state && that.state.searchText){
         that.state.searchText = null;
@@ -345,7 +345,7 @@ var SearchExchange = (function(){
               "qDimensions" : buildFieldDefs(options.fields, options.sortOptions),
               "qMeasures": buildMeasureDefs(options.fields),
             	"qSuppressZero": false,
-            	"qSuppressMissing": true,
+            	"qSuppressMissing": false,
             	"qInterColumnSortOrder": options.defaultSort
             }
           }

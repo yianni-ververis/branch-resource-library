@@ -339,6 +339,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
     defaultSelection = [];
     //only load the project if we have a valid projectId or we are in list view
     if($state.current.name=="projects.detail"){
