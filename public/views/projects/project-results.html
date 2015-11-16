@@ -1,5 +1,5 @@
 <ul class="project-listing">
-  <li ng-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)" class="project-item">
+  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true" class="project-item">
     <div class="project-info">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}"/>
