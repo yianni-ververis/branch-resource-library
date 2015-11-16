@@ -1,17 +1,14 @@
 <ul class="plainlist user-projects">
-  <li ng-repeat="project in items" id="{{project.projectId}}" ng-hide="isHidden(project.projectId)">
+  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true">
     <div class="row">
-      <div class="col-md-1">
-        <span class="list-index">{{$index+1}}</span>
-      </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <span class="list-title"><a href="#project/{{project.projectId}}">{{project.title}}</a></span>
-        <span><a class="user-link" href="#user/{{project.userId}}">{{project.username}}</a></span>
+        <span class="emphasize">Tags:</span><span>{{project.tags}}</span>
       </div>
       <div class="col-md-2">
         <ul class="plainlist">
           <li>Updated</li>
-          <li>{{project.last_updated_num | date:'MMM dd, yyyy'}}</li>
+          <li>{{project.last_updated_num:Date}}</li>
         </ul>
       </div>
       <div class="col-md-6">

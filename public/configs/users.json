@@ -13,11 +13,11 @@
       "suppressNull": true
     },
     {
-      "dimension" : "lastvisit",
+      "dimension" : "lastvisit_num",
       "suppressNull": false
     },
     {
-      "dimension" : "role",
+      "dimension" : "rolename",
       "suppressNull": false
     }
   ],
@@ -28,10 +28,11 @@
       "name": "A-Z",
       "order": 1,
       "field": "username",
-      "senseType": "qSortByAscii"
+      "sortType": "qSortByAscii"
     }
   },
   "defaultSort": "username",
+  "primaryKey" : "userId",
   "entity": "userprofile",
   "searchFields": ["usersearch"],
   "suggestFields": ["title","username","tags","category","product"],

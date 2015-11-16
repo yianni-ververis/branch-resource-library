@@ -31,6 +31,7 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
     }, function(result){
       if(resultHandler.process(result)){
         userManager.refresh();
+        searchExchange.clear(true);
         window.location = "#" + $scope.returnUrl || "/";
       }
       else{

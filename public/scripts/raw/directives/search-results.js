@@ -1,4 +1,4 @@
-app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchExchange", "userManager", "resultHandler", "publisher", function($resource, $state, $stateParams, searchExchange, userManager, resultHandler, publisher){
+app.directive("searchResults", ["$resource", "$state", "$stateParams", "userManager", "resultHandler", "publisher", function($resource, $state, $stateParams, userManager, resultHandler, publisher){
   return {
     restrict: "E",
     replace: true,
@@ -13,20 +13,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         $scope.qFields;
         $scope.sortOptions = $scope.config.sorting;
         $scope.sort = $scope.sortOptions[$scope.config.defaultSort];
+        $scope.elemId = $attrs.id;
         var Entity;
         if($scope.config.entity){
           Entity = $resource("/api/" + $scope.config.entity + "/:id", {id: "@id"});
-        }
-
-        //add additional sorting for moderators and admins
-        if(userManager.canApprove($scope.config.entity)){
-          $scope.sortOptions["flagged"] = {
-            "id": "flagged",
-            "name": "Flagged",
-            "order": -1,
-            "field": "flagcount",
-            "sortType": "qSortByNumeric"
-          };
         }
 
         $scope.highlightText = function(text){
@@ -116,12 +106,59 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           return false;
         };
 
-        $scope.$root.$on('searching', function(){
+        searchExchange.subscribe("searching", $attrs.view, function(){
           $scope.loading = true;
           $scope.pageTop = 0;
+          if(el = document.getElementById($attrs.id+"_loading")){
+            document.getElementById($attrs.id+"_loading").style.display = "block";
+          }
+          if(el = document.getElementById($attrs.id+"_list_container")){
+            document.getElementById($attrs.id+"_list_container").style.display = "none";
+          }
+          if(el = document.getElementById($attrs.id+"_no_results")){
+            document.getElementById($attrs.id+"_no_results").style.display = "none";
+          }
         });
 
-        // searchExchange.subscribe("update", $attrs.id, function(){
+        searchExchange.subscribe("noresults", $attrs.view, function(handles, data){
+          $scope.renderEmpty();
+        });
+
+        searchExchange.subscribe("update", $attrs.view, function(handles, data){
+          console.log('on update handle is '+$scope.handle);
+          setTimeout(function(){
+            if(searchExchange.state && searchExchange.state.sort){
+              $scope.sort = searchExchange.state.sort;
+            }
+            if(searchExchange.state && searchExchange.state.page){
+              $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
+            }
+            if($scope.handle){
+              if(handles){
+                if(handles.indexOf($scope.handle)!=-1){
+                    $scope.render();
+                };
+              }
+              else{
+                $scope.render();
+              }
+            }
+            else{
+              $scope.postponed = function(){
+                if(handles){
+                  if(handles.indexOf($scope.handle)!=-1){
+                      $scope.render();
+                  };
+                }
+                else{
+                  $scope.render();
+                }
+              }
+            }
+          },100);
+        });
+
+        // $scope.$root.$on("update", function(){
         //   if(searchExchange.state && searchExchange.state.sort){
         //     $scope.sort = searchExchange.state.sort;
         //   }
@@ -138,24 +175,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
         //     }
         //   }
         // });
-
-        $scope.$root.$on("update", function(){
-          if(searchExchange.state && searchExchange.state.sort){
-            $scope.sort = searchExchange.state.sort;
-          }
-          if(searchExchange.state && searchExchange.state.page){
-            $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
-          }
-          console.log('on update handle is '+$scope.handle);
-          if($scope.handle){
-            $scope.render();
-          }
-          else{
-            $scope.postponed = function(){
-              $scope.render();
-            }
-          }
-        });
 
         $scope.showItem = function(approved, entity){
           return approved=='True' || userManager.canApprove(entity);
@@ -193,16 +212,19 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
 				};
 
         $scope.render = function(){
-          console.log('result list handle is - '+$scope.handle);
+          if(el = document.getElementById($attrs.id+"_list")){  //only run render if the element for the current instance exists
+          }
+          else{
+            return;
+          }
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
-            var layout = response.qLayout;
+            var layout = response.result.qLayout;
             $scope.qFields = layout.qHyperCube.qDimensionInfo.concat(layout.qHyperCube.qMeasureInfo);
             searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
-              var data = response.qDataPages;
+              var data = response.result.qDataPages;
               var items = [];
               $scope.$apply(function(){
                 $scope.loading = false;
-                $scope.terms
                 $scope.pageTop = data[0].qArea.qTop;
                 $scope.pageBottom = (data[0].qArea.qTop + data[0].qArea.qHeight);
                 $scope.currentPage = Math.ceil($scope.pageBottom / $scope.config.pagesize);
@@ -211,7 +233,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                 for(var i=1;i<(Math.ceil($scope.total/$scope.config.pagesize)+1);i++){
                   $scope.pages.push(i);
                 }
-                //$scope.items = null;
+                $scope.items = [];
                 for(var i=0;i<data[0].qMatrix.length;i++){
                   var item = {}
                   //if the nullSuppressor field is null then we throw out the row
@@ -220,27 +242,57 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
                   }
                   for (var j=0; j < data[0].qMatrix[i].length; j++){
                     item[$scope.qFields[j].qFallbackTitle] = data[0].qMatrix[i][j].qText;
+
                   }
+                  if(item["rating"]!="-"){
+                    item.stars = [];
+                    var stars = parseInt(item.rating);
+                    for(var k=0;k<stars;k++){
+                      item.stars.push(k);
+                    }
+                  }
+                  item.hidden = $scope.isHidden(item[$scope.config.primaryKey]);
                   items.push( item );
                 }
-                if(items.length==0){
-                  $scope.renderEmpty();
-                  return;
+                console.log($attrs.view + ' has '+items.length+ ' items');
+                if(items.length>0){
+                  $scope.loading = false;
+                  $scope.items = items;
+                  //$element.find(".result-list").html("test");
+                  var terms = []
+                  if(searchExchange.state && searchExchange.state.searchText){
+                    terms = searchExchange.state.searchText.split(" ");
+                  }
+                  document.getElementById($attrs.id+"_count_label").innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
+                  document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms});
+                  document.getElementById($attrs.id+"_paging").innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                  document.getElementById($attrs.id+"_list_container").style.display = "block";
+                  document.getElementById($attrs.id+"_no_results").style.display = "none";
                 }
+                else{
+                  $scope.loading = false;
+                  document.getElementById($attrs.id+"_list_container").style.display = "none";
+                  document.getElementById($attrs.id+"_no_results").style.display = "block";
+                  $scope.items = [];
+                }
+                selectSortOption(document.getElementById($attrs.id+"_sort"), $scope.sort);
+                document.getElementById($attrs.id+"_loading").style.display = "none";
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
-                  $scope.items = items;
-                  //$scope.$apply();
               });
             });
           });
         };
 
         $scope.renderEmpty = function(){
-          $scope.loading = false;
-          $scope.items = [];
-          //$scope.$apply();
+          $scope.$apply(function(){
+            $scope.loading = false;
+            document.getElementById($attrs.id+"_loading").style.display = "none";
+            //document.getElementById($attrs.id+"_list_container").style.display = "none";
+            document.getElementById($attrs.id+"_no_results").style.display = "block";
+            $scope.items = [];
+          });
         };
 
         $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)
@@ -274,13 +326,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
               $scope.render();
             }
           });
-          // $scope.info.object.applyPatches([{
-          //   qPath: "/qHyperCubeDef/qInterColumnSortOrder",
-          //   qOp: "replace",
-          //   qValue: getFieldIndex(sort.field)
-          // }], true).then(function(result){
-          //   $scope.render();
-          // });
         };
 
         function getFieldIndex(field, asString){
@@ -303,6 +348,17 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             }
           }
           return 0;
+        };
+
+        function selectSortOption(elem, option){
+          for (var i=0;i<elem.options.length;i++){
+            if(elem.options[i].value == option.id){
+              elem.options[i].setAttribute('selected','')
+            }
+            else{
+              elem.options[i].removeAttribute('selected')
+            }
+          }
         }
 
         $scope.$root.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
@@ -327,6 +383,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
           }
         });
 
+
         searchExchange.addResults({
             id: $attrs.id,
             fields: $scope.fields,
@@ -334,12 +391,19 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "searchEx
             defaultSort: getFieldIndex($scope.sort.field, false)
           }, function(result){
             $scope.handle = result.handle;
-            if($scope.postponed){
-              console.log('execute postponed');
-              $scope.postponed.call(null);
+            if(!$scope.resultsTemplate){
+              $.get($scope.template).success(function(html){
+                $scope.resultsTemplate = new Templater(html);
+              });
             }
-            $scope.$apply();
-
+            if(!$scope.pagingTemplate){
+              $.get("/views/search/search-paging.html").success(function(html){
+                $scope.pagingTemplate = new Templater(html);
+              });
+            }
+            if($scope.postponed){
+              $scope.postponed.call();
+            }
           });
 
       }});

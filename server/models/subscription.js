@@ -9,7 +9,8 @@ var subscriptionSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'userprofiles'
   },
-  createdate: Date
+  createdate: Date,
+  createdate_num: Number,
 });
 
 module.exports = mongoose.model('subscription', subscriptionSchema)

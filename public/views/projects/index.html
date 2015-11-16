@@ -12,7 +12,7 @@
           </li>
         </ul>
         <div ng-show="searching">
-          <search-input data-config="projects"></search-input>
+          <search-input data-view="projects" data-config="projects"></search-input>
         </div>
         <div ng-show="!searching" class="plainlist browse-list">
           <search-filter id="productLB" class="picklist content" data-field="product" data-title="Product"></search-filter>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="col-md-12">
-      <search-results id="projectResultList" ng-class="{'browse-padding':!searching}" data-config="projects"></search-results>
+      <search-results id="projectResultList" data-view="projects" ng-class="{'browse-padding':!searching}" data-config="projects"></search-results>
     </div>
   </div>
 </div>

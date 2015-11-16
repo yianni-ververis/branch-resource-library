@@ -1,45 +1,28 @@
 <div class="results-container content">
-  <div class="" ng-show="items.length>0">
+  <div class="" id="{{elemId}}_list_container" style="display: none;">
     <div class="result-header row">
-      <div class="resultNumbers col-md-6">
-        Showing {{pageTop+1}} - {{pageBottom}} of {{total}} results
+      <div class="resultNumbers col-md-6" id="{{elemId}}_count_label">
+        
       </div>
       <div class="sorting col-md-6">
-        Sort by: <select class="form-control" ng-change="applySort(sort, true)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
+        Sort by: <select class="form-control" id="{{elemId}}_sort" ng-change="applySort(sort, true)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12 result-list">
-        <ng-include src="template" scope="scope"></ng-include>
+      <div class="col-md-12 result-list" id="{{elemId}}_list">
+        <!-- <ng-include src="template"></ng-include> -->
       </div>
     </div>
     <div class="result-footer row">
-      <div class="paging col-md-12">
-        <label>Page {{currentPage}} of {{pages.length}}</label>
-        <ul class="page-list plainlist">
-          <li ng-hide="currentPage==1">
-            <a ng-click="setPage(0)" class="icon first"></a>
-          </li>
-          <li ng-hide="currentPage==1">
-            <a ng-click="changePage(-1)" class="icon prev"></a>
-          </li>
-          <li ng-repeat="page in pages" ng-click="setPage(page-1)" ng-show="pageInRange(page)" ng-class="{active: page==currentPage}">
-            <a>{{page}}</a>
-          </li>
-          <li ng-show="currentPage < pages.length - 1">
-            <a ng-click="changePage(1)" class="icon next"></a>
-          </li>
-          <li ng-show="currentPage < pages.length - 1">
-            <a ng-click="setPage(pages.length-1)" class="icon last"></a>
-          </li>
-        </ul>
+      <div id="{{elemId}}_paging" class="paging col-md-12">
+
       </div>
     </div>
   </div>
-  <div class="no-results" ng-show="items.length==0">
-    <span ng-show="!loading">No Results</span>
-    <div class="loading" ng-show="loading">
+  <div id="{{elemId}}_no_results" class="no-results" style="display: none;">
+    <span>No Results</span>
+  </div>
+  <div id="{{elemId}}_loading" class="loading">
 
-    </div>
   </div>
 </div>

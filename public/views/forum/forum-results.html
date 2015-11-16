@@ -1,20 +1,16 @@
 <ul class="plainlist discussion-list">
-  <li ng-repeat="discussion in items" id="{{discussion.discussionId}}">
+  <li qs-repeat="discussion in items" id="{{discussion.discussionId}}" qs-hide="discussion.hidden==true">
     <div class="row">
       <div class="col-md-9">
-        <span class="list-title"><a href="#forum/{{discussion.discussionId}}" ng-bind-html="highlightText(discussion.title)"></a></span>
-        <span>started by <a class="user-link" href="#user/{{discussion.userId}}" ng-bind-html="highlightText(discussion.username)"></a></span>
+        <span class="list-title"><a href="#forum/{{discussion.discussionId}}">{{discussion.title}}</a><span class="emphasize"> ({{discussion.forumStatus}})</span></span>
+        <span>started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}} by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a></span>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-3">
         <ul class="stats plainlist">
-          <li><i>{{discussion.views || 0}}</i> Views</li>
-          <li><i>{{discussion.replycount || 0}}</i> Comments</li>
+          <li><i>{{discussion.views}}</i> Views</li>
+          <li><i>{{discussion.commentcount}}</i> Comments</li>
         </ul>
       </div>
-      <div class="col-md-1">
-        <moderation entity="'forum'" entityid="discussion.discussionId" approved="discussion.approved" size="'medium'" flagged="flagged[discussion.discussionId]" flagcount="discussion.flagcount" editable="false"></moderation>
-      </div>
-    </div>
     </div>
   </li>
 </ul>

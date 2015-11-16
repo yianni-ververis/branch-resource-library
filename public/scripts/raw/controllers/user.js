@@ -1,4 +1,4 @@
-app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "searchExchange", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, searchExchange){
+app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
@@ -10,10 +10,6 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
   $scope.projectCount = 0;
 
   $scope.userLoading = true;
-
-  $scope.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  })
 
   var defaultSelection = [];
 
@@ -69,52 +65,61 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-    //searchExchange.clear();
+    searchExchange.clear();
   };
 
-  if($state.current.name=="users" || $state.current.name=="users.detail"){
-    userManager.refresh(function(hasUser){
-      if(!hasUser){
-        defaultSelection.push({
-          field: "approved",
-          values: [{qText: "True"}]
-        });
-      }
-      else{
-        if(!userManager.canApprove('project')){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
+    if(toState.name=="users" || toState.name=="users.detail"){
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
           defaultSelection.push({
             field: "approved",
             values: [{qText: "True"}]
           });
         }
-      }
-      console.log('adding user lock');
-      defaultSelection.push({
-        field: "userId",
-        values: [{qText: $stateParams.userId}]
-      });
-      console.log('firing search init');
-      searchExchange.clear(true);
-    });
-    $scope.getUserData($scope.query);
-  }
-  else if($state.current.name=="users.addedit" || $state.current.name=="userprofiles.addedit"){
-    //need to implement edit stuff
-    userManager.refresh(function(hasUser){
-      if(!hasUser){
-        window.location = "#login?url=user/"+$stateParams.userId+"/edit"
-      }
-      else{
-        if($stateParams.userId!="new"){
-          $scope.getUserData($scope.query);
+        else{
+          if(!userManager.canApprove('project')){
+            defaultSelection.push({
+              field: "approved",
+              values: [{qText: "True"}]
+            });
+          }
         }
-      }
-    });
-  }
-  else{
-    //shouldn't reach here
+        console.log('adding user lock');
+        defaultSelection.push({
+          field: "userId",
+          values: [{qText: $stateParams.userId}]
+        });
+        console.log('firing search init');
+        searchExchange.subscribe('reset', "users", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "users");
+        });
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
+      });
+      $scope.getUserData($scope.query);
+    }
+    else if(toState.name=="users.addedit" || toState.name=="userprofiles.addedit"){
+      //need to implement edit stuff
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
+          window.location = "#login?url=user/"+$stateParams.userId+"/edit"
+        }
+        else{
+          if($stateParams.userId!="new"){
+            $scope.getUserData($scope.query);
+          }
+        }
+      });
+    }
+    else{
+      //shouldn't reach here
 
-  }
+    }
+  });
 
   $scope.previewThumbnail = function(){
     $scope.dirtyThumbnail = true;

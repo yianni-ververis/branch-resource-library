@@ -1,4 +1,4 @@
-app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, searchExchange, notifications, picklistService){
+app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
   $scope.pageSize = 20;
   $scope.query = {};
@@ -10,10 +10,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.dirtyThumbnail = false;
 
   var defaultSelection;
-
-  $scope.$root.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  });
 
   $scope.blogTypes;
 
@@ -105,7 +101,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     var errors = [];
     //Verify the blog has a name
     if(!$scope.blogs[0].title || $scope.blogs[0].title==""){
-      errors.push("Please specify a Title");
+      errors.push("Please specify a title");
+    }
+    if(!$scope.blogs[0].short_description || $scope.blogs[0].short_description==""){
+      errors.push("Please specify a short description");
     }
     //Verify the blog has a type
     if(!$scope.blogs[0].blogType){
@@ -166,91 +165,86 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
   };
 
-  if($state.current.name=="blogs.detail"){
-    $scope.getBlogData($scope.query); //get initial data set
-    if(searchExchange.state){
-      $scope.$root.$broadcast('setCrumb', {
-            text: "back to Search Results",
-            link: "blog"
-          });
-    }
-    userManager.refresh(function(hasUser){
-      $scope.currentuserid = userManager.userInfo._id;
-    });
-  }
-  else if($state.current.name=="blogs.addedit"){
-    $("#blogContent").summernote({
-      height: 400
-    });
-    picklistService.getPicklistItems("Blog Type", function(items){
-      $scope.blogTypes = items;
-    });
-    if($stateParams.blogId=="new"){
-      $scope.blogs = [{}];
-    }
-    var hasUser = userManager.hasUser();
-    if(!hasUser){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
+    if($state.current.name=="blogs.detail"){
+      $scope.getBlogData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
-        if(!hasUser){
-          window.location = "#login?url=blog/"+$stateParams.blogId+"/edit"
-        }
-        else{
-          if($stateParams.blogId!="new"){
-            $scope.getBlogData($scope.query); //get initial data set
-          }
-        }
+        $scope.currentuserid = userManager.userInfo._id;
       });
     }
-    else{
-      if($stateParams.blogId!="new"){
-        $scope.getBlogData($scope.query); //get initial data set
+    else if($state.current.name=="blogs.addedit"){
+      $("#blogContent").summernote({
+        height: 400
+      });
+      picklistService.getPicklistItems("Blog Type", function(items){
+        $scope.blogTypes = items;
+      });
+      if($stateParams.blogId=="new"){
+        $scope.blogs = [{}];
+      }
+      var hasUser = userManager.hasUser();
+      if(!hasUser){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
+            window.location = "#login?url=blog/"+$stateParams.blogId+"/edit"
+          }
+          else{
+            if($stateParams.blogId!="new"){
+              $scope.getBlogData($scope.query); //get initial data set
+            }
+          }
+        });
+      }
+      else{
+        if($stateParams.blogId!="new"){
+          $scope.getBlogData($scope.query); //get initial data set
+        }
       }
     }
-  }
-  else{ //this should be the list page
-    if(!userManager.hasUser()){
-      userManager.refresh(function(hasUser){
-        if(!hasUser){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        else{
-          if(!userManager.canApprove('blog')){
+    else{ //this should be the list page
+      if(!userManager.hasUser()){
+        userManager.refresh(function(hasUser){
+          if(!hasUser){
             defaultSelection = [{
               field: "approved",
               values: [{qText: "True"}]
             }]
           }
-        }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components
-        }
-        else{
-          console.log('no state so clear');
-          searchExchange.clear(true);
-        }
-      });
-    }
-    else{
-      if(!userManager.canApprove('blog')){
-        defaultSelection = [{
-          field: "approved",
-          values: [{qText: "True"}]
-        }]
-      }
-      //this effectively initiates the results
-      if(searchExchange.state){
-        //no action necessary, handled by search components
+          else{
+            if(!userManager.canApprove('blog')){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+          }
+          searchExchange.subscribe('reset', "blogs", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('reset', "blogs");
+          });
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
+        });
       }
       else{
-        console.log('no state so clear');
-        searchExchange.clear(true);
+        if(!userManager.canApprove('blog')){
+          defaultSelection = [{
+            field: "approved",
+            values: [{qText: "True"}]
+          }]
+        }
+        searchExchange.subscribe('reset', "blogs", function(){
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "blogs");
+        });
+        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+          searchExchange.clear(true);
+        }
       }
     }
-  }
+  });
 
   function convertToPlainText(text){
     console.log(text);

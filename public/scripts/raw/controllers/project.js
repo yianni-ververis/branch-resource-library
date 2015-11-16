@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "searchExchange", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, searchExchange, notifications, picklistService){
+app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -6,14 +6,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var Rating = $resource("api/rating");
   var MyRating = $resource("api/rating/rating/my");
 
-  $scope.$on('searchResults', function(){
-    $scope.senseOnline = true;
-  });
   var defaultSelection;
-
-  $scope.$on("cleared", function(){
-    searchExchange.init(defaultSelection);
-  });
 
   $scope.dirtyThumbnail = false;
 
@@ -345,15 +338,10 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.clear();
   };
 
-  $scope.$on("$stateChangeSuccess", function(){
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    defaultSelection = [];
     //only load the project if we have a valid projectId or we are in list view
     if($state.current.name=="projects.detail"){
-      if(searchExchange.state){
-        $scope.$root.$broadcast('setCrumb', {
-              text: "back to Search Results",
-              link: "project"
-            });
-      }
       $scope.getProjectData($scope.query); //get initial data set
       userManager.refresh(function(hasUser){
         $scope.currentuserid = userManager.userInfo._id;
@@ -392,48 +380,51 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       }
     }
     else{ //this should be the list page
-      if(!userManager.hasUser()){
-        userManager.refresh(function(hasUser){
-          if(!hasUser){
-            defaultSelection = [{
-              field: "approved",
-              values: [{qText: "True"}]
-            }]
-          }
-          else{
-            if(!userManager.canApprove('project')){
+      //if(fromState.name.split(".")[0]!=toState.name.split(".")[0]){  //the entity has changed so we re-initialise the search defaults
+        if(!userManager.hasUser()){
+          userManager.refresh(function(hasUser){
+            if(!hasUser){
               defaultSelection = [{
                 field: "approved",
                 values: [{qText: "True"}]
               }]
             }
-          }
-          //this effectively initiates the results
-          if(searchExchange.state){
-            //no action necessary, handled by search components
-          }
-          else{
-            console.log('no state so clear');
-            searchExchange.clear(true);
-          }
-        });
-      }
-      else{
-        if(!userManager.canApprove('project')){
-          defaultSelection = [{
-            field: "approved",
-            values: [{qText: "True"}]
-          }]
-        }
-        //this effectively initiates the results
-        if(searchExchange.state){
-          //no action necessary, handled by search components          
+            else{
+              if(!userManager.canApprove('project')){
+                defaultSelection = [{
+                  field: "approved",
+                  values: [{qText: "True"}]
+                }]
+              }
+            }
+            //searchExchange.init(defaultSelection);
+            searchExchange.subscribe('reset', "projects", function(){
+              console.trace();
+              searchExchange.init(defaultSelection);
+              searchExchange.unsubscribe('reset', "projects");
+            });
+            if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+              searchExchange.clear(true);
+            }
+          });
         }
         else{
-          console.log('no state so clear');
-          searchExchange.clear(true);
+          if(!userManager.canApprove('project')){
+            defaultSelection = [{
+              field: "approved",
+              values: [{qText: "True"}]
+            }]
+          }
+          //searchExchange.init(defaultSelection);
+          searchExchange.subscribe('reset', "projects", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('reset', "projects");
+          });
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
         }
-      }
+
     }
   });
 

@@ -89,6 +89,7 @@
     }
   },
   "defaultSort": "last_updated_num",
+  "primaryKey" : "projectId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","username","tags"],
   "nullSuppressor": 0,
