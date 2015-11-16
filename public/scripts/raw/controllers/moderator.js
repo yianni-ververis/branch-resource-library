@@ -61,6 +61,9 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
   });
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
     defaultSelection = [];
     if(!userManager.hasUser()){
       userManager.refresh(function(hasUser){

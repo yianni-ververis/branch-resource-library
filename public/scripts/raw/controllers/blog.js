@@ -166,6 +166,9 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
     defaultSelection = [];
     if($state.current.name=="blogs.detail"){
       $scope.getBlogData($scope.query); //get initial data set

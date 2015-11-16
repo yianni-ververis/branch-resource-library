@@ -55,20 +55,26 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
           $scope.users = result.data;
         }
         $scope.userInfo = result;
-        $scope.setTab(0);
+        //$scope.setTab(0);
         delete $scope.userInfo["data"];
       }
     });
   };
 
   $scope.activeTab = 0;
+  $scope.firstLoad = true;
 
   $scope.setTab = function(index){
     $scope.activeTab = index;
-    searchExchange.clear();
+    if(!$scope.firstLoad){
+      searchExchange.clear();
+    }
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
     defaultSelection = [];
     if(toState.name=="users" || toState.name=="users.detail"){
       userManager.refresh(function(hasUser){
@@ -79,7 +85,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
           });
         }
         else{
-          if(!userManager.canApprove('project')){
+          if(!userManager.canApprove('project') && userManager.userInfo._id!=$stateParams.userId){
             defaultSelection.push({
               field: "approved",
               values: [{qText: "True"}]
@@ -99,6 +105,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
         if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
           searchExchange.clear(true);
         }
+        $scope.firstLoad = false;
       });
       $scope.getUserData($scope.query);
     }
