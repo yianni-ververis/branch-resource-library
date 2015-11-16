@@ -16,23 +16,12 @@
       </div>
     </div>
     <div class="project-details">
-      <h1 ng-class="{na: project.rating === '-'}">{{project.rating === '-' ? 'not yet rated' : project.rating.slice(0,3)}}</h1>
+      <h1 ng-class="{na: project.rating === '-'}">{{project.rating === '-' ? 'Not yet rated' : project.rating.slice(0,3)}}</h1>
       <div class="mini-details">
         <div><span>VIEWS</span><p>{{project.views}}</p></div>
         <div><span>COMMENTS</span><p>{{project.commentcount}}</p></div>
         <div><span>LAST UPDATED</span><p>{{project.last_updated_num | date : 'yyyy-MM-dd'}}</p></div>     
       </div>
-      <!--<ul class="stats plainlist">
-        <li>
-          <rating displaystar="project.rating" mode="'static'"></rating>
-        </li>
-        <li><i>{{project.views}}</i> Views</li>
-        <li><i>{{project.commentcount}}</i> Comments</li>
-        <li>Last Update: <i>{{project.last_updated_num | date : 'dd MMM y'}}</i></li>
-      </ul>-->
     </div>
-    <!-- <div class="mod">
-      <moderation entity="'project'" entityid="project.projectId" approved="project.approved" size="'medium'" flagged="flagged[project.projectId]" flagcount="project.flagcount" editable="false"></moderation>
-    </div> -->
   </li>
 </ul>
