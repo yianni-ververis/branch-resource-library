@@ -18,10 +18,17 @@ module.exports = {
       res.json(Error.insufficientPermissions("Unable to get "+req.params.entity));
     }
     else{
+
       if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
           || (!user)){
-        query["approved"]=false;
+        //query["approved"]=false;
+        query.$or = [{approved:false}];
+        if(user){
+          query.$or.push( {userid: {$ne: user["_id"] }});
+        }
         MasterController.getIds(req.query, query, entity, function(results){
+          console.log('hidden');
+          console.log(results);
           res.json(results);
         });
       }

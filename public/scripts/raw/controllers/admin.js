@@ -306,5 +306,10 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     });
   };
 
-  $scope.setTab(0);
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(toState.name!="loginsignup"){
+      searchExchange.view = toState.name.split(".")[0];
+    }
+    $scope.setTab(0);
+  });
 }]);

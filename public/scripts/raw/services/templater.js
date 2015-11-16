@@ -132,7 +132,9 @@ var Templater = (function(){
                         if(prop.indexOf(":")){
                           prop = prop.split(":")[0];
                         }
-                        item = item[prop];
+                        if(item){
+                          item = item[prop];
+                        }
                       }
 
                       //item = data[prop];
@@ -149,7 +151,7 @@ var Templater = (function(){
                             var output = day + ' ' + monthNames[monthIndex] + ' ' + year
                           }
                           if(df=="Time"){
-                            var output = date.getHours() + ':' + date.getMinutes();
+                            var output = date.getHours() + ':' + (date.getMinutes()<10?'0':'')+date.getMinutes();
                           }
                           htmlString = htmlString.replace(what, output);
                         }
