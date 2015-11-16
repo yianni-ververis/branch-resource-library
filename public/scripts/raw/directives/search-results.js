@@ -223,6 +223,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             searchExchange.ask($scope.handle, "GetHyperCubeData", ["/qHyperCubeDef", [{qTop: $scope.pageTop, qLeft:0, qHeight: $scope.config.pagesize, qWidth: $scope.fields.length }]], function(response){
               var data = response.result.qDataPages;
               var items = [];
+              var hiddenCount = 0;
               $scope.$apply(function(){
                 $scope.loading = false;
                 $scope.pageTop = data[0].qArea.qTop;
@@ -260,9 +261,23 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                     }
                   }
                   item.hidden = $scope.isHidden(item[$scope.config.primaryKey]);
+                  if(item.hidden){
+                    hiddenCount++;
+                  }
                   items.push( item );
                 }
-                console.log($attrs.view + ' has '+items.length+ ' items');
+                console.log($attrs.view + ' has '+items.length+ ' items');                
+                selectSortOption(document.getElementById($attrs.id+"_sort"), $scope.sort);
+                if(hiddenCount==items.length){
+                  if(!userManager.hasUser){
+                    $scope.renderEmpty();
+                    return;
+                  }
+                  else if (!userManager.canApprove($scope.entity)) {
+                    $scope.renderEmpty();
+                    return;
+                  }
+                }
                 if(items.length>0){
                   $scope.loading = false;
                   $scope.items = items;
@@ -283,7 +298,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   document.getElementById($attrs.id+"_no_results").style.display = "block";
                   $scope.items = [];
                 }
-                selectSortOption(document.getElementById($attrs.id+"_sort"), $scope.sort);
                 document.getElementById($attrs.id+"_loading").style.display = "none";
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
@@ -294,13 +308,11 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         };
 
         $scope.renderEmpty = function(){
-          $scope.$apply(function(){
             $scope.loading = false;
-            //document.getElementById($attrs.id+"_loading").style.display = "none";
+            document.getElementById($attrs.id+"_loading").style.display = "none";
             //document.getElementById($attrs.id+"_list_container").style.display = "none";
             document.getElementById($attrs.id+"_no_results").style.display = "block";
             $scope.items = [];
-          });
         };
 
         $scope.pageWidth = function(){  //we currently only support paging width once (i.e. up to 20 fields)

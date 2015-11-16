@@ -47,9 +47,6 @@ module.exports = function(req, res){
   }
   //else{
   if(userPermissions){
-    if(userPermissions.allOwners!=true){
-      query["createuser"]=user._id;
-    }
     var record = data.standard || data;
     if(!record._id && !req.params.id && !hasProps(req.query)){
       //this is a new item
@@ -62,16 +59,22 @@ module.exports = function(req, res){
       record.userid = user._id;
       record.createdate = Date.now();
       record.createdate_num = new Date(Date.now()).getTime();
+      record.last_updated = Date.now();
+      record.last_updated_num = new Date(Date.now()).getTime();
     }
     else{
       if(userPermissions.update!=true){
         res.json(Error.insufficientPermissions());
       }
     }
+    if(userPermissions.allOwners!=true && !isNew){
+      query["createuser"]=user._id;
+    }
     record.edituser = user._id;
     record.editdate = Date.now();
     var imageBuffer;
     if(req.params.entity=="projects"){
+      //record.last_git_check = Date.now();
       //build the similar projects query
       var similarQuery = {
         category: data.standard.category,
@@ -135,6 +138,8 @@ module.exports = function(req, res){
       }
       console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+        console.log('new record saved');
+        console.log(newrecord);
         if(!newrecord.errCode){
           if(isNew){
             //most likely a comment but we'll check anyway
@@ -143,7 +148,7 @@ module.exports = function(req, res){
                 if(!parent.errCode){
                   if(parent.data && parent.data[0]){
                     if(parent.data[0].userid._id != newrecord.userid._id){
-                      Mailer.sendMail('create', "comment", {parent: parent.data[0], comment: newrecord}, function(){                        
+                      Mailer.sendMail('create', "comment", {parent: parent.data[0], comment: newrecord}, function(){
                         //Notifier.sendCommentNotification(parent.data[0]._id, {parent: parent.data[0], comment:newrecord});
                       });
                     }

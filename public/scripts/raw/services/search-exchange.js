@@ -175,12 +175,13 @@ var SearchExchange = (function(){
       this.clearing = true;
       console.trace();
       var handles;
-      if(that.state && that.state.searchText){
-        that.state.searchText = null;
-      }
-      if(that.state && that.state.searchFields){
-        that.state.searchFields = null;
-      }
+      // if(that.state && that.state.searchText){
+      //   that.state.searchText = null;
+      // }
+      // if(that.state && that.state.searchFields){
+      //   that.state.searchFields = null;
+      // }
+      that.state = null;
       if(senseApp){
         if(unlock && unlock==true){
           that.ask(senseApp.handle, "UnlockAll", [], function(result){

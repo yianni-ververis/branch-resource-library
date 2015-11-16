@@ -59,7 +59,11 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res, next){
     //add filter for approved items
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
         || (!user && entity.exemptFromApproval!=true)){
-      query["approved"]=true;
+          query.$or = [];
+          query.$or.push({approved:true});
+          if(user){
+            query.$or.push({userid: user["_id"] });
+          }
     }
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
@@ -90,7 +94,11 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
     // }
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
         || (!user)){
-      query["approved"]=true;
+          query.$or = [];
+          query.$or.push({approved:true});
+          if(user){
+            query.$or.push({userid: user["_id"] });
+          }
     }
     MasterController.count(req.query, query, entity, function(results){
       res.json(results);
@@ -128,7 +136,11 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
     // }
     if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
         || (!user)){
-      query["approved"]=true;
+      query.$or = [];
+      query.$or.push({approved:true});
+      if(user){
+        query.$or.push({userid: user["_id"] });
+      }
     }
     console.log(query);
     MasterController.get(req.query, query, entity, function(results){
@@ -168,11 +180,12 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         });
 
       }
-      if(req.params.entity=="projects"&&(results.data && results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
+      if(req.params.entity=="project"&&(results.data && results.data[0] && results.data[0].git_repo && ((results.data[0].last_git_check && results.data[0].last_git_check.getTime() < anHourAgo)||(!results.data[0].last_git_check)))){
         //if we're here then the following criteria has been met
         // - entity == "projects"
         // - project has a project_site
         // - the git details have not been updated for an hour +
+        console.log('getting git info');
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
