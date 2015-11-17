@@ -66,7 +66,7 @@ function buildMenu(user){
       label: "My Profile",
       href: "#user/" + user._id
     });
-    if(user.role.permissions && user.role.permissions.forum && user.role.permissions.forum.create==true){
+    if(user.role.permissions && user.role.permissions.discussion && user.role.permissions.discussion.create==true){
       basicMenu.splice(0,0,{
         label: "Create Discussion",
         href: "#forum/new/edit"
