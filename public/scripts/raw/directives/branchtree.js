@@ -1,4 +1,4 @@
-app.directive("branchtree", [function() {
+app.directive("branchtree", ['$interval', function($interval) {
   return {
     restrict: "E",
     replace: true,
@@ -7,7 +7,7 @@ app.directive("branchtree", [function() {
       height: '@'
     },
     link: function(scope, element) {
-      element.empty();
+
       var width = scope.width;
       var height = scope.height;
       
@@ -19,6 +19,7 @@ app.directive("branchtree", [function() {
       var ar = 0.4; // Randomness
       var maxDepth = 6;
       var animationbreak = 0;
+      var loop;
       
       var svg = d3.select(element[0])
         .append('svg')
@@ -79,7 +80,7 @@ app.directive("branchtree", [function() {
         
         svg.selectAll('line')
         .data(branches)
-        .enter()	
+        .enter()
         .append('line')
         .style('stroke', '#8A8A8A')
         .style('opacity', 0.6)
@@ -87,38 +88,42 @@ app.directive("branchtree", [function() {
         .attr('id', function(d) {return 'id-'+d.i;})
         .transition()
         .duration(500)
-           .delay(function(d, i) { return i * 10; })
+        .delay(function(d, i) { return i * 10; })
         .attr('x1', x1)
         .attr('y1', y1)
         .attr('x2', x2)
         .attr('y2', y2);
           
-        setTimeout(update, 3000);
+        loop = $interval(update, 4000, 30);
         
       };
       
-      function update() {
-        
-        if(animationbreak > 40) return;
-        
+      var update = function() {
+                
         branches = [];
         branch(seed);
         
-        d3.selectAll('line')
+        svg.selectAll('line')
           .data(branches)
           .transition()
           .duration(2500)
           .attr('x1', x1)
           .attr('y1', y1)
           .attr('x2', x2)
-          .attr('y2', y2);
-        
-        ++animationbreak  
-        return setTimeout(update, 3000)
-                
+          .attr('y2', y2)
+                        
       };
       
       create();
+      
+      scope.$on('$destroy', function() {
+        scope.$destroy();
+        scope = null;
+        $interval.cancel(loop);
+        element.remove();
+        element = null;
+        update = null;
+      })
             
     }
   }
