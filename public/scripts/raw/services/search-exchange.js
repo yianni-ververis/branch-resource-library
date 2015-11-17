@@ -2,17 +2,17 @@ var SearchExchange = (function(){
 
   function SearchExchange(){
     var that = this;
-    var config = {
-      host: "10.211.55.3:8080/anon",
-      isSecure: false,
-      rejectUnauthorized: false
-    };
     // var config = {
-    //   host: "qtdevrelations",
-    //   prefix: "/anon",
-    //   isSecure: true,
+    //   host: "10.211.55.3:8080/anon",
+    //   isSecure: false,
     //   rejectUnauthorized: false
     // };
+    var config = {
+      host: "qtdevrelations",
+      prefix: "/anon",
+      isSecure: true,
+      rejectUnauthorized: false
+    };
 
     this.seqId = 0;
 
@@ -85,8 +85,8 @@ var SearchExchange = (function(){
     var senseApp;
 
     qsocks.Connect(config).then(function(global){
-      global.openDoc("5f053fe1-e784-4e22-8150-c3814d557525").then(function(app){
-      //global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
+      //global.openDoc("5f053fe1-e784-4e22-8150-c3814d557525").then(function(app){
+      global.openDoc("a4e123af-4a5d-4d89-ac81-62ead61db33a").then(function(app){
         senseApp = app;
         that.seqId = senseApp.connection.seqid;
         //$rootScope.$broadcast("senseready", app);
