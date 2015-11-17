@@ -8,14 +8,19 @@ ul.project-listing {
   li.project-item {
     flex: 1;
     display: flex;
+    flex-wrap: wrap;
     min-height: 140px;
     background: #fff;
     border: 1px solid @content-border;
     margin-bottom: 10px;
     
     .project-info {
-      flex: 4;
+      flex: 1 1 100%;
       display: flex;
+      
+      @media screen and (min-width: @tablet-width) {
+          flex: 4;
+      }
       
       .thumb-container {
         flex: 0 0 170px;
@@ -23,6 +28,10 @@ ul.project-listing {
         align-items: center;
         justify-content: center;
         padding: 10px;
+        
+        @media screen and (min-width: @tablet-width) {
+          min-width: 200px
+        }
         
         img {
           height: auto;
@@ -37,7 +46,7 @@ ul.project-listing {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        
+                
         .project-summary-heading {
           flex: 1 1 100%;
         }
@@ -69,6 +78,11 @@ ul.project-listing {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+ 
+      @media screen and (max-width: @tablet-width) {
+        flex-wrap: nowrap;
+        flex-direction: row-reverse;
+      }
                 
       h1 {
         flex: 1 1 100%;
@@ -78,9 +92,9 @@ ul.project-listing {
         align-self: flex-end;
         text-align: center;
         
-        &.na {
-          font-size: 18px;
-          color: @dark-grey;
+        @media screen and (max-width: @tablet-width) {
+          font-size: 32px;
+          text-align: right;
         }
         
       }
