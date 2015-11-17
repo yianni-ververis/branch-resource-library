@@ -8,7 +8,7 @@ ul.project-listing {
   li.project-item {
     flex: 1;
     display: flex;
-    height: 160px;
+    min-height: 140px;
     background: #fff;
     border: 1px solid @content-border;
     margin-bottom: 10px;
@@ -18,13 +18,15 @@ ul.project-listing {
       display: flex;
       
       .thumb-container {
-        flex: 1;
+        flex: 0 0 170px;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 10px;
         
         img {
-          
+          height: auto;
+          max-width: 100%;
         }
         
       }
@@ -32,9 +34,26 @@ ul.project-listing {
       .project-summary {
         flex: 2;
         padding: 10px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        
+        .project-summary-heading {
+          flex: 1 1 100%;
+        }
         
         .list-title {
-          font-size: 24px;
+          font-size: 22px;
+          line-height: 24px;
+        }
+        
+        .project-short-description {
+          margin-top: 10px;
+        }
+        
+        .project-bottom {
+          flex: 1 1 100%;
+          align-self: flex-end;
         }
         
       }
@@ -43,6 +62,54 @@ ul.project-listing {
     
     .project-details {
       flex: 1;
+      border-left: 1px solid @content-border;
+      background: rgb(237,237,237);
+      padding: 10px;
+      
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+                
+      h1 {
+        flex: 1 1 100%;
+        font-size: 46px;
+        color: @orange;
+        margin: 0;
+        align-self: flex-end;
+        text-align: center;
+        
+        &.na {
+          font-size: 18px;
+          color: @dark-grey;
+        }
+        
+      }
+      
+      .mini-details {
+        flex: 1 1 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        font-size: 10px;
+        justify-content: space-around;
+        
+        div {
+          flex: 0 0 auto;
+          align-self: flex-end;
+
+          p {
+            font-size: 14px;
+            margin: 0;
+          }
+          
+          span {
+            font-size: 8px;
+          }
+          
+        }
+        
+      }
+      
     }
     
     .mod {

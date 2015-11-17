@@ -7,7 +7,7 @@ app.directive("branchtree", [function() {
       height: '@'
     },
     link: function(scope, element) {
-      
+      element.empty();
       var width = scope.width;
       var height = scope.height;
       
