@@ -7,6 +7,7 @@ var async = require('async'),
     MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     epoch = require("milli-epoch"),
+    Notifier = require("../../controllers/notifier"),
     git = require("github"),
     atob = require("atob"),
     GitCredentials = require("../../../gitCredentials"),
@@ -197,22 +198,24 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
 
             //update the update date and git check data
             var hasChanged = results.data[0].last_updated!=new Date(gitresult.updated_at);
-            results.data[0].last_updated = new Date(gitresult.updated_at);
-            results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
-            results.data[0].last_git_check = Date.now();
-            GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
-              //console.log(atob(readmeresult.content));
-              if(err){
-                console.log(err);
-              }
-              results.data[0].content = atob(readmeresult.content);
-              results.data[0].save(function(err){
-                if(!err){
-                  Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
+            if(hasChanged){
+              results.data[0].last_updated = new Date(gitresult.updated_at);
+              results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
+              results.data[0].last_git_check = Date.now();
+              GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
+                //console.log(atob(readmeresult.content));
+                if(err){
+                  console.log(err);
                 }
+                results.data[0].content = atob(readmeresult.content);
+                results.data[0].save(function(err){
+                  if(!err){
+                    Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
+                  }
+                });
+                res.json(results || {});
               });
-              res.json(results || {});
-            });
+            }
           }
         });
       }
