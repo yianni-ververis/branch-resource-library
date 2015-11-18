@@ -77,4 +77,4 @@ app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);
 app.use('/visualcaptcha', vcRoutes);
 
-app.listen(3001);
+app.listen(process.env.PORT || 3001);
