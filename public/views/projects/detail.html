@@ -3,7 +3,7 @@
     <notification-dialog></notification-dialog>
     <div class="col-md-4">
       <h1>{{projects[0].title}}</h1>
-      by <a class="user-link" href="#users/projects[0].userid._id">{{projects[0].userid.username}}</a>
+      by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a>
       <img src="{{projects[0].thumbnail}}" />
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
       <a href="{{projects[0].download_link}}">Download</a>
