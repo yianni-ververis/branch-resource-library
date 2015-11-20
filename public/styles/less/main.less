@@ -11,12 +11,15 @@
 }
 
 html{
+  min-height:100%;
   background-size: cover;
   background-attachment: fixed;
+  position:relative;
 }
 
 body{
   color: @default-text;
+  margin: 0 0 300px;
   font-family: sans-serif, arial;
   font-size: 12px;
   font-weight: lighter;
@@ -105,6 +108,7 @@ img{
 
 .main{
   margin-top: 70px;
+  
   padding-top: 20px;
 }
 
@@ -251,6 +255,12 @@ img{
   z-index: 100;
 }
 
+.branchTree{
+  background: url("/resources/branch_logo.png") no-repeat top center; //done this way for accessibility
+  display: block;
+  text-indent: -999999px;
+}
+
 .underline{
   border-bottom: 1px solid @content-border;
   margin-bottom: 3px;
@@ -283,6 +293,8 @@ img{
 @import "./moderator/moderator-main.less";
 @import "./header/header-main.less";
 @import "./header/header-mobile.less";
+@import "./footer/footer-main.less";
+@import "./footer/footer-mobile.less";
 @import "./home/home-main.less";
 @import "./home/home-mobile.less";
 @import "./login/login-main.less";
