@@ -247,7 +247,7 @@ var SearchExchange = (function(){
       that.pendingSuggest = that.seqId;
       senseApp.connection.ask(senseApp.handle, "SearchSuggest", [{qContext: "LockedFieldsOnly", qSearchFields: suggestFields}, searchText.split(" ")], that.seqId).then(function(response){
         if(response.id == that.pendingSuggest){
-          $rootScope.$broadcast('suggestResults', response.result.qResult);
+          that.publish('suggestResults', null, response.result.qResult);
         }
       });
     };

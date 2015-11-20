@@ -47,11 +47,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
         $scope.activeSuggestion = 0;
 
         $scope.cursorPosition = 0;
-        // $scope.$on('senseready', function(params){
-        //   console.log('sense is ready');
-        // });
 
-        //$scope.$on('cleared', function(results){
         searchExchange.subscribe('cleared', $attrs.view, function(){
           $scope.searchText = "";
           if(el = document.getElementById("branch-search-input")){
@@ -67,6 +63,13 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           setTimeout(function(){
             $scope.preSearch();
           }, 0);
+        });
+
+        searchExchange.subscribe('suggestResults', $attrs.view, function(handle, results){
+
+          $scope.suggestions = results.qSuggestions;
+          $scope.suggestions.splice(5, results.qSuggestions.length - 4);
+          $scope.showSuggestion();
         });
 
 
@@ -265,7 +268,19 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
 
         function getGhostString(query, suggestion){
           var suggestBase = query;
-          while(suggestBase.length > suggestion.length){
+          if(suggestion.toLowerCase().indexOf(suggestBase.toLowerCase())!=-1){
+            //the suggestion pertains to the whole query
+
+          }
+          else if(suggestion.length > suggestBase.length){
+            //this must apply to a substring of the query
+            while(suggestion.toLowerCase().indexOf(suggestBase.toLowerCase())==-1){
+              suggestBase = suggestBase.split(" ");
+              suggestBase.splice(0,1);
+              suggestBase = suggestBase.join(" ");
+            }
+          }
+          while(suggestBase.length >= suggestion.length && suggestBase.toLowerCase()!=suggestion.toLowerCase()){
             suggestBase = suggestBase.split(" ");
             suggestBase.splice(0,1);
             suggestBase = suggestBase.join(" ");
