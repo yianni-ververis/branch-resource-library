@@ -14,21 +14,21 @@ html{
   min-height:100%;
   background-size: cover;
   background-attachment: fixed;
-  font-size: 16px;
   position:relative;
 }
 
 body{
   color: @default-text;
-  font-family: 'ProximaNova-Regular', sans-serif, arial;
-  line-height: 1.45;
-  font-weight: 400;
   margin: 0 0 300px;
+  font-family: sans-serif, arial;
+  font-size: 12px;
+  font-weight: lighter;
   -webkit-font-smoothing: antialiased;
   background-color: @bodybackground;
 }
 
 .note-editor{overflow:visible}
+.project-comments .note-editor span{color:#000;}
 
 ul.plainlist{
   list-style-type: none;
@@ -54,30 +54,25 @@ label{
   margin-right: 4px;
 }
 
-h1, h2, h3, h4 {
-  margin: 1.141em 0 0.5em;
-  font-family: 'ProximaNova-Light';
-  font-weight: inherit;
-  line-height: 1.2;
-}
-
 h1{
   color: @heading;
-  font-family: 'ProximaNovaA-Semibold';
-  font-size: 3.998em;
-  margin-top: 0;
-  font-weight: 400;
+  font-size: 26px;
+  margin: 5px 0;
+  font-weight: bold;
 }
 
 h2{
   color: @dark-grey;
-  margin-top: 0;
-  font-size: 2.827em;
+  font-size: 16px;
+  margin: 3px 0;
+  font-weight: lighter;
 }
 
 h3{
   color: @orange;
-  font-size: 1.999em;
+  font-size: 14px;
+  margin: 2px 0;
+  font-weight: lighter;
 }
 
 textarea{
@@ -90,7 +85,7 @@ label{
 }
 
 p{
-  font-size: 1em;
+  font-size: 12px;
 }
 
 img{
@@ -126,16 +121,9 @@ img{
 .emphasize{
   font-weight: 500;
 }
-
 .page{
-  min-height: ~"calc(100% - 120px)";
-  
-  h2 {
-    margin-bottom: 0;
-  }
-  
+  min-height: 700px; //to make the footer not look as weird
 }
-
 .paging, .sorting{
   text-align: right;
   
@@ -222,30 +210,17 @@ img{
   border: 1px solid @content-border;
 }
 
-.no-results, .please-login {
-  padding: 1.4em;
+.no-results, .please-login{
+  height: 100px;
+  line-height: 100px;
   color: @light-grey;
+  font-size: 16px;
   text-align: center;
-  
-  h2 {
-    margin-bottom: 20px;
-  }
-  
-  p {
-    max-width: 50%;
-    margin: 0 auto;
-    font-size: 1.1em;
-    @media screen and (max-width: @tablet-width) {
-      max-width: 100%;
-    }    
-    
-  }
-  
 }
 
 .loading{
   height: 100px;
-  text-align: center;
+  background: url(/resources/loading.gif) center center no-repeat;
 }
 
 .loading-smoke{
@@ -303,7 +278,6 @@ img{
   color: @orange;
 }
 
-
 @import "./icons.less";
 @import "./buttons.less";
 @import "./notifications.less";
@@ -337,6 +311,3 @@ img{
 
 //disabling bootstrap styles
 @import "./disablecrapstrap.less";
-
-//Loading indicator
-@import "./loading.less";
