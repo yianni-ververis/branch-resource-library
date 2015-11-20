@@ -222,12 +222,24 @@ img{
   border: 1px solid @content-border;
 }
 
-.no-results, .please-login{
-  height: 100px;
-  line-height: 100px;
+.no-results, .please-login {
+  padding: 1.4em;
   color: @light-grey;
-  font-size: 16px;
   text-align: center;
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  p {
+    max-width: 50%;
+    margin: 0 auto;
+    @media screen and (max-width: @tablet-width) {
+      max-width: 100%;
+    }    
+    
+  }
+  
 }
 
 .loading{
