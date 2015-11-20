@@ -2523,7 +2523,7 @@
         ['fontsize', ['fontsize']],
         ['color', ['color']],
         ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']],
+        //['height', ['height']],
         ['table', ['table']],
         ['insert', ['link', 'picture', 'hr']],
         ['view', ['fullscreen'/*, 'codeview'*/]],
