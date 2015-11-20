@@ -4,7 +4,8 @@
 		width: 10px;
 		height: 10px;
 		margin: 20px 3px 0;
-		background: rgba(94,168,63,0.25);
+		background: @orange;
+		opacity: 0.25;
 		border-radius: 50%;
 		transform: translateY(0);		
 		animation: wave 1.4s infinite ease-in-out;
@@ -29,20 +30,20 @@
 @keyframes wave
 {
 	0%, 60%, 100%
-	{
-		background: rgba(94,168,63,0.25);
+	{	
+		opacity: 0.25;
 		transform: translateY(0);
 	}
 	
 	20%
 	{
-		background: rgba(94,168,63,0.75);
+		opacity: 0.75;
 		transform: translateY(13px);
 	}
 	
 	40%
 	{
-		background: rgba(94,168,63,0.75);
+		opacity: 0.75;
 		transform: translateY(-13px);
 	}
 	
