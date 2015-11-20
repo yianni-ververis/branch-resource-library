@@ -1,10 +1,10 @@
 <div class="results-container content">
   <div class="" id="{{elemId}}_list_container" style="display: none;">
     <div class="result-header row">
-      <div class="resultNumbers col-md-6" id="{{elemId}}_count_label">
+      <div class="resultNumbers" id="{{elemId}}_count_label">
         
       </div>
-      <div class="sorting col-md-6">
+      <div class="sorting">
         Sort by: <select class="form-control" id="{{elemId}}_sort" ng-change="applySort(sort, true)" ng-model="sort" ng-options="item.name for item in sortOptions track by item.id"/>
       </div>
     </div>

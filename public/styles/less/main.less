@@ -197,19 +197,20 @@ img{
 }
 
 .result-header, .result-footer{
-  font-size: 14px;
-  font-weight: lighter;
   color: @header-grey;
-  position: -webkit-sticky;
-  position: -moz-sticky;
-  position: -ms-sticky;
-  position: -o-sticky;
 }
 
-.result-header{
+.result-header {
+  display: flex;
   margin-bottom: 10px;
   height: 30px;
   line-height: 30px;
+  padding: 0 15px;
+  
+  > div {
+    flex: 1;
+  }
+  
 }
 
 .center{
@@ -241,24 +242,6 @@ img{
     
   }
   
-}
-
-.loading{
-  height: 100px;
-  text-align: center;
-}
-
-.loading-smoke{
-  background-color: rgba(255,255,255,0.7);
-  background-image: url(/resources/loading.gif);
-  background-position: center center;
-  background-repeat: no-repeat;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  z-index: 20;
 }
 
 .smoke{
@@ -311,7 +294,6 @@ img{
 @import "./lists.less";
 @import "./picklist.less";
 @import "./controls.less";
-@import "./search.less";
 @import "./breadcrumbs.less";
 @import "./confirm-dialog.less";
 @import "./admin/admin-main.less";
