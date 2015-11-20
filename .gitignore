@@ -1,7 +1,7 @@
 /config/*.*
 node_modules/*
 !node_modules/visualcaptcha/
-bower_components/
+bower_components/*
 !bower_components/summernote/
 data.js
 client.pem
