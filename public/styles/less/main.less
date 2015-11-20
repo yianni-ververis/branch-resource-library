@@ -234,6 +234,7 @@ img{
   p {
     max-width: 50%;
     margin: 0 auto;
+    font-size: 1.1em;
     @media screen and (max-width: @tablet-width) {
       max-width: 100%;
     }    
@@ -244,7 +245,7 @@ img{
 
 .loading{
   height: 100px;
-  background: url(/resources/loading.gif) center center no-repeat;
+  text-align: center;
 }
 
 .loading-smoke{
@@ -336,3 +337,6 @@ img{
 
 //disabling bootstrap styles
 @import "./disablecrapstrap.less";
+
+//Loading indicator
+@import "./loading.less";
