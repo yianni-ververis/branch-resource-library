@@ -7,7 +7,7 @@
   </div>
   <div class='search-suggestion-container content' ng-show="suggesting">
     <ul class="plainlist">
-      <li ng-repeat="s in suggestions" ng-if="$index < 6" ng-class="{active:activeSuggestion==$index}" ng-click="setAndAccept($index)">
+      <li ng-repeat="s in suggestions" ng-class="{active:activeSuggestion==$index}" ng-click="setAndAccept($index)">
         {{s.qValue}}
       </li>
     </ul>
