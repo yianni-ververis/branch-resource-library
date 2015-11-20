@@ -9,15 +9,14 @@ var mongoose = require('mongoose'),
 //var mode = "release";
 var mode = "debug";
 
-qrs.config = {
-  host: "10.211.55.3",
-  app: "bf6c1ed8-69fb-4378-86c2-a1c71a2b3cc1"
-};
-
 config = require('config');
 
-mongoose.connect('mongodb://qtdevrelations:27017/branch');
-//mongoose.connect('mongodb://localhost:27017/branch');
+
+var envconfig = require('./config')
+
+mongoose.connect(envconfig.mongoconnectionstring);
+qrs.config = envconfig.qrs;
+
 
 //load the models
 require('./server/models/project.js');

@@ -2,7 +2,7 @@
   <div class="row project-detail-summary content card">
     <notification-dialog></notification-dialog>
     <div class="col-md-4">
-      <h1>{{projects[0].title}}</h1>
+      <h2>{{projects[0].title}}</h2>
       by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a>
       <img src="{{projects[0].thumbnail}}" />
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
@@ -47,7 +47,7 @@
   </div>
   <div class="row content card">
     <div class="col-md-12">
-      <h2>Details</h2>
+      <h3>Details</h3>
     </div>
     <div class="col-md-12 project-detail" ng-bind-html="getPageText()">
     </div>

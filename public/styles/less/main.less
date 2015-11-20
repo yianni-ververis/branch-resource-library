@@ -14,15 +14,16 @@ html{
   min-height:100%;
   background-size: cover;
   background-attachment: fixed;
+  font-size: 16px;
   position:relative;
 }
 
 body{
   color: @default-text;
+  font-family: 'ProximaNova-Regular', sans-serif, arial;
+  line-height: 1.45;
+  font-weight: 400;
   margin: 0 0 300px;
-  font-family: sans-serif, arial;
-  font-size: 12px;
-  font-weight: lighter;
   -webkit-font-smoothing: antialiased;
   background-color: @bodybackground;
 }
@@ -53,25 +54,30 @@ label{
   margin-right: 4px;
 }
 
+h1, h2, h3, h4 {
+  margin: 1.141em 0 0.5em;
+  font-family: 'ProximaNova-Light';
+  font-weight: inherit;
+  line-height: 1.2;
+}
+
 h1{
   color: @heading;
-  font-size: 26px;
-  margin: 5px 0;
-  font-weight: bold;
+  font-family: 'ProximaNovaA-Semibold';
+  font-size: 3.998em;
+  margin-top: 0;
+  font-weight: 400;
 }
 
 h2{
   color: @dark-grey;
-  font-size: 16px;
-  margin: 3px 0;
-  font-weight: lighter;
+  margin-top: 0;
+  font-size: 2.827em;
 }
 
 h3{
   color: @orange;
-  font-size: 14px;
-  margin: 2px 0;
-  font-weight: lighter;
+  font-size: 1.999em;
 }
 
 textarea{
@@ -84,7 +90,7 @@ label{
 }
 
 p{
-  font-size: 12px;
+  font-size: 1em;
 }
 
 img{
@@ -123,6 +129,11 @@ img{
 
 .page{
   min-height: ~"calc(100% - 120px)";
+  
+  h2 {
+    margin-bottom: 0;
+  }
+  
 }
 
 .paging, .sorting{
@@ -278,6 +289,7 @@ img{
   display: block;
   color: @orange;
 }
+
 
 @import "./icons.less";
 @import "./buttons.less";
