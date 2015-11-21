@@ -70,7 +70,13 @@
               <input type="password" ng-model="gitpassword" class="form-control" placeholder="GitHub Password"/>
               <button class="branch-button orange" type="submit" name="button">Login</button>
             </form>
-            <div class="loading-smoke" ng-show="gitLoading"></div>
+            <div class="loading-cover" ng-show="gitLoading">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
           <div class="" ng-if="gitProjects.length>0">
             <h3>Select a Project</h3>
@@ -91,5 +97,11 @@
       </div>
     </div>
   </div>
-  <div class="loading-smoke" ng-show="projectLoading"></div>
+  <div class="loading-cover" ng-show="projectLoading">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </div>
