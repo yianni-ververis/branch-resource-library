@@ -2,8 +2,8 @@
   <div class="row content">
     <notification-dialog></notification-dialog>
     <div class="blog col-md-9">
-      <h1>{{blogs[0].title}}</h1>
-      <h2>{{blogs[0].short_description}}</h2>
+      <h2>{{blogs[0].title}}</h2>
+      <!-- <h2>{{blogs[0].short_description}}</h2> -->
       <span>Posted {{blogs[0].createdate |  date:'MMM dd, yyyy'}} at {{ blogs[0].createdate |  date:'HH:mm'}} by <a class="user-link" href="#user/{{blogs[0].userid._id}}">{{blogs[0].userid.username}}</a></span>
       <div class="blog-image" ng-show="blogs[0].image">
         <img src="{{blogs[0].image}}"/>
