@@ -1,7 +1,29 @@
+/* 
+ * Loading indicators
+ * .loading-cover will cover the entire page to prevent flash of templates.
+ * .loading will give you a small loading indicator box, useful for populating .loading-cover
+ * Required DOM: <div> <span></span><span></span><span></span><span></span><span></span> </div>
+*/
+
+.loading-cover {
+	background-color: @bodybackground;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	padding-top: 200px;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 20;
+}
+
 .loading {
 	height: 100px;
   	text-align: center;
-	
+}
+
+.loading-cover, .loading {
 	span {
 		display: inline-block;
 		width: 10px;
