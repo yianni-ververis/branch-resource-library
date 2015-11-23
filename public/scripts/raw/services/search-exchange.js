@@ -60,6 +60,8 @@ var SearchExchange = (function(){
             if(sub.indexOf(that.view)!=-1){
               console.log('sending subscription');
               console.log('function is '+that.catalog[eventName][sub]);
+              console.log('handles are '+handles);
+              console.log('data is '+data);
               that.catalog[eventName][sub].fn.call(null, handles, data);
               console.log('sent');
             }
