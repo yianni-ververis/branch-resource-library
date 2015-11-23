@@ -14,7 +14,8 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
 
   var defaultSelection;
 
-  if($stateParams.discussionId == 'new'){
+  if($state.current.name.indexOf('addedit')!=-1){
+    $scope.threadHeading = $stateParams.discussionId=="new"? "New Thread" : "Edit Thread";
     $scope.discussions = [{}];
     $("#discussionContent").summernote({
       height: 400
@@ -110,7 +111,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
       $scope.discussionLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#forum/"+result._id+"?status="+status;
+        window.location = "#discussion/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -137,6 +138,9 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
           $scope.discussions = result.data;
           //if this is the detail view we'll update the breadcrumbs
         }
+        if($state.current.name=="forum.addedit"){
+          $("#discussionContent").code(_arrayBufferToBase64(result.data[0].content.data));
+        }
         $scope.discussionInfo = result;
         $scope.canAnswer = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Unanswered");
         $scope.canReopen = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Answered");
@@ -156,8 +160,16 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+       if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+        searchExchange.publish("executeSearch");
+       }
+    }
     if(toState.name!="loginsignup"){
       searchExchange.view = toState.name.split(".")[0];
+    }
+    if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+      searchExchange.clear(true);
     }
     defaultSelection = [];
     if($state.current.name=="forum.detail"){
@@ -177,7 +189,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
       if(!hasUser){
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#login?url=forum/"+$stateParams.discussionId+"/edit"
+            window.location = "#login?url=discussion/"+$stateParams.discussionId+"/edit"
           }
           else{
             if($stateParams.discussionId!="new"){

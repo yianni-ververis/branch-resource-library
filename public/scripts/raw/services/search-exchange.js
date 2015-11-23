@@ -91,6 +91,14 @@ var SearchExchange = (function(){
         that.seqId = senseApp.connection.seqid;
         //$rootScope.$broadcast("senseready", app);
         that.online = true;
+        //this sets up a constant ping to ensure the websocket stays connected
+        function ping(){
+          that.ask(-1, "ProductVersion", [],function(result){});
+          setTimeout(function(){
+            ping();
+          },30000);
+        }
+        ping();
         that.publish('online');
       }, function(error) {
           if (error.code == "1002") { //app already opened on server
@@ -127,6 +135,7 @@ var SearchExchange = (function(){
     };
 
     this.executeQueue = function(){
+      console.log('now we\'re executing the other callbacks');
       if(that.queue.length > 0){
         for (var i=0;i<that.queue.length;i++){
           that.queue[i].call();
@@ -157,6 +166,7 @@ var SearchExchange = (function(){
     };
 
     this.executePriority = function(){
+      console.log('now we\'re executing the priority callbacks');
       if(that.priority && that.priority.length > 0){
         that.priority.forEach(function(priorityFn, index){
           priorityFn.call(null);
@@ -319,6 +329,7 @@ var SearchExchange = (function(){
     that.lockSelections = function(callbackFn){
       fn = function(){
         that.ask(senseApp.handle, "LockAll", [], function(result){
+          console.log('calling the lock callback');
           callbackFn.call(null);
         });
       }
@@ -331,6 +342,7 @@ var SearchExchange = (function(){
     }
 
     this.addResults = function(options, callbackFn, priority){
+      console.log('adding results');
       if(that.objects[options.id]){
         fn = function(){
           callbackFn.call(null, {handle:that.objects[options.id]});

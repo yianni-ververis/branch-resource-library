@@ -21,10 +21,11 @@ module.exports = function(passport, User, UserProfile){
 
         // spam checking
         function(next) {
-          spamCheck({ string: [username, password, req.body.email].join(' ') }, function(err, results) {
+          spamCheck({ string: [req.body.email].join(' '), type: 'full' }, function(err, results) {
+						console.log(results);
             if (err) return next(err)
 
-            if (results.spam || !spamchecker.isEmailClean(req.body.email)) {
+            if (results.spam) {
               console.log('User blocked by spam filter system.')
               return done('User blocked by spam filter system.', false)
             }
@@ -76,7 +77,7 @@ module.exports = function(passport, User, UserProfile){
 							console.log('User Registration succesful')
 							shared.newUser = newUserProfile
 							Mailer.sendMail("signup", "user", newUserProfile, function(){
-								
+
 							});
 							next()
 						});

@@ -2,7 +2,7 @@
   <li qs-repeat="discussion in items" id="{{discussion.discussionId}}" qs-hide="discussion.hidden==true">
     <div class="row">
       <div class="col-md-9">
-        <span class="list-title"><a href="#forum/{{discussion.discussionId}}">{{discussion.title}}</a><span class="emphasize"> ({{discussion.forumStatus}})</span></span>
+        <span class="list-title"><a href="#discussion/{{discussion.discussionId}}">{{discussion.title}}<span class="emphasize"> ({{discussion.forumStatus}})</span></a></span>
         <span>started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}} by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a></span>
       </div>
       <div class="col-md-3">

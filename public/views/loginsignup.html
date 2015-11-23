@@ -4,8 +4,8 @@
     <div class="form-signin block">
       <h2>Login</h2>
       <form ng-submit="login()">
-        <input class='form-control' name='username' ng-model='loginusername' placeholder='Username'>
-        <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password'>
+        <input class='form-control' name='username' ng-model='loginusername' placeholder='Username' required>
+        <input class='form-control' ng-model='loginpassword' placeholder='Password' type='password' required>
         <a href="#reset">Forgot your password?</a>
         <button class='branch-button' type='submit'>Login</button>
       </form>
