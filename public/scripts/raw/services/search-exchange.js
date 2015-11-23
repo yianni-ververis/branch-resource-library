@@ -50,11 +50,19 @@ var SearchExchange = (function(){
     };
 
     this.publish = function(eventName, handles, data){
+      console.log('publishing event '+eventName);
       if(that.catalog[eventName]){
+        console.log('catalog has subscriptions');
         if(that.view && eventName!="online"){
           for(var sub in that.catalog[eventName]){
+            console.log('subscriber is '+sub);
+            console.log('view is '+that.view);
             if(sub.indexOf(that.view)!=-1){
+              console.log('sending subscription');
+              console.log('function is');
+              console.log(that.catalog[eventName][sub]);              
               that.catalog[eventName][sub].fn.call(null, handles, data);
+              console.log('sent');
             }
           }
         }
@@ -373,6 +381,7 @@ var SearchExchange = (function(){
         fn.call();
       }
       else{
+        console.log('apparently we\'re not online so we\'re subscribing which means the callback is lost');
         that.subscribe('online', options.id, fn);
       }
     };
