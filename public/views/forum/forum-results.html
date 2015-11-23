@@ -1,16 +1,18 @@
-<ul class="plainlist discussion-list">
-  <li qs-repeat="discussion in items" id="{{discussion.discussionId}}" qs-hide="discussion.hidden==true">
-    <div class="row">
-      <div class="col-md-9">
-        <span class="list-title"><a href="#discussion/{{discussion.discussionId}}">{{discussion.title}}<span class="emphasize"> ({{discussion.forumStatus}})</span></a></span>
-        <span>started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}} by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a></span>
-      </div>
-      <div class="col-md-3">
-        <ul class="stats plainlist">
-          <li><i>{{discussion.views}}</i> Views</li>
-          <li><i>{{discussion.commentcount}}</i> Comments</li>
-        </ul>
-      </div>
+<div class="col-md-12 thread-list card" qs-repeat="discussion in items" id="{{discussion.discussionId}}" qs-hide="discussion.hidden==true">
+  <div class="thread">
+    <div class="avatar-container">
+      <img class="avatar" style="width: 40px; height: 40px; float: left;" src="/attachments/{{discussion.userId}}/thumbnail.png" alt="">
     </div>
-  </li>
-</ul>
+    <div class="thread-heading">
+      <a href="#discussion/{{discussion.discussionId}}"><p class="thread-title">{{discussion.title}}</p></a>
+      <span class="thread-date">started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}}</span> by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a>
+    </div>
+    <div class="thread-details">
+      <ul class="stats plainlist">
+        <li class="{{discussion.forumStatus}}">{{discussion.forumStatus}}</li>
+        <li>{{discussion.views}} Views</li>
+        <li>{{discussion.commentcount}} Comments</li>
+      </ul>
+    </div>
+  </div>
+</div>

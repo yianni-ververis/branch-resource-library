@@ -2,4 +2,72 @@
   .results-container{
     margin-top: 40px;
   }
+  
+  .thread-list {
+    margin-bottom: 10px; 
+  }
+  
+  .thread {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+  }
+  
+  img.avatar {
+    float: left;
+    margin: 0 10px 0 5px;
+  }
+  
+  .avatar-container {
+    flex: 0 0 70px;
+  }
+  
+  .thread-heading {
+    flex: 5;
+    
+    a {
+      color: inherit;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    
+  }
+  
+  .thread-details {
+    flex: 1
+  }
+  
+  .discussion-list > li {
+    border-bottom: 1px solid @content-border;
+    min-height: 70px;
+  }
+  
+  .thread-title {
+    font-size: 18px;
+    font-weight: lighter;
+    color: @orange;
+    display: block;
+    margin: 0;
+  }
+  
+  .thread-date {
+
+  }
+  
+  .thread-details {
+    
+    font-size: 12px;
+    
+    .Answered {
+      color: @green;
+    }
+    .Unanswered, .Answered {
+      font-size: 16px;
+    }
+  }
+  
 }
