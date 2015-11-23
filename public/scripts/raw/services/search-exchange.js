@@ -59,6 +59,7 @@ var SearchExchange = (function(){
             console.log('view is '+that.view);
             if(sub.indexOf(that.view)!=-1){
               console.log('sending subscription');
+              console.log('function is '+that.catalog[eventName][sub]);
               that.catalog[eventName][sub].fn.call(null, handles, data);
               console.log('sent');
             }
