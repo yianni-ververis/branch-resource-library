@@ -60,7 +60,7 @@ function buildMenu(user){
   if(user){
     basicMenu.splice(0,0,{
       label: "Change Password",
-      href: "#users/changepassword"
+      href: "#user/changepassword"
     });
     basicMenu.splice(0,0, {
       label: "My Profile",
@@ -69,7 +69,7 @@ function buildMenu(user){
     if(user.role.permissions && user.role.permissions.discussion && user.role.permissions.discussion.create==true){
       basicMenu.splice(0,0,{
         label: "Create Discussion",
-        href: "#forum/new/edit"
+        href: "#discussion/new/edit"
       });
     }
     if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){

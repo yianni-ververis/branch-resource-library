@@ -125,6 +125,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         });
 
         searchExchange.subscribe("update", $attrs.view, function(handles, data){
+          console.log('updating '+$attrs.view);
           console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
             if(searchExchange.state && searchExchange.state.sort){
@@ -212,9 +213,15 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
 				};
 
         $scope.render = function(){
+          console.log('rendering '+$attrs.id);
           if(el = document.getElementById($attrs.id+"_list")){  //only run render if the element for the current instance exists
+
+          }
+          else if(el = $("#"+$attrs.id).find("#_list")[0]){
+            console.log('if at first you don\'t succeed, write some code to accommodate for DOM based situations that angular missed');
           }
           else{
+            console.log('the element is but an apparition. it is there in spirit but not in flesh and so we have nothing to touch nor feel nor bind to our being.');
             return;
           }
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
@@ -266,7 +273,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   }
                   items.push( item );
                 }
-                console.log($attrs.view + ' has '+items.length+ ' items');                
+                console.log($attrs.view + ' has '+items.length+ ' items');
                 selectSortOption(document.getElementById($attrs.id+"_sort"), $scope.sort);
                 if(hiddenCount==items.length){
                   if(!userManager.hasUser){
