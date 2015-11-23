@@ -50,11 +50,17 @@ var SearchExchange = (function(){
     };
 
     this.publish = function(eventName, handles, data){
+      console.log('publishing event '+eventName);
       if(that.catalog[eventName]){
+        console.log('catalog has subscriptions');
         if(that.view && eventName!="online"){
           for(var sub in that.catalog[eventName]){
+            console.log('subscriber is '+sub);
+            console.log('view is '+that.view);
             if(sub.indexOf(that.view)!=-1){
+              console.log('sending subscription');
               that.catalog[eventName][sub].fn.call(null, handles, data);
+              console.log('sent');
             }
           }
         }
