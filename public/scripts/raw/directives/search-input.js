@@ -9,6 +9,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
     controller: function($scope, $element, $attrs){
       $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+$attrs.config+'.json', success: function(json){
         $scope.config = JSON.parse(json);
+        var inputTimeout;
         var ignoreKeys = [
           16,
           27
@@ -60,6 +61,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           $scope.ghostPart = "";
           $scope.ghostQuery = "";
           $scope.ghostDisplay = "";
+          console.log('executing a search after clear');
           setTimeout(function(){
             $scope.preSearch();
           }, 0);
@@ -228,32 +230,16 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           searchExchange.clear();
         };
 
-        $scope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
-          // if(toState.name!="loginsignup"){
-          //   searchExchange.view = toState.name.split(".")[0];
-          // }
-          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || toState.name!="loginsignup"){ //then we should clear the search state
-            //searchExchange.clear(true);
-          }
-        });
-
-        $scope.$root.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-          //if there is an existing state we should update the pageTop property on the $scope
-          //and apply patches to the object for sorting
+        searchExchange.subscribe("executeSearch", $attrs.view, function(){
           setTimeout(function(){
-            if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
-              if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
-                $scope.searchText = "";
-                if(searchExchange.state){
-                  if(searchExchange.state && searchExchange.state.searchText){
-                    $scope.searchText = searchExchange.state.searchText;
-                    document.getElementById("branch-search-input").value = $scope.searchText;
-                    //$scope.preSearch();
-                  }
-                }
-                $scope.preSearch();
+            $scope.searchText = "";
+            if(searchExchange.state){
+              if(searchExchange.state && searchExchange.state.searchText){
+                $scope.searchText = searchExchange.state.searchText;
+                document.getElementById("branch-search-input").value = $scope.searchText;
               }
             }
+            $scope.preSearch();
           },0);
         });
 

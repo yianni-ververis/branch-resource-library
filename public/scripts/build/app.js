@@ -97,7 +97,7 @@
     })
     //used to navigate to the forum list page
     .state("forum", {
-      url: "/forum",
+      url: "/discussion",
       templateUrl: "/views/forum/index.html",
       controller: "discussionController"
     })

@@ -166,8 +166,16 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   };
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+       if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+        searchExchange.publish("executeSearch");
+       }
+    }
     if(toState.name!="loginsignup"){
       searchExchange.view = toState.name.split(".")[0];
+    }
+    if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+      searchExchange.clear(true);
     }
     defaultSelection = [];
     if($state.current.name=="blogs.detail"){
