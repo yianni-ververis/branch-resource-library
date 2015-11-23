@@ -4,13 +4,14 @@
       <img class="avatar" style="width: 40px; height: 40px; float: left;" src="/attachments/{{discussion.userId}}/thumbnail.png" alt="">
     </div>
     <div class="thread-heading">
-      <p class="thread-title"><a href="#forum/{{discussion.discussionId}}">{{discussion.title}}</a><span class="emphasize"> ({{discussion.forumStatus}})</span></p>
-      <span class="thread-date">started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}}</span> <!--  by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a> -->
+      <a href="#forum/{{discussion.discussionId}}"><p class="thread-title">{{discussion.title}}</p></a>
+      <span class="thread-date">started on {{discussion.createdate_num:Date}} at {{discussion.createdate_num:Time}}</span> by <a class="user-link" href="#user/{{discussion.userId}}">{{discussion.username}}</a>
     </div>
     <div class="thread-details">
       <ul class="stats plainlist">
-        <li><i>{{discussion.views}}</i> Views</li>
-        <li><i>{{discussion.commentcount}}</i> Comments</li>
+        <li class="{{discussion.forumStatus}}">{{discussion.forumStatus}}</li>
+        <li>{{discussion.views}} Views</li>
+        <li>{{discussion.commentcount}} Comments</li>
       </ul>
     </div>
   </div>

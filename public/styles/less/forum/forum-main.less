@@ -27,6 +27,14 @@
   
   .thread-heading {
     flex: 5;
+    
+    a {
+      color: inherit;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    
   }
   
   .thread-details {
@@ -39,13 +47,27 @@
   }
   
   .thread-title {
-    font-size: 1em;
+    font-size: 18px;
     font-weight: lighter;
+    color: @orange;
     display: block;
+    margin: 0;
   }
   
   .thread-date {
-    color: @content-border;
+
+  }
+  
+  .thread-details {
+    
+    font-size: 12px;
+    
+    .Answered {
+      color: @green;
+    }
+    .Unanswered, .Answered {
+      font-size: 16px;
+    }
   }
   
 }
