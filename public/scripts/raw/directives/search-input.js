@@ -243,7 +243,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           },0);
         });
 
-        searchExchange.subscribe("update", $attrs.view, function(){
+        searchExchange.subscribe("update", $attrs.view+"_input", function(){
           if(!$scope.searchText){
             if(searchExchange.state && searchExchange.state.searchText){
               $scope.searchText = searchExchange.state.searchText;
