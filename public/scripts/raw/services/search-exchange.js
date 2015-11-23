@@ -373,6 +373,7 @@ var SearchExchange = (function(){
         fn.call();
       }
       else{
+        console.log('apparently we\'re not online so we\'re subscribing which means the callback is lost');
         that.subscribe('online', options.id, fn);
       }
     };
