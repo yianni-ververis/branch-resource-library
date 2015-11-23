@@ -47,20 +47,22 @@
 .featured{
   position: relative;
   border-bottom: 1px solid @content-border;
-  p{
+  p {
     padding: 10px 0;
   }
-  &.project{
-    background-color: white;
-    h2{
-      color: @default-text;
+
+  h2 {
+    margin-bottom: 0;
+    line-height: 1em;
+  }
+  
+  a {
+    &:hover {
+      text-decoration: none;
+      cursor: pointer;
     }
   }
-  &.article{
-    h2{
-      color: @default-text;
-    }
-  }
+
   .featured-project, .featured-article{
     height: 300px;
     background-repeat: no-repeat;
