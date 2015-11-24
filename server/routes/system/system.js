@@ -87,7 +87,7 @@ function buildMenu(user){
     topMenu = {
       items:[{
         label: user.username,
-        href:"#",
+        href:"",
         items: []
       }]
     };
