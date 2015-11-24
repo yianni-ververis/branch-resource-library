@@ -15,9 +15,9 @@ module.exports = {
   },
   unapprove:{
     userprofile:{
-      to: "DL-PartnerEngineering",
+      to: "{{email}}",
       subject: "Branch User Blocked",
-      html: "The user x on branch.qlik.com has been blocked blah blah blah"
+      html: "The user {{username}} on branch.qlik.com has been blocked with the following comments - <br/><p>{{hide_comment}}</p>"
     },
     project:{
       to: "{{userid.email}}",
