@@ -40,10 +40,6 @@ var blogSchema = new Schema({
   flagged:{
     type: Boolean,
     default: false
-  },
-  deleted: {
-    type: Boolean,
-    default: false
   }
 });
 
