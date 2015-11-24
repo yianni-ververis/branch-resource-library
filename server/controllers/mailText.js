@@ -8,9 +8,9 @@ module.exports = {
   },
   create:{
     comment:{
-      to: "DL-PartnerEngineering",
+      to: "{{parent.userid.email}}",
       subject: "New Activity on {{parent.title}}",
-      html: "{{comment.content}}"
+      html: "New Activity on <strong>{{parent.title}}</strong><br/>{{comment.content}}"
     }
   },
   unapprove:{
@@ -22,20 +22,20 @@ module.exports = {
     project:{
       to: "{{userid.email}}",
       subject: "Branch Project Rejected",
-      html: "Please do not be alarmed, this is a test. You're project hasn't really been rejected"
+      html: "The project <strong>{{title}}</strong> has been rejected with the following comments - <br/><p>{{hide_comment}}</p>"
       //html: "Project {{title}} on branch.qlik.com has been rejected with the following comments.<br /><p>{{hide_comment}}</p>"
     }
   },
   update:{
     subscription:{
-      to: "DL-PartnerEngineering",
-      subject: "{{title}} has been updated",
-      html: "Some relevant text here"
+      to: "{{subscription.userid.email}}",
+      subject: "{{record.title}} has been updated",
+      html: "The project <strong>{{record.title}}</strong> has been updated"
     },
     subscriptionComment:{
-      to: "DL-PartnerEngineering",
-      subject: "Someone has commented on {{parent.title}}",
-      html: "{{comment.content}}"
+      to: "{{subscription.userid.email}}",
+      subject: "Someone has commented on {{record.parent.title}}",
+      html: "{{record.comment.content}}"
     }
   }
 }
