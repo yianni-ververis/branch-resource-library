@@ -1018,7 +1018,7 @@ define( 'visualcaptcha/templates',[],function() {
 
         for ( var i = 0, l = captcha.numberOfImages(); i < l; i++ ) {
             string =
-                '<div class="img">' +
+                '<div class="img">'  +
                     '<a><img src="{imageUrl}" id="visualCaptcha-img-{i}" data-index="{i}" alt="" title="" /></a>' +
                 '</div>';
 
