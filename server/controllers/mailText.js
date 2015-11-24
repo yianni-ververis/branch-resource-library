@@ -20,7 +20,7 @@ module.exports = {
       html: "The user x on branch.qlik.com has been blocked blah blah blah"
     },
     project:{
-      to: "DL-PartnerEngineering",
+      to: "{{userid.email}}",
       subject: "Branch Project Rejected",
       html: "Please do not be alarmed, this is a test. You're project hasn't really been rejected"
       //html: "Project {{title}} on branch.qlik.com has been rejected with the following comments.<br /><p>{{hide_comment}}</p>"
