@@ -36,7 +36,7 @@ module.exports = {
   },
   qrsSend: function(url, method, data, callbackFn){
     try {
-        var cert = fs.readFileSync('./client.pem');
+        var cert = fs.readFileSync(this.config.cert);
     } catch (e) {
         console.log('Missing client certificate');
         return;
