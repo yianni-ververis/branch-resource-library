@@ -86,8 +86,7 @@ function buildMenu(user){
     }
     topMenu = {
       items:[{
-        label: user.username,
-        href:"",
+        label: user.username,        
         items: []
       }]
     };

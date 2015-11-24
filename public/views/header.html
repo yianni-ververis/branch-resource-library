@@ -14,7 +14,8 @@
           </a>
           <ul class="dropdown-menu" role="menu" ng-if="item.items.length > 0">
             <li ng-repeat="subItem in item.items">
-              <a href="{{subItem.href}}">{{subItem.label}}</a>
+              <a ng-if="subItem.href" href="{{subItem.href}}">{{subItem.label}}</a>
+              <a ng-if="!subItem.href">{{subItem.label}}</a>
             </li>
           </ul>
         </li>
