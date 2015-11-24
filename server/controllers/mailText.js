@@ -1,7 +1,7 @@
 module.exports = {
   signup:{
     user:{
-      to: "DL-PartnerEngineering",
+      to: "{{email}}",
       subject: "Welcome to Branch",
       html: "{{username}}, thank you for joining the Branch community."
     }
