@@ -16,7 +16,7 @@ module.exports = {
       if(list && list.data && list.data.length > 0){
         //send an email to each subscriber
         list.data.forEach(function(item, index){
-          mailer.sendMail("update", "subscription", record, function(){
+          mailer.sendMail("update", "subscription", {subscription: item, record: record}, function(){
 
           });
         });
@@ -33,7 +33,7 @@ module.exports = {
       if(list && list.data && list.data.length > 0){
         //send an email to each subscriber
         list.data.forEach(function(item, index){
-          mailer.sendMail("update", "subscriptionComment", record, function(){
+          mailer.sendMail("update", "subscriptionComment", {subscription: item, record: record}, function(){
 
           });
         });
