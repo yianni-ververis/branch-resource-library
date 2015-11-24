@@ -8,14 +8,13 @@
           <a class="green" href="{{getLoginUrl()}}">Login</a>
         </li>
         <li class="dropdown" ng-repeat="item in userManager.menu.items" role="button" ng-if="userManager.hasUser()">
-          <a data-toggle="dropdown" href="{{item.href}}" class="dropdown-toggle green">
+          <a data-toggle="dropdown" class="dropdown-toggle green">
             {{item.label}}
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu" ng-if="item.items.length > 0">
             <li ng-repeat="subItem in item.items">
-              <a ng-if="subItem.href" href="{{subItem.href}}">{{subItem.label}}</a>
-              <a ng-if="!subItem.href">{{subItem.label}}</a>
+              <a href="{{subItem.href}}">{{subItem.label}}</a>
             </li>
           </ul>
         </li>
