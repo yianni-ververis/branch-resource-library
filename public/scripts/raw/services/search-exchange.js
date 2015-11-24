@@ -8,7 +8,7 @@ var SearchExchange = (function(){
       prefix: "/anon",
       isSecure: true,
       rejectUnauthorized: false,
-      appname: window.location.hostname === "qtdevrelations" || "localhost" ? "a4e123af-4a5d-4d89-ac81-62ead61db33a" : "<UPDATE THIS FOR BRANCH-TEST>"
+      appname: window.location.hostname === "qtdevrelations" || "localhost" ? "a4e123af-4a5d-4d89-ac81-62ead61db33a" : "9573041f-0c45-4cb6-8166-64c2aac3c05d"
     };
 
     this.seqId = 0;
@@ -57,7 +57,7 @@ var SearchExchange = (function(){
             if(sub.indexOf(that.view)!=-1){
               console.log('sending subscription');
               console.log('function is');
-              console.log(that.catalog[eventName][sub]);              
+              console.log(that.catalog[eventName][sub]);
               that.catalog[eventName][sub].fn.call(null, handles, data);
               console.log('sent');
             }
