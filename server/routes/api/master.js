@@ -202,18 +202,24 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_updated = new Date(gitresult.updated_at);
               results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
               results.data[0].last_git_check = Date.now();
-              GitHub.repos.getReadme({user:gituser, repo:repo}, function(err, readmeresult){
-                //console.log(atob(readmeresult.content));
+              GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
+                console.log(readmeresult);
                 if(err){
                   console.log(err);
                 }
-                results.data[0].content = atob(readmeresult.content);
-                results.data[0].save(function(err){
-                  if(!err){
-                    Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
+                GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
+                  if(err){
+                    console.log(err);
                   }
-                });
-                res.json(results || {});
+                  console.log(htmlresult);
+                  results.data[0].content = htmlresult;
+                  results.data[0].save(function(err){
+                    if(!err){
+                      Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
+                    }
+                  });
+                  res.json(results || {});
+                })
               });
             }
           }
