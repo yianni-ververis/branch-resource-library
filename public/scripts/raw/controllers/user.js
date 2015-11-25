@@ -109,10 +109,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
         searchExchange.subscribe('reset', "users", function(){
           searchExchange.init(defaultSelection);
           searchExchange.unsubscribe('reset', "users");
-        });
-        if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
-          searchExchange.clear(true);
-        }
+        });        
         $scope.firstLoad = false;
       });
       $scope.getUserData($scope.query);
