@@ -1,7 +1,7 @@
 app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-  var Article = $resource("api/article/:articleId", {articleId: "@articleId"});
+  var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
 
   $scope.featuredProject = {};
   $scope.featuredArticle = {};
@@ -28,13 +28,13 @@ app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams
   });
 
   //Get the latest 5 projects
-  Project.get({sort: 'dateline', sortOrder:'-1', limit:'3'}, function(result){
+  Project.get({sort: 'createdate_num', sortOrder:'-1', limit:'3'}, function(result){
     if(resultHandler.process(result)){
       $scope.latestProjects = result.data;
     }
   });
 
-  Article.get({sort: 'dateline', sortOrder:'-1', limit:'3'}, function(result){
+  Article.get({sort: 'createdate_num', sortOrder:'-1', limit:'3'}, function(result){
     if(resultHandler.process(result)){
       $scope.latestArticles = result.data;
     }
