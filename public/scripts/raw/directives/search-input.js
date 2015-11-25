@@ -49,7 +49,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
 
         $scope.cursorPosition = 0;
 
-        searchExchange.subscribe('cleared', $attrs.view+".input", function(){
+        searchExchange.subscribe('cleared', $attrs.view, function(){
           $scope.searchText = "";
           if(el = document.getElementById("branch-search-input")){
             el.value = "";
