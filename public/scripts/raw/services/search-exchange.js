@@ -66,6 +66,7 @@ var SearchExchange = (function(){
       };
 
       this.unsubscribe = function(eventName, id){
+        console.log('unsubscribing from '+eventName+' for '+id);
         delete that.catalog[eventName][id];
       };
 
