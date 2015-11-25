@@ -67,8 +67,8 @@ module.exports = function(req, res){
         res.json(Error.insufficientPermissions());
       }
     }
-    if(userPermissions.allOwners!=true && !isNew){
-      query["createuser"]=user._id;
+    if(userPermissions.allOwners!=true && !isNew && req.params.entity != "userprofile"){
+      query["userid"]=user._id;
     }
     record.edituser = user._id;
     record.editdate = Date.now();
