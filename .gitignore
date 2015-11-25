@@ -8,4 +8,5 @@ bower_components/*
 data.js
 client.pem
 .vscode/
+/public/configs/sense.json
 config.js

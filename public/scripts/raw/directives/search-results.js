@@ -43,6 +43,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         $scope.stars = new Array(5);
 
         $scope.postponed;
+        $scope.resultsTemplateCallback;
+        $scope.pagingTemplateCallback;
 
         $scope.pageTop = 0;
         $scope.pageBottom = $scope.config.pagesize;
@@ -276,8 +278,22 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                     terms = searchExchange.state.searchText.split(" ");
                   }
                   $("#"+$attrs.id).find("._count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
-                  $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
-                  $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                  if($scope.resultsTemplate){
+                    $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                  }
+                  else{
+                    $scope.resultsTemplateCallback = function(){
+                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                    }
+                  }
+                  if($scope.pagingTemplate){
+                    $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                  }
+                  else{
+                    $scope.pagingTemplateCallback = function(){
+                      $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                    }
+                  }
                   $("#"+$attrs.id).find("._list_container")[0].style.display = "block";
                   $("#"+$attrs.id).find("._no_results")[0].style.display = "none";
                 }
@@ -403,11 +419,19 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             if(!$scope.resultsTemplate){
               $.get($scope.template).success(function(html){
                 $scope.resultsTemplate = new Templater(html);
+                if($scope.resultsTemplateCallback){
+                  $scope.resultsTemplateCallback.call();
+                  $scope.resultsTemplateCallback = null;
+                }
               });
             }
             if(!$scope.pagingTemplate){
               $.get("/views/search/search-paging.html").success(function(html){
                 $scope.pagingTemplate = new Templater(html);
+                if($scope.pagingTemplateCallback){
+                  $scope.pagingTemplateCallback.call();
+                  $scope.pagingTemplateCallback = null;
+                }
               });
             }
             if($scope.postponed){
