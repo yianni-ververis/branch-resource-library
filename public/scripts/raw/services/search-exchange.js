@@ -20,7 +20,7 @@ var SearchExchange = (function(){
     this.view;
 
     this.catalog = {};
-    
+
     $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/sense.json', success: function(json){
 
       var config = JSON.parse(json);
@@ -77,7 +77,8 @@ var SearchExchange = (function(){
             for(var sub in that.catalog[eventName]){
               console.log('subscriber is '+sub);
               console.log('view is '+that.view);
-              if(sub.indexOf(that.view)!=-1){
+
+              if(sub.split(".")[0].indexOf(that.view)!=-1){
                 console.log('sending subscription');
                 console.log('function is');
                 console.log(that.catalog[eventName][sub]);

@@ -49,7 +49,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
 
         $scope.cursorPosition = 0;
 
-        searchExchange.subscribe('cleared', $attrs.view, function(){
+        searchExchange.subscribe('cleared', $attrs.view+".input", function(){
           $scope.searchText = "";
           if(el = document.getElementById("branch-search-input")){
             el.value = "";
@@ -67,7 +67,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           }, 0);
         });
 
-        searchExchange.subscribe('suggestResults', $attrs.view, function(handle, results){
+        searchExchange.subscribe('suggestResults', $attrs.view+".input", function(handle, results){
 
           $scope.suggestions = results.qSuggestions;
           $scope.suggestions.splice(5, results.qSuggestions.length - 4);
@@ -230,7 +230,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           searchExchange.clear();
         };
 
-        searchExchange.subscribe("executeSearch", $attrs.view, function(){
+        searchExchange.subscribe("executeSearch", $attrs.view+".input", function(){
           setTimeout(function(){
             $scope.searchText = "";
             if(searchExchange.state){
@@ -243,7 +243,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           },0);
         });
 
-        searchExchange.subscribe("update", $attrs.view+"_input", function(){
+        searchExchange.subscribe("update", $attrs.view+".input", function(){
           if(!$scope.searchText){
             if(searchExchange.state && searchExchange.state.searchText){
               $scope.searchText = searchExchange.state.searchText;
