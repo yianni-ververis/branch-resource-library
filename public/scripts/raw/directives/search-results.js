@@ -127,6 +127,13 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         });
 
         searchExchange.subscribe("update", $attrs.view, function(handles, data){
+          updateResume(handles);
+        });
+        searchExchange.subscribe("resume", $attrs.view, function(handles, data){
+          updateResume(handles);
+        });
+
+        function updateResume(handles){
           console.log('updating '+$attrs.view);
           console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
@@ -159,7 +166,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
               }
             }
           },100);
-        });
+        }
 
         $scope.showItem = function(approved, entity){
           return approved=='True' || userManager.canApprove(entity);

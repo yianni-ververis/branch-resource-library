@@ -28,6 +28,15 @@ var SearchExchange = (function(){
       qsocks.Connect(config).then(function(global){
         global.openDoc(config.appname).then(function(app){
           senseApp = app;
+          var old = senseApp.connection.ws.onmessage
+          senseApp.connection.ws.onmessage = function(ev){
+            var msg = JSON.parse(ev.data);
+            if( msg.suspend ) {
+              that.publish('resume');
+            } else {
+              old(ev);
+            }
+          };
           that.seqId = senseApp.connection.seqid;
           //$rootScope.$broadcast("senseready", app);
           that.online = true;
