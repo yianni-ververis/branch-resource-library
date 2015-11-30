@@ -211,6 +211,8 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
                   if(err){
                     console.log(err);
                   }
+                  htmlresult = htmlresult.replace(/href="([^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
+                  htmlresult = htmlresult.replace(/src="([^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                   console.log(htmlresult);
                   results.data[0].content = htmlresult;
                   results.data[0].save(function(err){
