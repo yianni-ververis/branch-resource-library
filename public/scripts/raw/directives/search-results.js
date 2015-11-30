@@ -444,6 +444,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             if($scope.postponed){
               $scope.postponed.call();
             }
+            else{
+              console.log('i\m drawing the results :)');
+              updateResume([result.handle]);
+            }
           });
 
       }});
