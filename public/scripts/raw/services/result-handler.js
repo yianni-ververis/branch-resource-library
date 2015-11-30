@@ -9,7 +9,7 @@ app.service('resultHandler', ["notifications", function(notifications){
       return false;
     }
     else if (result.errCode) {
-      
+      console.log(result);
       return false;
     }
     else {
