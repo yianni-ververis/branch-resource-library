@@ -167,7 +167,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           viewQuery.ip = ip;
         }
         MasterController.get(viewQuery, viewQuery, entities["view"], function(results){
-          if(results.data.length == 0){
+          if(results.data && results.data.length == 0){
             var viewData = {};
             if(req.user){
               viewData.userid = req.user._id;
