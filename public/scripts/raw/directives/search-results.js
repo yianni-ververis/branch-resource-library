@@ -445,8 +445,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
               $scope.postponed.call();
             }
             else{
-              console.log('i\m drawing the results :)');
-              updateResume([result.handle]);
+              if($attrs.id.indexOf("users.")==-1){
+                console.log('i\m drawing the results :)');
+                updateResume([result.handle]);
+              }
             }
           });
 
