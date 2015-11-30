@@ -83,6 +83,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             $scope.projects = result.data;
           }
         }
+        else{
+          window.location = "#noitem";
+        }
         if($stateParams.status){
           if($stateParams.status=='created'){
             notifications.notify("Your project has been successfully submitted for approval.", null, {sentiment:"positive"});
@@ -160,6 +163,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.getGitProjects = function(gituser, gitpassword){
     $scope.gitLoading = true;
+    $scope.gitError = null;
     var creds = {
       user: gituser,
       password: gitpassword
@@ -168,6 +172,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       if(resultHandler.process(result)){
         $scope.gitLoading = false;
         $scope.gitProjects = result.repos;
+      }
+      else{
+        var msg = JSON.parse(result.errText);
+        $scope.gitError = msg.message;
+        $scope.gitLoading = false;
       }
     });
   };

@@ -27,26 +27,31 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     Blog.get(query, function(result){
       $scope.blogLoading = false;
       if(resultHandler.process(result)){
-        if($stateParams.status){
-          if($stateParams.status=='created'){
-            notifications.notify("Your blog post has been successfully submitted for approval.", null, {sentiment:"positive"});
+        if(result.data && result.data.length > 0){
+          if($stateParams.status){
+            if($stateParams.status=='created'){
+              notifications.notify("Your blog post has been successfully submitted for approval.", null, {sentiment:"positive"});
+            }
+            else if ($stateParams.status=='updated') {
+              notifications.notify("Your blog post has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
+            }
           }
-          else if ($stateParams.status=='updated') {
-            notifications.notify("Your blog post has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
+          if(append && append==true){
+            $scope.blogs = $scope.blogs.concat(result.data);
           }
-        }
-        if(append && append==true){
-          $scope.blogs = $scope.blogs.concat(result.data);
+          else{
+            $scope.blogs = result.data;
+            //if this is the detail view we'll update the breadcrumbs
+          }
+          if($state.current.name=="blogs.addedit"){
+            $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
+          }
+          $scope.blogInfo = result;
+          delete $scope.blogInfo["data"];
         }
         else{
-          $scope.blogs = result.data;
-          //if this is the detail view we'll update the breadcrumbs
+          window.location = "#noitem";
         }
-        if($state.current.name=="blogs.addedit"){
-          $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
-        }
-        $scope.blogInfo = result;
-        delete $scope.blogInfo["data"];
       }
     });
   };

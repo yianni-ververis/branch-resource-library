@@ -1,6 +1,6 @@
 <ul class="plainlist moderation-list" ng-class="{'horizontal':orientation=='horizontal'}">
   <li class="icon flag {{size}}" ng-if="hasUser && !userManager.canFlag(entity)" ng-click="flagEntity('spam')" ng-class="{flagged: flagged==true}" data-flagcount="{{spamcount}}">
-    <span ng-if="size=='large'">Report Spam</span>    
+    <span ng-if="size=='large'">Report Spam</span>
   </li>
   <li class="icon flag {{size}}" ng-if="userManager.canFlag(entity)" ng-click="flagEntity('flag')" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
     <span ng-if="size=='large'">Flag</span>
@@ -11,7 +11,7 @@
   <li class="icon remove {{size}}" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
     <span ng-if="size=='large'">Unapprove</span>
   </li>
-  <li class="icon delete {{size}}" ng-if="userManager.canDelete(entity)" ng-click="deleteEntity()">
+  <li class="icon delete {{size}}" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
     <span ng-if="size=='large'">Delete</span>
   </li>
   <li class="icon edit {{size}}" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">

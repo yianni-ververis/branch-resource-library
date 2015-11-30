@@ -11,6 +11,11 @@
       templateUrl: "/views/home/index.html",
       controller: "homeController"
     })
+    //no item page
+    .state("noitem", {
+      url: "/noitem",
+      templateUrl: "/views/noitem.html"
+    })
     //login and signup page
     .state("loginsignup", {
       url: "/loginsignup?url",

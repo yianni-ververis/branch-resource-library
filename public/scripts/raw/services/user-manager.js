@@ -37,9 +37,21 @@ app.service('userManager', ['$resource', function($resource){
   this.canHide = function(entity){
     return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].hide && this.userInfo.role.permissions[entity].hide==true;
   }
-  this.canDelete = function(entity){
-    return this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true;
-  }  
+  this.canDelete = function(entity, owner){
+    if (this.hasPermissions() && this.userInfo.role.permissions[entity] && this.userInfo.role.permissions[entity].delete && this.userInfo.role.permissions[entity].delete==true){
+      if(!this.userInfo.role.permissions[entity].allOwners || this.userInfo.role.permissions[entity].allOwners==false){
+        if(this.userInfo._id==owner){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+      else{
+        return true
+      }
+    }
+  }
   this.hasUser = function(){
     return !$.isEmptyObject(that.userInfo);
   }
