@@ -1,4 +1,4 @@
-/* 
+/*
  * Loading indicators
  * .loading-cover will cover the entire page to prevent flash of templates.
  * .loading will give you a small loading indicator box, useful for populating .loading-cover
@@ -16,6 +16,9 @@
 	height: 100%;
 	width: 100%;
 	z-index: 20;
+	&.git{
+		padding-top: 30%;
+	}
 }
 
 .loading {
@@ -32,7 +35,7 @@
 		background: @orange;
 		opacity: 0.25;
 		border-radius: 50%;
-		transform: translateY(0);		
+		transform: translateY(0);
 		animation: wave 1.4s infinite ease-in-out;
 		&:nth-child(1) {
 			animation-delay: 0s;
@@ -42,34 +45,34 @@
 		}
 		&:nth-child(3) {
 			animation-delay: 0.2s;
-		}		
+		}
 		&:nth-child(4) {
 			animation-delay: 0.3s;
-		}		
+		}
 		&:nth-child(5) {
 			animation-delay: 0.4s;
-		}	
+		}
 	}
 }
 
 @keyframes wave
 {
 	0%, 60%, 100%
-	{	
+	{
 		opacity: 0.25;
 		transform: translateY(0);
 	}
-	
+
 	20%
 	{
 		opacity: 0.75;
 		transform: translateY(13px);
 	}
-	
+
 	40%
 	{
 		opacity: 0.75;
 		transform: translateY(-13px);
 	}
-	
+
 }
