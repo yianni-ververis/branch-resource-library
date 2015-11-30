@@ -23,6 +23,13 @@
   ],
   "template": "/views/admin/user-results.html",
   "sorting":{
+    "lastvisit_num": {
+      "id": "lastvisit_num",
+      "name": "Last Visit",
+      "order": -1,
+      "field": "lastvisit_num",
+      "sortType": "qSortByNumeric"
+    },
     "username": {
       "id": "username",
       "name": "A-Z",

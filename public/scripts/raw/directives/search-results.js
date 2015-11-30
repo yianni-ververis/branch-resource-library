@@ -43,6 +43,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         $scope.stars = new Array(5);
 
         $scope.postponed;
+        $scope.resultsTemplateCallback;
+        $scope.pagingTemplateCallback;
 
         $scope.pageTop = 0;
         $scope.pageBottom = $scope.config.pagesize;
@@ -159,24 +161,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
           },100);
         });
 
-        // $scope.$root.$on("update", function(){
-        //   if(searchExchange.state && searchExchange.state.sort){
-        //     $scope.sort = searchExchange.state.sort;
-        //   }
-        //   if(searchExchange.state && searchExchange.state.page){
-        //     $scope.pageTop = ($scope.config.pagesize * searchExchange.state.page);
-        //   }
-        //   console.log('on update handle is '+$scope.handle);
-        //   if($scope.handle){
-        //     $scope.render();
-        //   }
-        //   else{
-        //     $scope.postponed = function(){
-        //       $scope.render();
-        //     }
-        //   }
-        // });
-
         $scope.showItem = function(approved, entity){
           return approved=='True' || userManager.canApprove(entity);
         };
@@ -214,12 +198,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
 
         $scope.render = function(){
           console.log('rendering '+$attrs.id);
-          var properlyIdentified = false;
-          if(el = document.getElementById($attrs.id+"_list")){  //only run render if the element for the current instance exists
-            properlyIdentified = true;
-          }
-          else if(el = $("#"+$attrs.id).find("#_list")[0]){
-            console.log('if at first you don\'t succeed, write some code to accommodate for DOM based situations that angular missed');
+          if(el = $("#"+$attrs.id).find("._list")[0]){
+
           }
           else{
             console.log('the element is but an apparition. it is there in spirit but not in flesh and so we have nothing to touch nor feel nor bind to our being.');
@@ -275,15 +255,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   items.push( item );
                 }
                 console.log($attrs.view + ' has '+items.length+ ' items');
-                if(sortEl = document.getElementById($attrs.id+"_sort")){
-                  selectSortOption(sortEl, $scope.sort);
-                }
-                else if(sortEl = $("#"+$attrs.id).find("#_sort")[0]){
-                  selectSortOption(sortEl, $scope.sort);
-                }
-                else{
-                  //do nothing because we have no element to work with. This might be a bad idea
-                }
+
+                var sortEl = $("#"+$attrs.id).find("._sort")[0];
+                selectSortOption(sortEl, $scope.sort);
+
                 if(hiddenCount==items.length){
                   if(!userManager.hasUser){
                     $scope.renderEmpty();
@@ -302,43 +277,33 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   if(searchExchange.state && searchExchange.state.searchText){
                     terms = searchExchange.state.searchText.split(" ");
                   }
-                  if(properlyIdentified){
-                    //we have properly identified elements
-                    document.getElementById($attrs.id+"_count_label").innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
-                    document.getElementById($attrs.id+"_list").innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
-                    document.getElementById($attrs.id+"_paging").innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
-                    document.getElementById($attrs.id+"_list_container").style.display = "block";
-                    document.getElementById($attrs.id+"_no_results").style.display = "none";
+                  $("#"+$attrs.id).find("._count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
+                  if($scope.resultsTemplate){
+                    $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
                   }
-                  else {
-                    $("#"+$attrs.id).find("#_count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
-                    $("#"+$attrs.id).find("#_list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
-                    $("#"+$attrs.id).find("#_paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
-                    $("#"+$attrs.id).find("#_list_container")[0].style.display = "block";
-                    $("#"+$attrs.id).find("#_no_results")[0].style.display = "none";
+                  else{
+                    $scope.resultsTemplateCallback = function(){
+                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                    }
                   }
-
+                  if($scope.pagingTemplate){
+                    $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                  }
+                  else{
+                    $scope.pagingTemplateCallback = function(){
+                      $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
+                    }
+                  }
+                  $("#"+$attrs.id).find("._list_container")[0].style.display = "block";
+                  $("#"+$attrs.id).find("._no_results")[0].style.display = "none";
                 }
                 else{
                   $scope.loading = false;
-                  if(properlyIdentified){
-                    //we have properly identified elements
-                    document.getElementById($attrs.id+"_list_container").style.display = "none";
-                    document.getElementById($attrs.id+"_no_results").style.display = "block";
-                  }
-                  else{
-                    $("#"+$attrs.id).find("#_list_container")[0].style.display = "none";
-                    $("#"+$attrs.id).find("#_no_results")[0].style.display = "block";
-                  }
+                  $("#"+$attrs.id).find("._list_container")[0].style.display = "none";
+                  $("#"+$attrs.id).find("._no_results")[0].style.display = "block";
                   $scope.items = [];
                 }
-                if(properlyIdentified){
-                  //we have properly identified elements
-                  document.getElementById($attrs.id+"_loading").style.display = "none";
-                }
-                else{
-                  $("#"+$attrs.id).find("#_loading")[0].style.display = "none";
-                }
+                $("#"+$attrs.id).find("._loading")[0].style.display = "none";
                 if(layout.qHyperCube.qSize.qcx < $scope.fields.length){
                   $scope.pageWidth();
                 }
@@ -349,16 +314,9 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
 
         $scope.renderEmpty = function(){
             $scope.loading = false;
-            if(loadingEl = document.getElementById($attrs.id+"_loading")){
-              document.getElementById($attrs.id+"_loading").style.display = "none";
-              document.getElementById($attrs.id+"_list_container").style.display = "none";
-              document.getElementById($attrs.id+"_no_results").style.display = "block";
-            }
-            else{
-              $("#"+$attrs.id).find("#_loading")[0].style.display = "none";
-              $("#"+$attrs.id).find("#_list_container")[0].style.display = "none";
-              $("#"+$attrs.id).find("#_no_results")[0].style.display = "block";
-            }
+            $("#"+$attrs.id).find("._loading")[0].style.display = "none";
+            $("#"+$attrs.id).find("._list_container")[0].style.display = "none";
+            $("#"+$attrs.id).find("._no_results")[0].style.display = "block";
             $scope.items = [];
         };
 
@@ -461,11 +419,19 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             if(!$scope.resultsTemplate){
               $.get($scope.template).success(function(html){
                 $scope.resultsTemplate = new Templater(html);
+                if($scope.resultsTemplateCallback){
+                  $scope.resultsTemplateCallback.call();
+                  $scope.resultsTemplateCallback = null;
+                }
               });
             }
             if(!$scope.pagingTemplate){
               $.get("/views/search/search-paging.html").success(function(html){
                 $scope.pagingTemplate = new Templater(html);
+                if($scope.pagingTemplateCallback){
+                  $scope.pagingTemplateCallback.call();
+                  $scope.pagingTemplateCallback = null;
+                }
               });
             }
             if($scope.postponed){

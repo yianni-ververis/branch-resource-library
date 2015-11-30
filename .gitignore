@@ -2,8 +2,11 @@
 node_modules/*
 !node_modules/visualcaptcha/
 bower_components/*
+!bower_components/visualcaptcha.angular
 !bower_components/summernote/
 !bower_components/angular-sanitize/
 data.js
 client.pem
 .vscode/
+/public/configs/sense.json
+config.js

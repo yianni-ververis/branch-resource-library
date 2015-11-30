@@ -8,7 +8,7 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
             passwordField : 'password',
             passReqToCallback : true
         },
-        function(req, username, password, done) {					
+        function(req, username, password, done) {
             // check in mongo if a user with username exists or not
 						var regExp = new RegExp("^"+username+"$", "i");
             UserProfile.findOne({ 'username' : {$regex: regExp} },
@@ -38,8 +38,9 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
 	                    // User and password both match, return user from done method
 	                    // which will be treated like success
 											LoginHistory.create({userid: user._id}, function(err, result){
-												user.lastvisit = result.createdate.getTime();
-												user.save(function(err){
+												userProfile.lastvisit = result.createdate;
+												userProfile.lastvisit_num = result.createdate.getTime();
+												userProfile.save(function(err){
 
 												});
 											});

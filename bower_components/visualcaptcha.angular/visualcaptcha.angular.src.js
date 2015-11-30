@@ -819,7 +819,7 @@ define( 'visualcaptcha/deep-extend',[],function() {
     //
     _deepExtend = function( dest, src ) {
         dest = dest || {};
-        
+
         for ( var key in src ) {
             if ( src[ key ] &&
                 src[ key ].constructor &&
@@ -957,12 +957,12 @@ define( 'visualcaptcha/templates',[],function() {
 
          btnAccessibility =
             '<div class="visualCaptcha-accessibility-button">' +
-                '<a href="#"><img src="{path}accessibility{retinaExtra}.png" title="{accessibilityTitle}" alt="{accessibilityAlt}" /></a>' +
+                '<a><img src="{path}accessibility{retinaExtra}.png" title="{accessibilityTitle}" alt="{accessibilityAlt}" /></a>' +
             '</div>';
 
         btnRefresh =
             '<div class="visualCaptcha-refresh-button">' +
-                '<a href="#"><img src="{path}refresh{retinaExtra}.png" title="{refreshTitle}" alt="{refreshAlt}" /></a>' +
+                '<a><img src="{path}refresh{retinaExtra}.png" title="{refreshTitle}" alt="{refreshAlt}" /></a>' +
             '</div>';
 
         string =
@@ -1019,7 +1019,7 @@ define( 'visualcaptcha/templates',[],function() {
         for ( var i = 0, l = captcha.numberOfImages(); i < l; i++ ) {
             string =
                 '<div class="img">' +
-                    '<a href="#"><img src="{imageUrl}" id="visualCaptcha-img-{i}" data-index="{i}" alt="" title="" /></a>' +
+                    '<a><img src="{imageUrl}" id="visualCaptcha-img-{i}" data-index="{i}" alt="" title="" /></a>' +
                 '</div>';
 
             params = {

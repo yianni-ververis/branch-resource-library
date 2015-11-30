@@ -5,8 +5,8 @@
 <div class="frosted-cover frosted-white">
   <div class="container featured-article">
     <div class="featured-article-content">
-      <a href="#blogs/{{featuredArticle.entityId}}"><h2>{{featuredArticle.title}}</h2></a>
-      by <a>{{featuredArticle.userid.username}}</a>
+      <a href="#blog/{{featuredArticle.entityId}}"><h2>{{featuredArticle.title}}</h2></a>
+      by <a href="#user/{{featuredArticle.userid._id}}">{{featuredArticle.userid.username}}</a>
       <p>
         {{featuredArticle.comment}}
       </p>
