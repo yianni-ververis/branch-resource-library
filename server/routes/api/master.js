@@ -189,6 +189,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         console.log('getting git info');
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
+        GitHub.authenticate({type: "token", token: GitCredentials.token });
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           if(err){
             res.json(Error.custom(err.message));
@@ -202,11 +203,13 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_updated = new Date(gitresult.updated_at);
               results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
               results.data[0].last_git_check = Date.now();
+              GitHub.authenticate({type: "token", token: GitCredentials.token });
               GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
                 console.log(readmeresult);
                 if(err){
                   console.log(err);
                 }
+                GitHub.authenticate({type: "token", token: GitCredentials.token });
                 GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
                   if(err){
                     console.log(err);
