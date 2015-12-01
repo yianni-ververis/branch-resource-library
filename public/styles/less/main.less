@@ -1,4 +1,5 @@
 @tablet-width: 720px;
+@mobile-width: 360px;
 
 @import "./colors.less";
 @import "./fonts.less";
@@ -24,6 +25,9 @@ body{
   line-height: 1.45;
   font-weight: 400;
   margin: 0 0 300px;
+  @media screen and (max-width: @mobile-width) {
+    margin: 0 0 50px;
+  }
   -webkit-font-smoothing: antialiased;
   background-color: @bodybackground;
 }
@@ -74,6 +78,9 @@ h2{
   color: @dark-grey;
   margin-top: 0;
   font-size: 2.827em;
+  @media screen and (max-width: @mobile-width) {
+    font-size: 2em;
+  }
 }
 
 h3{
@@ -122,7 +129,7 @@ img.avatar {
 
 .main{
   margin-top: 70px;
-  
+
   padding-top: 20px;
 }
 
@@ -137,16 +144,16 @@ img.avatar {
 
 .page{
   min-height: 700px;
-  
+
   h2 {
     margin-bottom: 0;
   }
-  
+
 }
 
 .paging, .sorting{
   text-align: right;
-  
+
   label, ul, select{
     display: inline-block;
   }
@@ -184,6 +191,10 @@ img.avatar {
   top: 0;
   left: 0;
   padding: 20px;
+  @media screen and (max-width: @mobile-width) {
+    position: relative;
+    padding: 20px 0px;
+  }
 }
 
 .no-mobile{
@@ -214,11 +225,19 @@ img.avatar {
   height: 30px;
   line-height: 30px;
   padding: 0 15px;
-  
+
   > div {
     flex: 1;
   }
-  
+
+  @media screen and (max-width: @mobile-width) {
+    display: block;
+    height: auto;
+    padding: initial;
+    .sorting{
+      text-align: left;
+    }
+  }
 }
 
 .center{
@@ -235,21 +254,21 @@ img.avatar {
   padding: 1.4em;
   color: @light-grey;
   text-align: center;
-  
+
   h2 {
     margin-bottom: 20px;
   }
-  
+
   p {
     max-width: 50%;
     margin: 0 auto;
     font-size: 1.1em;
     @media screen and (max-width: @tablet-width) {
       max-width: 100%;
-    }    
-    
+    }
+
   }
-  
+
 }
 
 .smoke {

@@ -1,15 +1,19 @@
 <div class="container">
-  <div class="col-md-12 featured-project" style="background-image:url({{featuredProject.image}})">
+  <div class="row">
+    <div class="col-md-12 col-xs-12 featured-project" style="background-image:url({{featuredProject.image}})">
+    </div>
   </div>
 </div>
 <div class="frosted-cover frosted-white">
   <div class="container featured-project">
-    <div class="featured-project-content">
-      <a href="#project/{{featuredProject.entityId}}"><h2>{{featuredProject.title}}</h2></a>
-      by <a href="#user/{{featuredProject.userid._id}}">{{featuredProject.userid.username}}</a>
-      <p>
-        {{featuredProject.comment}}
-      </p>
+    <div class="row">
+      <div class="featured-project-content col-md-6 col-xs-12">
+        <a href="#project/{{featuredProject.entityId}}"><h2>{{featuredProject.title}}</h2></a>
+        by <a href="#user/{{featuredProject.userid._id}}">{{featuredProject.userid.username}}</a>
+        <p>
+          {{featuredProject.comment}}
+        </p>
+      </div>
     </div>
   </div>
 </div>
