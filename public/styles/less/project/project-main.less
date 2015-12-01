@@ -3,85 +3,85 @@ ul.project-listing {
   padding: 0;
   display: flex;
   flex-direction: column;
-  
-  
+
+
   li.project-item {
     flex: 1;
     display: flex;
     flex-wrap: wrap;
     min-height: 140px;
     margin-bottom: 10px;
-    
+
     .project-info {
       flex: 1 1 100%;
       display: flex;
-      
+      overflow: hidden;
       @media screen and (min-width: @tablet-width) {
           flex: 4;
       }
-      
+
       .thumb-container {
         flex: 0 0 170px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 10px;
-        
+
         @media screen and (min-width: @tablet-width) {
           min-width: 200px
         }
-        
+
         img {
           height: auto;
           max-width: 100%;
         }
-        
+
       }
-      
+
       .project-summary {
         flex: 2;
         padding: 10px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-                
+
         .project-summary-heading {
           flex: 1 1 100%;
         }
-        
+
         .list-title {
           font-size: 22px;
           line-height: 24px;
         }
-        
+
         .project-short-description {
           margin-top: 10px;
         }
-        
+
         .project-bottom {
           flex: 1 1 100%;
           align-self: flex-end;
         }
-        
+
       }
-      
+
     }
-    
+
     .project-details {
       flex: 1;
       border-left: 1px solid @content-border;
       background: rgb(237,237,237);
       padding: 10px;
-      
+
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
- 
+
       @media screen and (max-width: @tablet-width) {
         flex-wrap: nowrap;
         flex-direction: row-reverse;
       }
-                
+
       h1 {
         flex: 1 1 100%;
         font-size: 46px;
@@ -90,21 +90,21 @@ ul.project-listing {
         margin: 0;
         align-self: flex-end;
         text-align: center;
-        
+
         @media screen and (max-width: @tablet-width) {
           font-size: 32px;
           text-align: right;
         }
-        
+
       }
-      
+
       .mini-details {
         flex: 1 1 100%;
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         justify-content: space-around;
-        
+
         div {
           flex: 0 0 auto;
           align-self: flex-end;
@@ -112,19 +112,19 @@ ul.project-listing {
           p {
             margin: 0;
           }
-          
+
           span {
             font-size: 10px;
           }
-          
+
         }
-        
+
       }
-      
+
     }
-    
+
   }
-  
+
 }
 
 
@@ -179,11 +179,11 @@ ul.project-listing {
       border-bottom: none;
     }
   }
-  
+
   .result-header {
     padding: 0;
   }
-  
+
 }
 
 .projects{
