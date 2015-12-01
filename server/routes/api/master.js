@@ -167,7 +167,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           viewQuery.ip = ip;
         }
         MasterController.get(viewQuery, viewQuery, entities["view"], function(results){
-          if(results.data.length == 0){
+          if(results.data && results.data.length == 0){
             var viewData = {};
             if(req.user){
               viewData.userid = req.user._id;
@@ -189,6 +189,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         console.log('getting git info');
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
+        GitHub.authenticate({type: "token", token: GitCredentials.token });
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           if(err){
             res.json(Error.custom(err.message));
@@ -202,15 +203,19 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_updated = new Date(gitresult.updated_at);
               results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
               results.data[0].last_git_check = Date.now();
+              GitHub.authenticate({type: "token", token: GitCredentials.token });
               GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
                 console.log(readmeresult);
                 if(err){
                   console.log(err);
                 }
+                GitHub.authenticate({type: "token", token: GitCredentials.token });
                 GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
                   if(err){
                     console.log(err);
                   }
+                  htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
+                  htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                   console.log(htmlresult);
                   results.data[0].content = htmlresult;
                   results.data[0].save(function(err){

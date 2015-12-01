@@ -123,28 +123,33 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
     Discussion.get(query, function(result){
       $scope.discussionLoading = false;
       if(resultHandler.process(result)){
-        if($stateParams.status){
-          if($stateParams.status=='created'){
-            notifications.notify("Your discussion has been successfully created.", null, {sentiment:"positive"});
+        if(result.data && result.data.length > 0){
+          if($stateParams.status){
+            if($stateParams.status=='created'){
+              notifications.notify("Your discussion has been successfully created.", null, {sentiment:"positive"});
+            }
+            else if ($stateParams.status=='updated') {
+              notifications.notify("Your discussion has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
+            }
           }
-          else if ($stateParams.status=='updated') {
-            notifications.notify("Your discussion has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
+          if(append && append==true){
+            $scope.discussions = $scope.discussions.concat(result.data);
           }
-        }
-        if(append && append==true){
-          $scope.discussions = $scope.discussions.concat(result.data);
+          else{
+            $scope.discussions = result.data;
+            //if this is the detail view we'll update the breadcrumbs
+          }
+          if($state.current.name=="forum.addedit"){
+            $("#discussionContent").code(_arrayBufferToBase64(result.data[0].content.data));
+          }
+          $scope.discussionInfo = result;
+          $scope.canAnswer = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Unanswered");
+          $scope.canReopen = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Answered");
+          delete $scope.discussionInfo["data"];
         }
         else{
-          $scope.discussions = result.data;
-          //if this is the detail view we'll update the breadcrumbs
+          window.location = "#noitem";
         }
-        if($state.current.name=="forum.addedit"){
-          $("#discussionContent").code(_arrayBufferToBase64(result.data[0].content.data));
-        }
-        $scope.discussionInfo = result;
-        $scope.canAnswer = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Unanswered");
-        $scope.canReopen = ($scope.discussions[0].userid._id == $scope.currentuserid) && ($scope.discussions[0].status.name=="Answered");
-        delete $scope.discussionInfo["data"];
       }
     });
   };

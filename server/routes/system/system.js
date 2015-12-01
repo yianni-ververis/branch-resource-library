@@ -37,7 +37,7 @@ router.post('/git/projects', function(req, res){
     GitHub.repos.getAll({user:req.body.user}, function(err, repos){
       if(err){
         console.log(err);
-        res.json(Error.custom("Could not Git Projects"));
+        res.json(Error.custom(err.message));
       }
       else{
         res.json({repos: repos});
@@ -86,7 +86,7 @@ function buildMenu(user){
     }
     topMenu = {
       items:[{
-        label: user.username,        
+        label: user.username,
         items: []
       }]
     };

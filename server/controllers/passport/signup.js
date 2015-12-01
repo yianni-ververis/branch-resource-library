@@ -71,6 +71,8 @@ module.exports = function(passport, User, UserProfile){
             if (err) return next(err)
 						var newUserProfileData = req.body;
 						newUserProfileData._id = newUserId;
+						newUserProfileData.image = "/attachments/default/userprofile.png";
+            newUserProfileData.thumbnail = "/attachments/default/userprofile.png";
 						var newUserProfile = new UserProfile(newUserProfileData)
 						newUserProfile.save(function(err){
 							if (err) return next(err)

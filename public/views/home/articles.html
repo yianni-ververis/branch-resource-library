@@ -1,15 +1,19 @@
 <div class="container">
-  <div class="col-md-12 featured-article" style="background-image:url({{featuredArticle.image}})">
+  <div class="row">
+    <div class="col-md-12 featured-article" style="background-image:url({{featuredArticle.image}})">
+    </div>
   </div>
 </div>
 <div class="frosted-cover frosted-white">
   <div class="container featured-article">
-    <div class="featured-article-content">
-      <a href="#blog/{{featuredArticle.entityId}}"><h2>{{featuredArticle.title}}</h2></a>
-      by <a href="#user/{{featuredArticle.userid._id}}">{{featuredArticle.userid.username}}</a>
-      <p>
-        {{featuredArticle.comment}}
-      </p>
+    <div class="row">
+      <div class="featured-article-content col-md-6 col-xs-12">
+        <a href="#blog/{{featuredArticle.entityId}}"><h2>{{featuredArticle.title}}</h2></a>
+        by <a href="#user/{{featuredArticle.userid._id}}">{{featuredArticle.userid.username}}</a>
+        <p>
+          {{featuredArticle.comment}}
+        </p>
+      </div>
     </div>
   </div>
 </div>
