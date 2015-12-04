@@ -10,7 +10,7 @@ module.exports = {
     comment:{
       to: "{{parent.userid.email}}",
       subject: "New Activity on {{parent.title}}",
-      html: "New Activity on <strong>{{parent.title}}</strong><br/>{{comment.content}}"
+      html: "New Activity on <strong>{{parent.title}}</strong><br/>{{comment.plaintext}}"
     }
   },
   unapprove:{
@@ -35,7 +35,7 @@ module.exports = {
     subscriptionComment:{
       to: "{{subscription.userid.email}}",
       subject: "Someone has commented on {{record.parent.title}}",
-      html: "{{record.comment.content}}"
+      html: "{{record.comment.plaintext}}"
     }
   }
 }

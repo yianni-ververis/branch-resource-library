@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var discussionSchema = new Schema({
   title: String,
   content: Buffer,
-  content_plaintext: String,
+  plaintext: String,
   createdate: {
     type: Date,
     default: Date.now

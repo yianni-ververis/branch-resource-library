@@ -103,6 +103,7 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   $scope.saveDiscussion = function(){
     $scope.discussionLoading = true;
     $scope.discussions[0].content = $("#discussionContent").code();
+    $scope.discussions[0].plaintext = cleanUpContent($scope.discussions[0].content);
     var query = {};
     if($scope.discussions[0]._id){
       query.discussionId = $scope.discussions[0]._id;
@@ -261,6 +262,12 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
         binary += String.fromCharCode( bytes[ i ] );
     }
     return binary ;
+  }
+
+  function cleanUpContent(text){
+    var noImg = text.replace(/<img[^>]*>/g,"[image]");
+    noHTML = noImg.replace(/<\/?[^>]+(>|$)/g, "");
+    return noHTML;
   }
 
 }]);
