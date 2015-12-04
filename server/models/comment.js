@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var commentSchema = new Schema({
   content: Buffer,
   pagetext: Buffer,
+  plaintext: String,
   createdate: {
     type: Date,
     default: Date.now

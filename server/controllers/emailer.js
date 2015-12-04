@@ -1,4 +1,5 @@
-nodemailer = require('nodemailer').createTransport();
+config = require('../../config.js');
+nodemailer = require('nodemailer').createTransport(config.mailTransport);
 Templater = require('./templater');
 MailText = require('./mailText');
 

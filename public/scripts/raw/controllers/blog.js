@@ -134,7 +134,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.saveBlog = function(){
     $scope.blogLoading = true;
     $scope.blogs[0].content = $("#blogContent").code();
-    convertToPlainText($scope.blogs[0].content);
+    $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
     var data = {
       standard: $scope.blogs[0]
     };
@@ -275,4 +275,11 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
     return binary ;
   }
+
+  function cleanUpContent(text){
+    var noImg = text.replace(/<img[^>]*>/g,"[image]");
+    noHTML = noImg.replace(/<\/?[^>]+(>|$)/g, "");
+    return noHTML;
+  }
+
 }]);
