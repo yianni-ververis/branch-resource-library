@@ -1,58 +1,59 @@
 <div class="container page">
-  <div class="row project-detail-summary content card">
-    <notification-dialog></notification-dialog>
-    <div class="col-md-4">
-      <h2>{{projects[0].title}}</h2>
-      by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a>
+  <notification-dialog></notification-dialog>
+
+  <div class="row project-header card">
+    <div class="project-thumbnail">
       <img src="{{projects[0].thumbnail}}" />
+    </div>
+    <div class="project-heading">  
+      <h2>{{projects[0].title}}</h2>
+      <p>created by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a></p>
+      <p>{{projects[0].short_description}}</p>
+      <a href="{{projects[0].download_link}}"><button class="branch-light-button"><i class="fa fa-download"></i>Download project</button></a>
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
-      <a href="{{projects[0].download_link}}">Download</a>
     </div>
-    <div class="col-md-5">
-      <ul class="plainlist">
-        <li>
-          <label>Project Website:</label>
-          <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
-        </li>
-        <li>
-          <label>Updated at:</label>
-          {{projects[0].last_updated | date:'dd MMM yy HH:mm'}}
-        </li>
-        <li>
-          <label>Git Clone Url:</label>
-          {{projects[0].git_clone_url}}
-        </li>
-        <li>
-          <label>Project State:</label>
-          {{projects[0].status.name || 'None Specified'}}
-        </li>
-        <li>
-          <label>Release version:</label>
-          TBD
-        </li>
-        <li>
-          <label>Branch Contributors:</label>
-          TBD
-        </li>
-        <li>
-          <label>Tags:</label>
-          {{projects[0].tags}}
-        </li>
-      </ul>
+    <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
+  </div>
+  
+  <div class="row card content project-metadata">
+    <div>
+      <p class="meta-label">Project Website</p>
+      <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
     </div>
-    <div class="col-md-3 align-left">
-      <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
-      <moderation entity="'project'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
+    <div>
+      <p class="meta-label">Updated</p>
+      <p>{{projects[0].last_updated | date:'dd MMM yy HH:mm'}}</p>
+    </div>
+    <div>
+      <p class="meta-label">Product</p>
+      <p>{{projects[0].product.name}}</p>  
+    </div>
+    <div>
+      <p class="meta-label">Project State</p>
+      <p>{{projects[0].status.name || 'None Specified'}}</p>  
+    </div>
+    <div>
+      <p class="meta-label">Views</p>
+      <p>{{projects[0].views}}</p>    
+    </div>    
+    <div>
+      <p class="meta-label">Tags</p>
+      <p>{{projects[0].tags}}</p>    
     </div>
   </div>
+
   <div class="row content card">
-    <div class="col-md-12">
-      <h3>Details</h3>
-    </div>
     <div class="col-md-12 markdown-body project-detail" ng-bind-html="getPageText()">
     </div>
   </div>
-  <div comments entity="'project'" entityid="projectId" parent="projects[0]">
+ 
+   <div ng-show="currentuserid" class="row">
+    <div class="col-md-12">
+      <moderation entity="'project'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
+    </div>
+   </div>
+   
+   <div comments entity="'project'" entityid="projectId" parent="projects[0]">
 
   </div>
   <div class="loading-cover" ng-show="projectLoading">
@@ -63,3 +64,4 @@
     <span></span>
   </div>
 </div>
+<!-- <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>-->

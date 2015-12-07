@@ -34,7 +34,7 @@
 				user: "="
 			},
       template: function(elem, attr){
-        var html = "<button class='branch-button' ng-show='user' ng-click='toggleSubscription()' ng-disabled='{{subscribing==true}}'>{{buttonText}}</button>";
+        var html = "<button class='branch-light-button' ng-show='user' ng-click='toggleSubscription()' ng-disabled='{{subscribing==true}}'><i class='fa fa-envelope-o'></i>{{buttonText}}</button>";
         return html;
       },
       link: function(scope){

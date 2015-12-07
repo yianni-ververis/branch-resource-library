@@ -70,3 +70,31 @@
   background-color: transparent;
   border: none;
 }
+
+.branch-light-button {
+  box-sizing: border-box;
+  border: solid 1px @content-border;
+  background: linear-gradient(to bottom, #FFFFFF, #FFFFFF);
+  box-shadow: none;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  background-clip: border-box;
+  vertical-align: middle;
+  display: inline-block;
+  min-width: 44px;
+  padding: 1px 15px;
+  line-height: 24px;
+  height: 28px;
+  white-space: nowrap;
+  
+  &:hover {
+    border-color: #666666;
+  }
+  
+  .fa {
+    margin-right: 10px;
+  }
+  
+}

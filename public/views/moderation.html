@@ -1,23 +1,23 @@
-<ul class="plainlist moderation-list" ng-class="{'horizontal':orientation=='horizontal'}">
-  <li class="icon flag {{size}}" ng-if="hasUser && !userManager.canFlag(entity)" ng-click="flagEntity('spam')" ng-class="{flagged: flagged==true}" data-flagcount="{{spamcount}}">
-    <span ng-if="size=='large'">Report Spam</span>
-  </li>
-  <li class="icon flag {{size}}" ng-if="userManager.canFlag(entity)" ng-click="flagEntity('flag')" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
-    <span ng-if="size=='large'">Flag</span>
-  </li>
-  <li class="icon approve {{size}}" ng-if="(userManager.canApprove(entity) && !isApproved()) || (userManager.canHide(entity) && !isApproved())" ng-click="approveEntity()">
-    <span ng-if="size=='large'">Approve</span>
-  </li>
-  <li class="icon remove {{size}}" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
-    <span ng-if="size=='large'">Unapprove</span>
-  </li>
-  <li class="icon delete {{size}}" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
-    <span ng-if="size=='large'">Delete</span>
-  </li>
-  <li class="icon edit {{size}}" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">
-    <span ng-if="size=='large'">Edit</span>
-  </li>
-  <li class="icon download {{size}}" ng-if="userManager.hasUser() && download" ng-click="downloadEntity()">
-    <span ng-if="size=='large'">Download</span>
-  </li>
-</ul>
+<div ng-class="{'vertical':orientation=='vertical'}">
+  <button class="branch-light-button" ng-if="hasUser && !userManager.canFlag(entity)" ng-click="flagEntity('spam')" ng-class="{flagged: flagged==true}" data-flagcount="{{spamcount}}">
+    <i class="fa fa-flag"></i>Report Spam
+  </button>
+  <button class="branch-light-button" ng-if="userManager.canFlag(entity)" ng-click="flagEntity('flag')" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
+    <i class="fa fa-flag"></i>Flag
+  </button>
+  <button class="branch-light-button" ng-if="(userManager.canApprove(entity) && !isApproved()) || (userManager.canHide(entity) && !isApproved())" ng-click="approveEntity()">
+    <i class="fa fa-thumbs-up"></i>Approve
+  </button>
+  <button class="branch-light-button" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
+    <i class="fa fa-ban"></i>Unapprove
+  </button>
+  <button class="branch-light-button" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
+    <i class="fa fa-trash-o"></i>Delete
+  </button>
+  <button class="branch-light-button" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">
+    <i class="fa fa-pencil"></i>Edit
+  </button>
+  <button class="branch-light-button" ng-if="userManager.hasUser() && download" ng-click="downloadEntity()">
+    <i class="fa fa-download"></i>Download
+  </button>
+</div>
