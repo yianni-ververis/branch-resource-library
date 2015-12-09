@@ -30,5 +30,16 @@ module.exports = {
     else{
       console.log('no mail template found for '+action+"/"+entity);
     }
+  },
+  sendCustomMail: function(mailOptions, callbackFn){
+    nodemailer.sendMail(mailOptions, function(error, info){
+      if(error){
+        return console.log(error)
+      }
+      else{
+        console.log('Message sent: ' + info.response);
+        callbackFn.call(null);
+      }
+    });
   }
 }
