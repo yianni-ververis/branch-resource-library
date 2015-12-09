@@ -1,5 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
 		User = require('../../models/user'),
+		UserProfile = require('../../models/userprofile'),
 		bCrypt = require('bcryptjs'),
 		md5 = require('MD5'),
 		async = require('async'),
