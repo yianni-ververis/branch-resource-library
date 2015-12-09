@@ -73,7 +73,7 @@ module.exports = function(req, res, next){
       }
 
       // send email with new password
-      mailer.sendMail(mailOptions, function(){
+      mailer.sendCustomMail(mailOptions, function(){
 			  res.json({});
       })
     }
