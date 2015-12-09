@@ -14,19 +14,25 @@ module.exports = function(req, res, next){
 
     // check user exists
     function(next) {
-      User.findOne({ email: req.body.email }, function(err, user) {
-        if (err){
+			UserProfile.findOne({ 'email' : {$regex: regExp} }, function(err, userProfile) {
+				if (err){
 					res.json(Error.custom(err));
 				}
-
-        if (!user) {
-          res.json(Error.custom('User Not Found with email - '+req.body.email));
-        }
 				else{
-	        shared.user = user;
-	        next();
+					if (!user) {
+						res.json(Error.custom('User Not Found with email - '+req.body.email));
+					}
+		      User.findOne({'_id': userProfile._id}, function(err, user){
+		        if (err){
+							res.json(Error.custom(err));
+						}
+						else{
+							shared.user = user;
+			        next();
+						}
+		      });
 				}
-      })
+			});
     },
 
     // create new password

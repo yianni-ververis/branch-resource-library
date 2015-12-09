@@ -15,7 +15,6 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
                 function(err, userProfile) {
                     // In case of any error, return using the done method
                     if (err){
-												console.log('are we here?');
 												console.log(err);
                         return done(err.message);
 										}
