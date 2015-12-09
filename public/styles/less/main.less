@@ -60,7 +60,6 @@ label{
 }
 
 h1, h2, h3, h4 {
-  margin: 1.141em 0 0.5em;
   font-family: 'ProximaNova-Light';
   font-weight: inherit;
   line-height: 1.2;
@@ -106,6 +105,8 @@ img{
 }
 img.avatar {
   border-radius: 50%;
+  width: 45px;
+  height: 45px;
   max-width: 100%;
   height: auto;
   vertical-align: middle;
@@ -136,6 +137,8 @@ img.avatar {
 .card {
   background: @cardbg;
   border: 1px solid @content-border;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 
 .emphasize{
@@ -224,7 +227,6 @@ img.avatar {
   margin-bottom: 10px;
   height: 30px;
   line-height: 30px;
-  padding: 0 15px;
 
   > div {
     flex: 1;
@@ -243,6 +245,10 @@ img.avatar {
 .center{
   margin: 0 auto;
   display: block;
+}
+
+.no-padding {
+  padding: 0;
 }
 
 .no-results {

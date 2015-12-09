@@ -1,7 +1,7 @@
 <div class="col-md-12 thread-list card" qs-repeat="discussion in items" id="{{discussion.discussionId}}" qs-hide="discussion.hidden==true">
   <div class="thread">
     <div class="avatar-container">
-      <img class="avatar" style="width: 40px; height: 40px; float: left;" src="/attachments/{{discussion.userId}}/thumbnail.png" alt="" onerror="this.src='/attachments/default/userprofile.png'">
+      <img class="avatar" style="float: left;" src="/attachments/{{discussion.userId}}/thumbnail.png" alt="" onerror="this.src='/attachments/default/userprofile.png'">
     </div>
     <div class="thread-heading">
       <a href="#discussion/{{discussion.discussionId}}"><p class="thread-title">{{discussion.title}}</p></a>
