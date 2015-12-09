@@ -20,18 +20,21 @@ module.exports = function(req, res, next){
 					res.json(Error.custom(err));
 				}
 				else{
-					if (!user) {
+					if (!userProfile) {
 						res.json(Error.custom('User Not Found with email - '+req.body.email));
 					}
-		      User.findOne({'_id': userProfile._id}, function(err, user){
-		        if (err){
-							res.json(Error.custom(err));
-						}
-						else{
-							shared.user = user;
-			        next();
-						}
-		      });
+					else {
+						shared.userProfile = userProfile;
+						User.findOne({'_id': userProfile._id}, function(err, user){
+			        if (err){
+								res.json(Error.custom(err));
+							}
+							else{
+								shared.user = user;
+				        next();
+							}
+			      });
+					}
 				}
 			});
     },
@@ -62,7 +65,7 @@ module.exports = function(req, res, next){
 
       // setup email data
       var mailOptions = {
-        to: shared.user.email,
+        to: shared.userProfile.email,
         subject: 'Password reset',
         html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +
          '<p>Please use the following temporary password to access your account - <b>' + shared.newPassword + '</b></p>' +
