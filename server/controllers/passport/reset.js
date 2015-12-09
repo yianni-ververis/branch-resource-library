@@ -15,7 +15,7 @@ module.exports = function(req, res, next){
 
     // check user exists
     function(next) {
-			UserProfile.findOne({ 'email' : {$regex: regExp} }, function(err, userProfile) {
+			UserProfile.findOne({ 'email' : req.body.email }, function(err, userProfile) {
 				if (err){
 					res.json(Error.custom(err));
 				}
