@@ -8,7 +8,7 @@
       <div class="col-md-2">
         <ul class="plainlist">
           <li>Updated</li>
-          <li>{{item.last_updated_num | date:'MMM dd, yyyy'}}</li>
+          <li>{{item.last_updated_num:Date}}</li>
         </ul>
       </div>
       <div class="col-md-2">
@@ -19,7 +19,7 @@
       </div>
       <div class="col-md-3">
         <ul class="plainlist">
-          <li>Marked as spam {{item.spamCount || 0}} times</li>
+          <li>Marked as spam {{item.spamCount}} times</li>
           <li><a class="orange" onclick="searchExchange.publish('viewComments', ['spam', '{{item.title}}'], '{{item.entityId}}')">View Comments</a></li>
         </ul>
       </div>

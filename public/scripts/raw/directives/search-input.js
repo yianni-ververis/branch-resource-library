@@ -14,14 +14,16 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           16,
           27
         ];
-        var reservedKeys = [ //these keys should not execute another search, they are reserved for the suggestions mechanism
+        var reservedKeys = [ //these keys should not execute another search, they are reserved for the suggestions mechanism or are navigationkeys (page up/page down)
           9,
           13,
           38,
           40,
           39,
           37,
-          32
+          32,
+          33,
+          34
         ];
 
         var Key = {
