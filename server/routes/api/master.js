@@ -214,15 +214,17 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
                   if(err){
                     console.log(err);
                   }
-                  htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
-                  htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
-                  console.log(htmlresult);
-                  results.data[0].content = htmlresult;
-                  results.data[0].save(function(err){
-                    if(!err){
-                      Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
-                    }
-                  });
+                  else{
+                    htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
+                    htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
+                    console.log(htmlresult);
+                    results.data[0].content = htmlresult;
+                    results.data[0].save(function(err){
+                      if(!err){
+                        Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
+                      }
+                    });  
+                  }
                   res.json(results || {});
                 })
               });

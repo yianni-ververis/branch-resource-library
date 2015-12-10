@@ -1,7 +1,7 @@
 <div class="container page blog-edit">
   <div class="content">
     <notification-dialog></notification-dialog>
-    <h2>New blog post</h2>
+    <h2>{{blogs[0]._id ? 'Edit post' : 'New blog post'}}</h2>
     <div class="row">
       <div class="col-md-12">
         <label>Title:</label>
@@ -37,7 +37,7 @@
 
           </div>
         </div>
-        <button class="branch-button" type="button" name="button" ng-click="validateNewBlogData()">Submit for Approval</button>
+        <button class="branch-button" type="button" name="button" ng-click="validateNewBlogData()">{{blogs[0]._id ? 'Save' : 'Submit for approval'}}</button>
       </div>
     </div>
   </div>
