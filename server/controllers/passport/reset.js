@@ -65,7 +65,7 @@ module.exports = function(req, res, next){
 
       // setup email data
       var mailOptions = {
-				from: 'Qlik Branch <branchadmin@qlik.com>',
+				from: 'Qlik Branch',
         to: shared.userProfile.email,
         subject: 'Password reset',
         html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +

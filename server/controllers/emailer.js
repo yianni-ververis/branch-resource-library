@@ -11,7 +11,7 @@ module.exports = {
       var subjectTemplate = new Templater(templateOptions.subject);
       var htmlTemplate = new Templater(templateOptions.html);
       var mailOptions = {
-        from: 'Qlik Branch <branchadmin@qlik.com>',
+        from: 'Qlik Branch',
         to: toTemplate.getHTML(data),
         subject: subjectTemplate.getHTML(data),
         html: htmlTemplate.getHTML(data)
