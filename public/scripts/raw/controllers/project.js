@@ -347,6 +347,51 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     searchExchange.clear();
   };
 
+  $scope.removedefaultSelection = function(field){
+    for(var i=0;i<defaultSelection.length;i++){
+      if(defaultSelection[i].field==field){
+        defaultSelection.splice(i,1);
+      }
+    }
+  };
+
+  $scope.filterProduct = function(product){
+    $scope.removedefaultSelection('product');
+    if(product=="QlikView"){
+      if($(".qlikview-filter").hasClass('active')){
+        $(".qlikview-filter").removeClass('active');
+      }
+      else{
+        $(".qlikview-filter").addClass('active');
+        $scope.addDefaultSelection('product', [{qText: product}]);
+      }
+      $(".qlik-sense-filter").removeClass('active');
+    }
+    else {
+      if($(".qlik-sense-filter").hasClass('active')){
+        $(".qlik-sense-filter").removeClass('active');
+      }
+      else{
+        $(".qlik-sense-filter").addClass('active');
+        $scope.addDefaultSelection('product', [{qText: product}]);
+      }
+      $(".qlikview-filter").removeClass('active');
+    }
+    searchExchange.subscribe('reset', "projects", function(){
+      console.trace();
+      searchExchange.init(defaultSelection);
+      searchExchange.unsubscribe('reset', "projects");
+    });
+    searchExchange.clear(true);
+  };
+
+  $scope.addDefaultSelection = function(field, values){
+    defaultSelection.push({
+      field: field,
+      values: values
+    });
+  };
+
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
     if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
        if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
