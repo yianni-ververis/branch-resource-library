@@ -2,9 +2,6 @@
 ###### That's right branch.qlik.com is open source.
 
 For better or for worse Branch contains a lot of moving parts. Before setting out on your Branch adventure you'll need to be familiar with [Qlik Sense](), [The Generic REST Connector for Qlik Sense](), [MongoDB](), [NodeJS](), [ExpressJS]() and [AngularJS]()
-### Contents
-[Environment](#Environment)
-[An overview of moving parts](#An overview of moving parts)
 
 ### Environment
 To setup Branch you'll need the following available environments - 
@@ -74,3 +71,63 @@ We are using [Nodemailer](https://github.com/andris9/Nodemailer) for sending ema
 ```
 
 ### Customising the Sense Integration
+Each search result list that appears in Branch is composes of an HTML template and a JSON configuration file. The HTML template can live anywhere however the JSON config **MUST** reside in the **/public/configs** directory. The configuration file contains the definition for which fields to use in when Searching, Suggesting and Sorting as well as the fields that will be available in the results list. The config also controls how many results to load per page. An example config may look like this -
+```javascript
+{
+  "fields":[
+    {
+      "dimension": "projectId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "username",
+      "suppressNull": false
+    },
+    {
+      "measure": "sum(points)",
+      "label": "rating",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
+    },
+    {
+      "measure": "sum(viewNum)",
+      "label": "views"
+    }
+  ],
+  "template": "/views/projects/project-results.html",
+  "sorting":{
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title",
+      "sortType": "qSortByAscii"
+    },
+    "username": {
+      "id": "username",
+      "name": "User",
+      "order": 1,
+      "field": "username",
+      "sortType": "qSortByAscii"
+    },
+    "rating": {
+      "id": "rating",
+      "name": "Most Popular",
+      "order": -1,
+      "field": "rating",
+      "sortType": "qSortByNumeric"
+    }
+  },
+  "primaryKey" : "projectId",
+  "defaultSort": "title",
+  "entity": "project",
+  "nullSuppressor": 0,
+  "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags","category","product"],
+  "pagesize" : 20
+}
+```
