@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <h3>Comments</h3>
   </div>
-  <div class="col-md-12 project-comments" ng-show="userManager.canRead('comment') || entity=='discussion'">
+  <div class="col-md-12 project-comments">
     <div class="" ng-if="comments.length>0">
       <div class="result-header">
         Showing {{comments.length}} of {{commentInfo.total}} comments
@@ -38,8 +38,5 @@
       </div>
     </div>
     <button ng-show="userManager.canCreate('comment')" type="button" class="form-control" ng-click="saveComment()">Reply</button>
-  </div>
-  <div class="please-login" ng-hide="userManager.canRead('comment') || entity=='discussion'">
-    Please login to view comments
   </div>
 </div>
