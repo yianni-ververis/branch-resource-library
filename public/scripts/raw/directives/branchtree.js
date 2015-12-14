@@ -13,7 +13,7 @@ app.directive("branchtree", ['$interval', function($interval) {
       
       // Tree configuration
       var branches = [];
-      var seed = {i: 0, x: width / 2 , y: height, a: 0, l: 80, d:0}; // a = angle, l = length, d = depth
+      var seed = {i: 0, x: width / 2 , y: height, a: 0, l: 70, d:0}; // a = angle, l = length, d = depth
       var da = 0.6; // Angle delta
       var dl = 0.8; // Length delta (factor)
       var ar = 0.4; // Randomness
