@@ -6,8 +6,8 @@ var mongoose = require('mongoose'),
     bodyParser = require('body-parser'),
     qrs = require('./SenseQRS');
 
-//var mode = "release";
-var mode = "debug";
+var mode = "release";
+//var mode = "debug";
 
 config = require('config');
 

@@ -180,34 +180,34 @@
     })
   }]);
 
-  // //directives
-  // include "./directives/header.js"
-  // include "./directives/confirm-dialog.js"
-  // include "./directives/notification-dialog.js"
-  // include "./directives/comments.js"
-  // include "./directives/moderation.js"
-  // include "./directives/rating.js"
-  // include "./directives/subscribe.js"
-  // include "./directives/search-input.js"
-  // include "./directives/search-filter.js"
-  // include "./directives/search-results.js"
-  // //services
-  // include "./services/user-manager.js"
-  // include "./services/result-handler.js"
-  // include "./services/search-exchange.js"
-  // include "./services/picklists.js"
-  // include "./services/publisher.js"
-  // include "./services/templater.js"
-  // //controllers
-  // include "./controllers/admin.js"
-  // include "./controllers/moderator.js"
-  // include "./controllers/auth.js"
-  // include "./controllers/home.js"
-  // include "./controllers/project.js"
-  // include "./controllers/blog.js"
-  // include "./controllers/comment.js"
-  // include "./controllers/user.js"
-  // include "./controllers/moderation.js"
+  //directives
+  include "./directives/header.js"
+  include "./directives/confirm-dialog.js"
+  include "./directives/notification-dialog.js"
+  include "./directives/comments.js"
+  include "./directives/moderation.js"
+  include "./directives/rating.js"
+  include "./directives/subscribe.js"
+  include "./directives/search-input.js"
+  include "./directives/search-filter.js"
+  include "./directives/search-results.js"
+  //services
+  include "./services/user-manager.js"
+  include "./services/result-handler.js"
+  include "./services/search-exchange.js"
+  include "./services/picklists.js"
+  include "./services/publisher.js"
+  include "./services/templater.js"
+  //controllers
+  include "./controllers/admin.js"
+  include "./controllers/moderator.js"
+  include "./controllers/auth.js"
+  include "./controllers/home.js"
+  include "./controllers/project.js"
+  include "./controllers/blog.js"
+  include "./controllers/comment.js"
+  include "./controllers/user.js"
+  include "./controllers/moderation.js"
 
 //  return app
 
