@@ -115,7 +115,8 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
     Comment.save({}, {
       entityId: $scope.entityid,
       entity: $scope.entity,
-      content: commentText
+      content: commentText,
+      plaintext: cleanUpComment(commentText)
     }, function(result){
       if(resultHandler.process(result)){
         $("#summernote").code("");
@@ -142,6 +143,12 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
         binary += String.fromCharCode( bytes[ i ] );
     }
     return binary ;
+  }
+
+  function cleanUpComment(commentText){
+    var noImg = commentText.replace(/<img[^>]*>/g,"[image]");
+    noHTML = noImg.replace(/<\/?[^>]+(>|$)/g, "");
+    return noHTML;
   }
 
 

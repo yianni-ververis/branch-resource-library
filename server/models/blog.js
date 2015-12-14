@@ -5,7 +5,7 @@ var blogSchema = new Schema({
   title: String,
   short_description: String,
   content: Buffer,
-  content_plaintext: String,
+  plaintext: String,
   tags: String,
   createdate: {
     type: Date,

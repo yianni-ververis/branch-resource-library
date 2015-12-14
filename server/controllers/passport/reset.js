@@ -1,5 +1,6 @@
 var LocalStrategy = require('passport-local').Strategy,
 		User = require('../../models/user'),
+		UserProfile = require('../../models/userprofile'),
 		bCrypt = require('bcryptjs'),
 		md5 = require('MD5'),
 		async = require('async'),
@@ -14,19 +15,28 @@ module.exports = function(req, res, next){
 
     // check user exists
     function(next) {
-      User.findOne({ email: req.body.email }, function(err, user) {
-        if (err){
+			UserProfile.findOne({ 'email' : req.body.email }, function(err, userProfile) {
+				if (err){
 					res.json(Error.custom(err));
 				}
-
-        if (!user) {
-          res.json(Error.custom('User Not Found with email - '+req.body.email));
-        }
 				else{
-	        shared.user = user;
-	        next();
+					if (!userProfile) {
+						res.json(Error.custom('User Not Found with email - '+req.body.email));
+					}
+					else {
+						shared.userProfile = userProfile;
+						User.findOne({'_id': userProfile._id}, function(err, user){
+			        if (err){
+								res.json(Error.custom(err));
+							}
+							else{
+								shared.user = user;
+				        next();
+							}
+			      });
+					}
 				}
-      })
+			});
     },
 
     // create new password
@@ -55,7 +65,8 @@ module.exports = function(req, res, next){
 
       // setup email data
       var mailOptions = {
-        to: shared.user.email,
+				from: 'Qlik Branch <svc-branchadminmail@qlik.com>',
+        to: shared.userProfile.email,
         subject: 'Password reset',
         html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +
          '<p>Please use the following temporary password to access your account - <b>' + shared.newPassword + '</b></p>' +
@@ -63,7 +74,7 @@ module.exports = function(req, res, next){
       }
 
       // send email with new password
-      mailer.sendMail(mailOptions, function(){
+      mailer.sendCustomMail(mailOptions, function(){
 			  res.json({});
       })
     }

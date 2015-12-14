@@ -15,7 +15,7 @@ config = require('config');
 var envconfig = require('./config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
-qrs.config = envconfig.qrs;
+
 
 
 //load the models

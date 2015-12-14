@@ -34,6 +34,7 @@ module.exports = {
         flag.flagType = req.body.flagType;
         flag.comment = req.body.comment;
         flag.entity = req.params.entity;
+        flag.createdate_num = new Date(Date.now()).getTime();
         flag.entityId = req.params.id;
         flag.save(function(err){
           if(err){
