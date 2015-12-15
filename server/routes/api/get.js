@@ -11,7 +11,6 @@ module.exports = {
     var entity = req.params.entity;
     var user = req.user;
     var userPermissions = req.user.role.permissions[entity];
-    //console.log(userPermissions);
     //check that the user has sufficient permissions for this operation
     if(!userPermissions || userPermissions.update!=true){
       res.json(Error.insufficientPermissions);
@@ -41,9 +40,9 @@ module.exports = {
       if(userPermissions.allOwners!=true && !entities[entity].exemptFromOwnership){
         query["createuser"]=user._id;
       }
-      
+
       entity.model.find().exec(function(err, response){
-        if(err) { 
+        if(err) {
           console.log(err)
         }
 

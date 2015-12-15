@@ -45,7 +45,7 @@
 	      html += "</div>";
 				return html;
       },
-      link: function(scope){
+      controller: ['$scope', function(scope){
 				scope.$on('confirmPrompt', function(event, data){
           scope.message = data.message;
           scope.options = data.options;
@@ -53,7 +53,6 @@
           scope.active = true;
         });
         scope.returnOption = function(index){
-					console.log('firing');
 					var comment = $(".confirm-dialog textarea").val();
 					scope.message = null;
           scope.options = null;
@@ -61,7 +60,7 @@
 					scope.callback.call(null, {result: index, comment: comment});
           //scope.callback = null;
         };
-      }
+      }]
     }
   }]);
 

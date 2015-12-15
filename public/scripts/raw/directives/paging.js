@@ -19,7 +19,7 @@
 		};
   });
 
-  module.factory('paging', ['$rootScope', function ($rootScope) {
+  module.factory('paging', ['$root$scope', function ($root$scope) {
 		return {};
   }]);
 
@@ -64,28 +64,28 @@
 	        html += '</div>';
 					return html;
       },
-      link: function(scope){
-				scope.pageInRange = function(pageIndex){
+      controller: ['$scope', function($scope){
+				$scope.pageInRange = function(pageIndex){
 					var minPage, maxPage;
-					if(scope.info.pages.length==1){
+					if($scope.info.pages.length==1){
 						return false;
 					}
-					else if(scope.info.currentPage <= 2){
+					else if($scope.info.currentPage <= 2){
 						minPage = 1;
 						maxPage = 5
 					}
-					else if (scope.info.currentPage >= scope.info.pages.length - 2) {
-						minPage = scope.info.pages.length - 5;
-						maxPage = scope.info.pages.length;
+					else if ($scope.info.currentPage >= $scope.info.pages.length - 2) {
+						minPage = $scope.info.pages.length - 5;
+						maxPage = $scope.info.pages.length;
 					}
 					else{
-						minPage = scope.info.currentPage - 2;
-						maxPage = scope.info.currentPage + 2;
+						minPage = $scope.info.currentPage - 2;
+						maxPage = $scope.info.currentPage + 2;
 					}
 					return (pageIndex >= minPage && pageIndex <= maxPage);
 				};
-				scope.applySort = function(){
-			    window.location = "#"+scope.url+"?page="+scope.info.currentPage+"&sort="+ scope.sort.id;
+				$scope.applySort = function(){
+			    window.location = "#"+$scope.url+"?page="+$scope.info.currentPage+"&sort="+ $scope.sort.id;
 			  };
       }
     }

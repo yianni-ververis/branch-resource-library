@@ -143,10 +143,8 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         query.$or.push({userid: user["_id"] });
       }
     }
-    console.log(query);
     MasterController.get(req.query, query, entity, function(results){
       if(entity.logViews){
-        console.log('checking views')
         //check to see if the current user or IP Address has viewed the same item
         //in the last hour. If not add an item to the views table
         var anHourAgo = (new Date()).getTime() - (360000);
@@ -186,7 +184,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         // - entity == "projects"
         // - project has a project_site
         // - the git details have not been updated for an hour +
-        console.log('getting git info');
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
         GitHub.authenticate({type: "token", token: GitCredentials.token });
@@ -205,7 +202,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_git_check = Date.now();
               GitHub.authenticate({type: "token", token: GitCredentials.token });
               GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
-                console.log(readmeresult);
                 if(err){
                   console.log(err);
                 }
@@ -217,13 +213,12 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
                   else{
                     htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                     htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
-                    console.log(htmlresult);
                     results.data[0].content = htmlresult;
                     results.data[0].save(function(err){
                       if(!err){
                         Notifier.sendUpdateNotification(results.data[0]._id, results.data[0], req.params.entity);
                       }
-                    });  
+                    });
                   }
                   res.json(results || {});
                 })

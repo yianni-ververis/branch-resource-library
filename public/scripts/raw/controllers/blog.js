@@ -262,10 +262,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     }
   });
 
-  function convertToPlainText(text){
-    console.log(text);
-  }
-
   function _arrayBufferToBase64( buffer ) {
     var binary = '';
     var bytes = new Uint8Array( buffer );

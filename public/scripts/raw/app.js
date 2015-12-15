@@ -1,7 +1,7 @@
-//(function() {
+(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig, ratingConfig, subscribeConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -185,11 +185,11 @@
     })
   }]);
 
-  app.run(function($rootScope) {
+  app.run(['$rootScope',function($rootScope) {
     $rootScope.$on('$stateChangeSuccess', function() {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     });
-  });
+  }]);
 
   if (!window.WebSocket){
     window.location = "#badbrowser";
@@ -197,6 +197,8 @@
 
   //directives
   include "./directives/header.js"
+  include "./directives/footer.js"
+  include "./directives/branchtree.js"
   include "./directives/confirm-dialog.js"
   include "./directives/notification-dialog.js"
   include "./directives/comments.js"
@@ -224,6 +226,6 @@
   include "./controllers/user.js"
   include "./controllers/moderation.js"
 
-//  return app
+  return app
 
-//})();
+})();

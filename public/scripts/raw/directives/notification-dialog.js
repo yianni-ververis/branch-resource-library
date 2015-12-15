@@ -27,7 +27,7 @@
   }]);
 
 
-  module.directive('notificationDialog', ['notificationConfig', '$timeout', function (confirmConfig, $timeout) {
+  module.directive('notificationDialog', ['notificationConfig', '$timeout', function (notificationConfig, $timeout) {
     return {
 			restrict: "E",
 			scope:{
@@ -44,14 +44,14 @@
 	      html += "</div>";
 				return html;
       },
-      link: function(scope){
-				scope.$on('notify', function(event, data){
-					scope.showing = true;
-          scope.message = data.message || "";
-					scope.list = data.list || [];
-					scope.options = data.options || {};
+      controller: ['$scope', function($scope){
+				$scope.$on('notify', function(event, data){
+					$scope.showing = true;
+          $scope.message = data.message || "";
+					$scope.list = data.list || [];
+					$scope.options = data.options || {};
         });
-      }
+      }]
     }
   }]);
 

@@ -122,7 +122,6 @@ module.exports = function(req, res){
       else{
         record.thumbnail = "/attachments/default/"+req.params.entity+".png";
       }
-      console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
         if(!newrecord.errCode){
           //send an notification to all subscribers of the item
@@ -136,10 +135,7 @@ module.exports = function(req, res){
         record.image = "/attachments/default/"+req.params.entity+".png";
         record.thumbnail = "/attachments/default/"+req.params.entity+".png";
       }
-      console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
-        console.log('new record saved');
-        console.log(newrecord);
         if(!newrecord.errCode){
           if(isNew){
             //most likely a comment but we'll check anyway

@@ -6,11 +6,11 @@ app.directive("branchtree", ['$interval', function($interval) {
       width: '@',
       height: '@'
     },
-    link: function(scope, element) {
-      
-      var width = scope.width;
-      var height = scope.height;
-      
+    controller: ['$scope', '$element', function($scope, $element) {
+
+      var width = $scope.width;
+      var height = $scope.height;
+
       // Tree configuration
       var branches = [];
       var seed = {i: 0, x: width / 2 , y: height, a: 0, l: 70, d:0}; // a = angle, l = length, d = depth
@@ -20,20 +20,20 @@ app.directive("branchtree", ['$interval', function($interval) {
       var maxDepth = 6;
       var animationbreak = 0;
       var loop;
-      
-      var svg = d3.select(element[0])
+
+      var svg = d3.select($element[0])
         .append('svg')
         .attr('width', width)
         .attr('height', height)
-      
-      
+
+
       function branch(b) {
         var end = endPt(b), daR, newB;
         branches.push(b);
-      
+
         if (b.d === maxDepth)
           return;
-      
+
         // Left branch
         daR = ar * Math.random() - ar * 0.5;
         newB = {
@@ -46,15 +46,15 @@ app.directive("branchtree", ['$interval', function($interval) {
           parent: b.i
         };
         branch(newB);
-      
+
         // Right branch
         daR = ar * Math.random() - ar * 0.5;
         newB = {
           i: branches.length,
-          x: end.x, 
-          y: end.y, 
-          a: b.a + da + daR, 
-          l: b.l * dl, 
+          x: end.x,
+          y: end.y,
+          a: b.a + da + daR,
+          l: b.l * dl,
           d: b.d + 1,
           parent: b.i
         };
@@ -66,7 +66,7 @@ app.directive("branchtree", ['$interval', function($interval) {
         var x = b.x + b.l * Math.sin( b.a );
         var y = b.y - b.l * Math.cos( b.a );
         return {x: x, y: y};
-      };      
+      };
 
       function x1(d) {return d.x;}
       function y1(d) {return d.y;}
@@ -74,10 +74,10 @@ app.directive("branchtree", ['$interval', function($interval) {
       function y2(d) {return endPt(d).y;}
 
       function create() {
-        
+
         branches = [];
         branch(seed);
-        
+
         svg.selectAll('line')
         .data(branches)
         .enter()
@@ -93,16 +93,16 @@ app.directive("branchtree", ['$interval', function($interval) {
         .attr('y1', y1)
         .attr('x2', x2)
         .attr('y2', y2);
-          
+
         loop = $interval(update, 4000, 30);
-        
+
       };
-      
+
       var update = function() {
-                
+
         branches = [];
         branch(seed);
-        
+
         svg.selectAll('line')
           .data(branches)
           .transition()
@@ -111,20 +111,20 @@ app.directive("branchtree", ['$interval', function($interval) {
           .attr('y1', y1)
           .attr('x2', x2)
           .attr('y2', y2)
-                        
+
       };
-      
+
       create();
-      
-      scope.$on('$destroy', function() {
-        scope.$destroy();
-        scope = null;
+
+      $scope.$on('$destroy', function() {
+        $scope.$destroy();
+        $scope = null;
         $interval.cancel(loop);
-        element.remove();
-        element = null;
+        $element.remove();
+        $element = null;
         update = null;
       })
-            
-    }
+
+    }]
   }
-}])
+}]);

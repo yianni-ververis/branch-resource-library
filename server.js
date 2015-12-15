@@ -3,8 +3,7 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
-    bodyParser = require('body-parser'),
-    qrs = require('./SenseQRS');
+    bodyParser = require('body-parser');
 
 var mode = "release";
 //var mode = "debug";

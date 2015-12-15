@@ -24,8 +24,6 @@ module.exports = {
         res.json(Error.insufficientPermissions());
       }
     }
-    console.log('flag query');
-    console.log(query);
     MasterController.get(req.query, query, entities[entity], function(response){    //This ensures that users can only update records they have access to
       if(response.data.length > 0){
         var flag = new Flag();

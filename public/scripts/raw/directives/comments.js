@@ -33,9 +33,9 @@
 				parent: "="
 			},
       templateUrl: "/views/comments.html",
-      link: function(scope){
+      link: ['$scope', function(scope){
 
-      },
+      }],
       controller: "commentController"
     }
   }]);
