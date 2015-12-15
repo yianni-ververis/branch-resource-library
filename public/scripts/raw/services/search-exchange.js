@@ -56,7 +56,7 @@ var SearchExchange = (function(){
                   //$rootScope.$broadcast("senseready", app);
                 });
             } else {
-                console.log(error)
+                //console.log(error)
                 $rootScope.$broadcast("senseoffline");
             }
         });
@@ -75,30 +75,30 @@ var SearchExchange = (function(){
       };
 
       this.unsubscribe = function(eventName, id){
-        console.log('unsubscribing from '+eventName+' for '+id);
+        //console.log('unsubscribing from '+eventName+' for '+id);
         delete that.catalog[eventName][id];
       };
 
       this.publish = function(eventName, handles, data){
-        console.log('publishing event '+eventName);
+        //console.log('publishing event '+eventName);
         if(that.catalog[eventName]){
-          console.log('catalog has subscriptions');
+          //console.log('catalog has subscriptions');
           if(that.view && eventName!="online"){
             for(var sub in that.catalog[eventName]){
-              console.log('subscriber is '+sub);
-              console.log('view is '+that.view);
+              //console.log('subscriber is '+sub);
+              //console.log('view is '+that.view);
 
               if(sub.split(".")[0].indexOf(that.view)!=-1){
-                console.log('sending subscription');
-                console.log('function is');
-                console.log(that.catalog[eventName][sub]);
+                //console.log('sending subscription');
+                //console.log('function is');
+                //console.log(that.catalog[eventName][sub]);
                 that.catalog[eventName][sub].fn.call(null, handles, data);
-                console.log('sent');
+                //console.log('sent');
               }
             }
           }
           else{
-            console.log('publishing to all');
+            //console.log('publishing to all');
             var ind = 0;
             for(var sub in that.catalog[eventName]){
               that.catalog[eventName][sub].fn.call(null, handles, data);
@@ -125,14 +125,14 @@ var SearchExchange = (function(){
 
       this.init = function(defaultSelections){
         if(defaultSelections && defaultSelections.length > 0){
-          console.log('applying default selections for '+that.view);
+          //console.log('applying default selections for '+that.view);
           defaultSelections.forEach(function(selection, index){
             that.makeSelection(selection, function(result) {
-              console.log('selection applied in '+selection.field);
+              //console.log('selection applied in '+selection.field);
               if(index==defaultSelections.length-1){
                 that.lockSelections(function(result){
-                  console.log('selection locked in '+selection.field);
-                  console.log('selections locked for '+that.view);
+                  //console.log('selection locked in '+selection.field);
+                  //console.log('selections locked for '+that.view);
                   that.executePriority();
                 })
               }
@@ -145,7 +145,7 @@ var SearchExchange = (function(){
       };
 
       this.executeQueue = function(){
-        console.log('now we\'re executing the other callbacks');
+        //console.log('now we\'re executing the other callbacks');
         if(that.queue.length > 0){
           for (var i=0;i<that.queue.length;i++){
             that.queue[i].call();
@@ -193,7 +193,6 @@ var SearchExchange = (function(){
 
       this.clear = function(unlock){
         this.clearing = true;
-        console.trace();
         var handles;
         // if(that.state && that.state.searchText){
         //   that.state.searchText = null;
@@ -224,7 +223,7 @@ var SearchExchange = (function(){
       };
 
       this.render = function(){
-        console.log('exchange render called');
+        //console.log('exchange render called');
         //$rootScope.$broadcast("update");
         that.publish('update');
       }
@@ -339,7 +338,7 @@ var SearchExchange = (function(){
       that.lockSelections = function(callbackFn){
         fn = function(){
           that.ask(senseApp.handle, "LockAll", [], function(result){
-            console.log('calling the lock callback');
+            //console.log('calling the lock callback');
             callbackFn.call(null);
           });
         }
@@ -352,7 +351,7 @@ var SearchExchange = (function(){
       }
 
       this.addResults = function(options, callbackFn, priority){
-        console.log('adding results');
+        //console.log('adding results');
         if(that.objects[options.id]){
           fn = function(){
             callbackFn.call(null, {handle:that.objects[options.id]});
@@ -383,7 +382,7 @@ var SearchExchange = (function(){
           fn.call();
         }
         else{
-          console.log('apparently we\'re not online so we\'re subscribing which means the callback is lost');
+          //console.log('apparently we\'re not online so we\'re subscribing which means the callback is lost');
           that.subscribe('online', options.id, fn);
         }
       };

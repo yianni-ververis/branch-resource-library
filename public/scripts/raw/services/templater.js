@@ -11,14 +11,12 @@ var Templater = (function(){
         this.evalFn = null;
         this.templateHTML = html;
 
-        if (html.indexOf('qs-repeat=') !== -1
-            || html.indexOf('qs-show=') !== -1
-            || html.indexOf('qs-if=') !== -1){
+        if (html.indexOf('qs-repeat=') !== -1 || html.indexOf('qs-show=') !== -1 || html.indexOf('qs-if=') !== -1) {
             this.evalFn = repeater(html);
-        }else {
+        } else {
             this.pieces = parse(html);
         }
-    }
+    };
 
     function parse(html){
         var pattern = /({{([^#^/].*?)}})/g;
@@ -27,7 +25,7 @@ var Templater = (function(){
             pieces.push({what:s[0], item:s[0].replace("{{","").replace("}}","")});
         }
         return pieces;
-    }
+    };
 
     function repeater(html){
         var htmlObj = document.createElement('div');
@@ -35,7 +33,7 @@ var Templater = (function(){
         var evalFn = [];
 
         var ifElms = htmlObj.querySelectorAll('[qs-if]');
-        if (ifElms.length > 0){
+        if (ifElms.length > 0) {
             for (var i=0; i<ifElms.length;i++){
                 var htmlItem = getHTMLString(ifElms[i]);
                 var expression = (ifElms[i].attributes)? ifElms[i].attributes["qs-if"].value : null;
@@ -45,7 +43,7 @@ var Templater = (function(){
                     'expression': expression
                 });
             }
-        }
+        };
 
         var repeatElms = htmlObj.querySelectorAll('[qs-repeat]');
         if (repeatElms.length > 0){
@@ -109,7 +107,6 @@ var Templater = (function(){
         }
 
         htmlObj.innerHTML = null;
-
         return evalFn;
     }
 
@@ -271,8 +268,6 @@ var Templater = (function(){
             }
           }
         }
-
-
         return htmlString;
     }
 
@@ -300,16 +295,17 @@ var Templater = (function(){
                     }
                     return s;
                 };
-
+                
                 var fn = this.evalFn;
                 if (fn && fn.length > 0){
                     for (var i=0; i<fn.length; i++){
                       //on the first pass we're just looking for repeat blocks
-                      if (fn[i].type === 'qs-repeat'){
+                      if (fn[i].type === 'qs-repeat') {
                           this.compiledHTML = repeat.call(this, this.compiledHTML, fn[i]['htmlItem'], fn[i], data[fn[i]['dimension']], i);
                           break;  //we break out of the loop after the first execution. The repeater block should handle embedded repeats
                       }
                     }
+                    
                     //DUE TO CONFLICTS IN REPEATED COMPONENTS 'QS-IF' IS CURRENTLY NOT EXECUTED AT A PARENT LEVEL
                     for (var i=0; i<fn.length; i++){  //then we can run again and update the if/show blocks
                       // if (fn[i].type === 'qs-if'){
@@ -340,23 +336,23 @@ var Templater = (function(){
                 //if (!this.pieces){
                     this.pieces = parse(this.compiledHTML);
                 //}
-
                 for(var i=0;i<this.pieces.length;i++){
-                    try{
+                    //try{
                       //check to see if the piece refers to a child property
                       var props = this.pieces[i].item.split(".");
-                      var result = data;
+                      var result = {};
                       for (var p in props){
-                        result = result[props[p]];
+                        result = data[props[p]];
                       }
                       if(result){
                         this.compiledHTML = this.compiledHTML.replace(this.pieces[i].what, result);
                       }
-                    }
-                    catch(err){
-                        console.log("error", data.toString());
-                    }
+                    //}
+                    //catch(err){
+                    //    console.log("error",err, data, i);
+                    //}
                 }
+                console.log(this)
                 return this.compiledHTML;
             }
         }
@@ -366,14 +362,17 @@ var Templater = (function(){
     function repeat(compiledHTML, oriString, fn, data, iteration){
       iteration++;
       var repeatBlokHTML = '';
+
       var oriString = fn['htmlItem'];
-      if(compiledHTML.indexOf(oriString) !== -1){
-          for (var t in data){
+      console.log(compiledHTML)
+      console.log(oriString)
+      //if(compiledHTML.indexOf(oriString) !== -1){
+          for (var t in data){              
               repeatBlokHTML += getRepeatBlock.call(this, fn, t, data[t], iteration);
           }
           return compiledHTML.replace(oriString, repeatBlokHTML);
-      }
-      return "";
+      //}
+      //return "";
     }
 
     function getHTMLString(node){
