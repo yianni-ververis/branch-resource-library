@@ -1,12 +1,12 @@
 <ul class="project-listing">
-  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true" class="project-item card">
+  <li class="project-item card" id="{{project.projectId}}" qs-repeat="project in items" qs-hide="project.hidden==true">
     <div class="project-info">
       <div class="thumb-container">
         <img src="{{project.thumbnail}}">
       </div>
       <div class="project-summary">
         <div class="project-summary-heading">
-          <a href="#project/{{project.projectId}}" class="list-title">{{project.title}}</a>
+          <a class="list-title" href="#project/{{project.projectId}}">{{project.title}}</a>
           by <a class="user-link" href="#user/{{project.userId}}">{{project.username}}</a>
           <p class="project-short-description">{{project.short_description}}</p>        
         </div>

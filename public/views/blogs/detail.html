@@ -1,13 +1,13 @@
 <div class="container page">
   <div class="row content">
     <notification-dialog></notification-dialog>
-    <div class="blog col-md-12">
+    <div class="blog card">
       <h2>{{blogs[0].title}}</h2>
       <!-- <h2>{{blogs[0].short_description}}</h2> -->
       <span>Posted {{blogs[0].createdate |  date:'MMM dd, yyyy'}} at {{ blogs[0].createdate |  date:'HH:mm'}} by <a class="user-link" href="#user/{{blogs[0].userid._id}}">{{blogs[0].userid.username}}</a></span>
-      <div class="blog-image" ng-show="blogs[0].image">
+      <!--<div class="blog-image" ng-show="blogs[0].image">
         <img src="{{blogs[0].image}}"/>
-      </div>
+      </div>-->
       <div class="" ng-bind-html="getBlogContent(blogs[0].content)">
 
       </div>

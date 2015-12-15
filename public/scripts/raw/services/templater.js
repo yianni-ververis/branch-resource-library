@@ -2,23 +2,27 @@ var Templater = (function(){
 
     //var templateHTML, compiledHTML, pieces=[];
 
+
     function Templater(html, attributes){
-        //One single line and one space only
-        html = html.replace(/(?:\r\n|\r|\n|\t|\n\t| \n\t)/g, '');
-        html = html.replace(/\s{2,}/g, ' ');
+       //One single line and one space only
+       var vDomEl = document.createElement('div');
+       vDomEl.innerHTML = html;
+       html = vDomEl.innerHTML;
+       html = html.replace(/(?:\r\n|\r|\n|\t|\n\t| \n\t)/g, '');
+       html = html.replace(/\s{2,}/g, ' ');
 
-        this.pieces = null;
-        this.evalFn = null;
-        this.templateHTML = html;
+       this.pieces = null;
+       this.evalFn = null;
+       this.templateHTML = html;
 
-        if (html.indexOf('qs-repeat=') !== -1
-            || html.indexOf('qs-show=') !== -1
-            || html.indexOf('qs-if=') !== -1){
-            this.evalFn = repeater(html);
-        }else {
-            this.pieces = parse(html);
-        }
-    }
+       if (html.indexOf('qs-repeat=') !== -1
+           || html.indexOf('qs-show=') !== -1
+           || html.indexOf('qs-if=') !== -1){
+           this.evalFn = repeater(html);
+       }else {
+           this.pieces = parse(html);
+       }
+   }
 
     function parse(html){
         var pattern = /({{([^#^/].*?)}})/g;
@@ -367,6 +371,7 @@ var Templater = (function(){
       iteration++;
       var repeatBlokHTML = '';
       var oriString = fn['htmlItem'];
+      console.log(oriString)
       if(compiledHTML.indexOf(oriString) !== -1){
           for (var t in data){
               repeatBlokHTML += getRepeatBlock.call(this, fn, t, data[t], iteration);
