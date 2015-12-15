@@ -20,7 +20,6 @@ var express = require('express'),
 router.get('/userInfo', function(req, res){
   var menu = buildMenu(req.user);
   var userNoPassword = {};
-  console.log(menu);
   if(req.user&&req.user.role){
     userNoPassword = cloneObject(req.user);
     delete userNoPassword["password"];
@@ -93,7 +92,6 @@ function buildMenu(user){
     //establish whether or not the user has "moderator" permissions
     if(user.role.permissions){
       var strPerm = JSON.stringify(user.role.permissions);
-      console.log(strPerm);
       if(strPerm.indexOf('"hide":true')!=-1 || strPerm.indexOf('"approve":true')!=-1 || strPerm.indexOf('"flag":true')!=-1){
         basicMenu.splice(0,0, {
           label: "Moderator Console",

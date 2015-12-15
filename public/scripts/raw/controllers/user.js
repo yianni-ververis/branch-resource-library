@@ -4,8 +4,6 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
   var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
   var ChangePassword = $resource("auth/change");
 
-  console.log('firing user controller');
-
   $scope.query = {};
   $scope.projectCount = 0;
 
@@ -100,16 +98,14 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
             });
           }
         }
-        console.log('adding user lock');
         defaultSelection.push({
           field: "userId",
           values: [{qText: $stateParams.userId}]
         });
-        console.log('firing search init');
         searchExchange.subscribe('reset', "users", function(){
           searchExchange.init(defaultSelection);
           searchExchange.unsubscribe('reset', "users");
-        });        
+        });
         $scope.firstLoad = false;
       });
       $scope.getUserData($scope.query);

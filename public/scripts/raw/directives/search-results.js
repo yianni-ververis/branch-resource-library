@@ -5,7 +5,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
     scope: {
 
     },
-    controller: function($scope, $element, $attrs){
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs){
       $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+$attrs.config+'.json', success: function(json){
         $scope.config = JSON.parse(json);
         $scope.template = $scope.config.template;
@@ -134,8 +134,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         });
 
         function updateResume(handles){
-          console.log('updating '+$attrs.view);
-          console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
             if(searchExchange.state && searchExchange.state.sort){
               $scope.sort = searchExchange.state.sort;
@@ -204,12 +202,10 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
 				};
 
         $scope.render = function(){
-          console.log('rendering '+$attrs.id);
           if(el = $("#"+$attrs.id).find("._list")[0]){
 
           }
           else{
-            console.log('the element is but an apparition. it is there in spirit but not in flesh and so we have nothing to touch nor feel nor bind to our being.');
             return;
           }
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
@@ -261,7 +257,6 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   }
                   items.push( item );
                 }
-                console.log($attrs.view + ' has '+items.length+ ' items');
 
                 var sortEl = $("#"+$attrs.id).find("._sort")[0];
                 selectSortOption(sortEl, $scope.sort);
@@ -446,14 +441,13 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
             }
             else{
               if($attrs.id.indexOf("users.")==-1){
-                console.log('i\m drawing the results :)');
                 updateResume([result.handle]);
               }
             }
           });
 
       }});
-    },
+    }],
     templateUrl: "/views/search/search-results.html"
   }
 }])

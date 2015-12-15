@@ -18,7 +18,7 @@
 		};
   });
 
-  module.factory('rating', ['$rootScope', function ($rootScope) {
+  module.factory('rating', ['$root$scope', function ($root$scope) {
 		return {
 
 		};
@@ -36,25 +36,25 @@
         displaystar: "="
 			},
       templateUrl: "/views/rating.html",
-      link: function(scope){
+      controller: ['$scope', function($scope){
         var Rating = $resource("/api/rating/:ratingId", {ratingId: "@ratingId"});
 
-        scope.$watch('user', function(newVal, oldVal){
-          if(scope.user && scope.entityid && scope.mode!='static'){
-            scope.getRating();
+        $scope.$watch('user', function(newVal, oldVal){
+          if($scope.user && $scope.entityid && $scope.mode!='static'){
+            $scope.getRating();
           }
         });
 
-        scope.$watch('entityid', function(newVal, oldVal){
-          if(scope.user && scope.entityid && scope.mode!='static'){
-            scope.getRating();
+        $scope.$watch('entityid', function(newVal, oldVal){
+          if($scope.user && $scope.entityid && $scope.mode!='static'){
+            $scope.getRating();
           }
         });
 
-        scope.stars = [1,2,3,4,5];
+        $scope.stars = [1,2,3,4,5];
 
-        scope.displayStar;
-        scope.pointsMap = {
+        $scope.displayStar;
+        $scope.pointsMap = {
           "1": -2,
           "2": -1,
           "3": 1,
@@ -62,61 +62,61 @@
           "5": 3
         };
 
-        scope.getStar = function(){
-          if(scope.displaystar){
-            return Math.round(scope.displaystar);
+        $scope.getStar = function(){
+          if($scope.displaystar){
+            return Math.round($scope.displaystar);
           }
-          else if (scope.myRating && scope.myRating.rating) {
-            return Math.round(scope.myRating.rating);
+          else if ($scope.myRating && $scope.myRating.rating) {
+            return Math.round($scope.myRating.rating);
           }
           else{
             return null;
           }
         };
 
-        scope.setDisplayStar = function(star){
-          if(scope.mode=='static') {
+        $scope.setDisplayStar = function(star){
+          if($scope.mode=='static') {
             return
           }
-          scope.displaystar = star;
+          $scope.displaystar = star;
         };
-        scope.clearDisplayStar = function(){
-          if(scope.mode=='static') {
+        $scope.clearDisplayStar = function(){
+          if($scope.mode=='static') {
             return
           }
-          scope.displaystar = null;
+          $scope.displaystar = null;
         };
 
-        scope.getRating = function(){
-          Rating.get({entityId: scope.entityid, userid: scope.user}, function(result){
+        $scope.getRating = function(){
+          Rating.get({entityId: $scope.entityid, userid: $scope.user}, function(result){
             if(resultHandler.process(result)){
-              scope.myRating = result.data[0] || {};
+              $scope.myRating = result.data[0] || {};
             }
           });
         };
 
-        scope.rate = function(rating){
+        $scope.rate = function(rating){
           var query = {};
-          if(scope.myRating && scope.myRating._id){
-            query.ratingId = scope.myRating._id;
-            scope.myRating.entityId = scope.entityid;
-            scope.myRating.rating = rating;
-            scope.myRating.points = scope.pointsMap[rating];
+          if($scope.myRating && $scope.myRating._id){
+            query.ratingId = $scope.myRating._id;
+            $scope.myRating.entityId = $scope.entityid;
+            $scope.myRating.rating = rating;
+            $scope.myRating.points = $scope.pointsMap[rating];
           }
           else{
-            scope.myRating = {
-              entityId: scope.entityid,
+            $scope.myRating = {
+              entityId: $scope.entityid,
               rating: rating,
-              points: scope.pointsMap[rating]
+              points: $scope.pointsMap[rating]
             };
           }
-          Rating.save(query, scope.myRating, function(result){
+          Rating.save(query, $scope.myRating, function(result){
             if(resultHandler.process(result)){
 
             }
           })
         };
-      }
+      }]
     }
   }]);
 

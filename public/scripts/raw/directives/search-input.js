@@ -6,7 +6,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
 
     },
     templateUrl: "/views/search/search-input.html",
-    controller: function($scope, $element, $attrs){
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs){
       $.ajax({type: "GET", dataType: "text", contentType: "application/json", url: '/configs/'+$attrs.config+'.json', success: function(json){
         $scope.config = JSON.parse(json);
         var inputTimeout;
@@ -51,7 +51,7 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
 
         $scope.cursorPosition = 0;
 
-        searchExchange.subscribe('cleared', $attrs.view, function(){
+        searchExchange.subscribe('cleared', $attrs.view+".input", function(){
           $scope.searchText = "";
           if(el = document.getElementById("branch-search-input")){
             el.value = "";
@@ -63,10 +63,25 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           $scope.ghostPart = "";
           $scope.ghostQuery = "";
           $scope.ghostDisplay = "";
-          console.log('executing a search after clear');
+          
           setTimeout(function(){
             $scope.preSearch();
           }, 0);
+        });
+
+        searchExchange.subscribe('reset', $attrs.view+".input", function(){
+          $scope.searchText = "";
+          if(el = document.getElementById("branch-search-input")){
+            el.value = "";
+          }
+          $scope.cursorPosition = 0;
+          $scope.suggestions = [];
+          $scope.suggesting = false;
+          $scope.activeSuggestion = 0;
+          $scope.ghostPart = "";
+          $scope.ghostQuery = "";
+          $scope.ghostDisplay = "";
+
         });
 
         searchExchange.subscribe('suggestResults', $attrs.view+".input", function(handle, results){
@@ -277,6 +292,6 @@ app.directive('searchInput', ['$state', '$interpolate', "confirm", function ($st
           return suggestion.replace(re,"");
         }
       }});
-    }
+    }]
   }
 }]);

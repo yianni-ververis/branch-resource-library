@@ -7,7 +7,6 @@ var express = require('express'),
 router.post('/login', function(req, res, next){
   passport.authenticate('local', function(err, user){
     if(err){
-      console.log('here');
       res.json(Error.custom(err));
     }
     else{
@@ -16,7 +15,6 @@ router.post('/login', function(req, res, next){
           res.json(Error.custom(err));
         }
         else{
-          console.log('here we are');
           res.json({});
         }
       })

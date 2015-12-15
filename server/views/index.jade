@@ -1,5 +1,5 @@
 doctype html
-html(ng-app="branch")
+html(ng-app="branch" ng-strict-di)
   head
     title Qlik Branch 
     link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")    
@@ -50,9 +50,9 @@ html(ng-app="branch")
       script(src="/debug/services/user-manager.js")   
       script(src="/debug/services/templater.js")      
     else
-      script(src="/js/app.js")
-    meta(content="text/html charset=utf-8" http-equiv="Content-Type")
-    meta(name="viewport" content="width=device-width, initial-scale=1")
+      script(src="/js/app.min.js")
+      meta(content="text/html charset=utf-8" http-equiv="Content-Type")
+      meta(name="viewport" content="width=device-width, initial-scale=1")
   body        
     confirm-dialog
     div(header)

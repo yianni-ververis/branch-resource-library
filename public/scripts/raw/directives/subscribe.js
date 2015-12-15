@@ -37,7 +37,7 @@
         var html = "<button class='branch-light-button' ng-show='user' ng-click='toggleSubscription()' ng-disabled='{{subscribing==true}}'><i class='fa fa-envelope-o'></i>{{buttonText}}</button>";
         return html;
       },
-      link: function(scope){
+      controller: ['$scope', function(scope){
         scope.buttonText = "Please wait...";
         var Subscribe = $resource("/api/subscription/:subId", {subId: "@subId"});
 
@@ -94,7 +94,7 @@
 					}
         };
 
-      }
+      }]
     }
   }]);
 

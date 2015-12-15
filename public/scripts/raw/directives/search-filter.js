@@ -5,13 +5,13 @@ app.directive("searchFilter", [function(){
     scope: {
 
     },
-    link: function($scope, element, attr){
-      $scope.title = attr.title;
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs){
+      $scope.title = $attrs.title;
       $scope.handle;
       $scope.items;
 
       $scope.toggleValue =  function(elemNum){
-        $scope.$parent.toggleSelect(attr.field, elemNum);
+        $scope.$parent.toggleSelect($attrs.field, elemNum);
       }
       $scope.$on('searchResults', function(){
         if($scope.handle){
@@ -39,7 +39,7 @@ app.directive("searchFilter", [function(){
         }
       });
 
-      searchExchange.subscribe("update", $(element).attr("id"), function(params){
+      searchExchange.subscribe("update", $attrs("id"), function(params){
         setTimeout(function(){
           if($scope.handle){
             $scope.render();
@@ -81,8 +81,8 @@ app.directive("searchFilter", [function(){
       };
 
       searchExchange.addFilter({
-          id: $(element).attr("id"),
-          field: attr.field
+          id: $($element).$attrs("id"),
+          field: $attrs.field
         }, function(result){
         //$scope.$apply(function(){
           $scope.handle = result.handle;
@@ -97,7 +97,7 @@ app.directive("searchFilter", [function(){
         //});
       });
 
-    },
+    }],
     templateUrl: "/views/search/search-filter.html"
   }
 }])
