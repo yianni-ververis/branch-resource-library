@@ -1,5 +1,5 @@
 <ul class="plainlist user-projects">
-  <li qs-repeat="project in items" id="{{project.projectId}}" qs-hide="project.hidden==true">
+  <li id="{{project.projectId}}" qs-hide="project.hidden==true" qs-repeat="project in items">
     <div class="row">
       <div class="col-md-4">
         <span class="list-title"><a href="#project/{{project.projectId}}">{{project.title}}</a></span>
