@@ -193,14 +193,7 @@ var SearchExchange = (function(){
 
       this.clear = function(unlock){
         this.clearing = true;
-        console.trace();
-        var handles;
-        // if(that.state && that.state.searchText){
-        //   that.state.searchText = null;
-        // }
-        // if(that.state && that.state.searchFields){
-        //   that.state.searchFields = null;
-        // }
+        var handles;        
         that.state = null;
         if(senseApp){
           if(unlock && unlock==true){

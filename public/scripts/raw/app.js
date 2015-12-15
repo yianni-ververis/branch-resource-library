@@ -16,6 +16,11 @@
       url: "/noitem",
       templateUrl: "/views/noitem.html"
     })
+    //no item page
+    .state("badbrowser", {
+      url: "/badbrowser",
+      templateUrl: "/views/badbrowser.html"
+    })
     //login and signup page
     .state("loginsignup", {
       url: "/loginsignup?url",
@@ -179,13 +184,16 @@
       }
     })
   }]);
-  
+
   app.run(function($rootScope) {
     $rootScope.$on('$stateChangeSuccess', function() {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     });
   });
-  
+
+  if (!window.WebSocket){
+    window.location = "#badbrowser";
+  }
 
   //directives
   include "./directives/header.js"
