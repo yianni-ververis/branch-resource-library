@@ -11,6 +11,11 @@
       templateUrl: "/views/home/index.html",
       controller: "homeController"
     })
+    //Terms & Conditions
+    .state("tnc", {
+      url: "/tnc",
+      templateUrl: "/views/tnc/index.html"
+    })
     //no item page
     .state("noitem", {
       url: "/noitem",
