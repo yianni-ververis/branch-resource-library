@@ -332,13 +332,13 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.search = function(){
-    //console.log('mode is search');
+    console.log('mode is search');
     searchExchange.clear();
     $scope.searching = true;
   };
 
   $scope.browse = function(){
-    //console.log('mode is browse');
+    console.log('mode is browse');
     searchExchange.clear();
     $scope.searching = false;
   };
@@ -378,6 +378,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       $(".qlikview-filter").removeClass('active');
     }
     searchExchange.subscribe('reset', "projects", function(){
+      console.trace();
       searchExchange.init(defaultSelection);
       searchExchange.unsubscribe('reset', "projects");
     });
@@ -463,6 +464,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             }
             //searchExchange.init(defaultSelection);
             searchExchange.subscribe('reset', "projects", function(){
+              console.trace();
               searchExchange.init(defaultSelection);
               searchExchange.unsubscribe('reset', "projects");
             });

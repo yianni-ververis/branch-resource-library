@@ -134,8 +134,8 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
         });
 
         function updateResume(handles){
-          //console.log('updating '+$attrs.view);
-          //console.log('on update handle is '+$scope.handle);
+          console.log('updating '+$attrs.view);
+          console.log('on update handle is '+$scope.handle);
           setTimeout(function(){
             if(searchExchange.state && searchExchange.state.sort){
               $scope.sort = searchExchange.state.sort;
@@ -204,12 +204,12 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
 				};
 
         $scope.render = function(){
-          //console.log('rendering '+$attrs.id);
+          console.log('rendering '+$attrs.id);
           if(el = $("#"+$attrs.id).find("._list")[0]){
 
           }
           else{
-            //console.log('the element is but an apparition. it is there in spirit but not in flesh and so we have nothing to touch nor feel nor bind to our being.');
+            console.log('the element is but an apparition. it is there in spirit but not in flesh and so we have nothing to touch nor feel nor bind to our being.');
             return;
           }
           searchExchange.ask($scope.handle, "GetLayout", [], function(response){
@@ -261,10 +261,11 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   }
                   items.push( item );
                 }
-                //console.log($attrs.view + ' has '+items.length+ ' items');
+                console.log($attrs.view + ' has '+items.length+ ' items');
 
                 var sortEl = $("#"+$attrs.id).find("._sort")[0];
                 selectSortOption(sortEl, $scope.sort);
+
                 if(hiddenCount==items.length){
                   if(!userManager.hasUser){
                     $scope.renderEmpty();
@@ -285,16 +286,13 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   }
                   $("#"+$attrs.id).find("._count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
                   if($scope.resultsTemplate){
-                    //console.log(items, terms, totals, min, max)
-                    var test = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
-                    console.log('HTML TO INSERT', test)
-                    $("#"+$attrs.id).find("._list")[0].innerHTML = test;
-                  } 
-                  /*else {
+                    $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                  }
+                  else{
                     $scope.resultsTemplateCallback = function(){
                       $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
                     }
-                  }*/
+                  }
                   if($scope.pagingTemplate){
                     $("#"+$attrs.id).find("._paging")[0].innerHTML = $scope.pagingTemplate.getHTML({currentPage:$scope.currentPage, pages: $scope.pages});
                   }
@@ -434,7 +432,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                 }
               });
             }
-            /*if(!$scope.pagingTemplate){
+            if(!$scope.pagingTemplate){
               $.get("/views/search/search-paging.html").success(function(html){
                 $scope.pagingTemplate = new Templater(html);
                 if($scope.pagingTemplateCallback){
@@ -451,7 +449,7 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                 console.log('i\m drawing the results :)');
                 updateResume([result.handle]);
               }
-            */
+            }
           });
 
       }});
