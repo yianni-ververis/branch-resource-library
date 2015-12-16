@@ -227,9 +227,9 @@
   include "./controllers/home.js"
   include "./controllers/project.js"
   include "./controllers/blog.js"
+  include "./controllers/discussion.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"
   include "./controllers/moderation.js"
-
   //return app
 //})();

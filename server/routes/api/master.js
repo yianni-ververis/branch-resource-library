@@ -292,7 +292,7 @@ router.delete("/:entity/:id", Auth.isLoggedIn, function(req, res){
   }
   else{
     if(userPermissions.allOwners!=true){
-      query["createuser"]=user._id;
+      query["userid"]=user._id;
     }
     MasterController.delete(query, entities[entity], function(result){
       //need to delete any comments and flags
