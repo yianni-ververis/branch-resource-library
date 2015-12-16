@@ -192,11 +192,10 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
             res.json(Error.custom(err.message));
           }
           else{
-            //update the contributors
-
             //update the update date and git check data
-            var hasChanged = results.data[0].last_updated!=new Date(gitresult.updated_at);
+            var hasChanged = results.data[0].last_updated_num!=(new Date(gitresult.updated_at)).getTime();
             if(hasChanged){
+              console.log('it has changed');
               results.data[0].last_updated = new Date(gitresult.updated_at);
               results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
               results.data[0].last_git_check = Date.now();
@@ -223,6 +222,9 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
                   res.json(results || {});
                 })
               });
+            }
+            else{
+              res.json(results || {});
             }
           }
         });
