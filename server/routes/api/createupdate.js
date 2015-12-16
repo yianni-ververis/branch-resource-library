@@ -8,24 +8,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
-    atob = require("atob"),
-    git = require("github"),
-    GitCredentials = require("../../../gitCredentials"),
-    GitHub = new git({
-        // required
-        version: "3.0.0",
-        // optional
-        debug: false,
-        protocol: "https",
-        host: "api.github.com", // should be api.github.com for GitHub
-        pathPrefix: "", // for some GHEs; none for GitHub
-        timeout: 5000,
-        headers: {
-            "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
-        }
-    });
-
-GitHub.authenticate({type: "token", token: GitCredentials.token });
+    atob = require("atob");    
 
 module.exports = function(req, res){
   //This route is for creating a new record on the 'Project' entity and returning the new record

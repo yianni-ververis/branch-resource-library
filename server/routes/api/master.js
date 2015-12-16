@@ -10,7 +10,7 @@ var async = require('async'),
     Notifier = require("../../controllers/notifier"),
     git = require("github"),
     atob = require("atob"),
-    GitCredentials = require("../../../gitCredentials"),
+    Config = require("../../../config"),
     GitHub = new git({
         // required
         version: "3.0.0",
@@ -34,7 +34,7 @@ var hide = require("./hide");
 var approve = require("./approve");
 var get = require("./get")
 
-GitHub.authenticate({type: "token", token: GitCredentials.token });
+GitHub.authenticate({type: "token", token: Config.git.token });
 
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
@@ -186,7 +186,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         // - the git details have not been updated for an hour +
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
-        GitHub.authenticate({type: "token", token: GitCredentials.token });
+        GitHub.authenticate({type: "token", token: Config.git.token });
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           if(err){
             res.json(Error.custom(err.message));
@@ -200,12 +200,12 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_updated = new Date(gitresult.updated_at);
               results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
               results.data[0].last_git_check = Date.now();
-              GitHub.authenticate({type: "token", token: GitCredentials.token });
+              GitHub.authenticate({type: "token", token: Config.git.token });
               GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
                 if(err){
                   console.log(err);
                 }
-                GitHub.authenticate({type: "token", token: GitCredentials.token });
+                GitHub.authenticate({type: "token", token: Config.git.token });
                 GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
                   if(err){
                     console.log(err);
