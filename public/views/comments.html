@@ -13,7 +13,7 @@
       <ul class="plainlist comment-list">
         <li class="card" ng-repeat="comment in comments" ng-class="{'author-comment': comment.userid._id==parent.userid._id}">
           <div class="thumb-container">
-            <img src="{{comment.userid.thumbnail}}"/>
+            <a href="#/user/{{comment.userid._id}}"><img src="{{comment.userid.thumbnail}}"/></a>
           </div>
           <div class="comment-container">
             <div class="comment-header">
