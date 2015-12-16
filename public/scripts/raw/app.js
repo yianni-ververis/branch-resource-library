@@ -1,4 +1,4 @@
-(function() {
+//(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
@@ -10,6 +10,11 @@
       url: "/",
       templateUrl: "/views/home/index.html",
       controller: "homeController"
+    })
+    //Terms & Conditions
+    .state("tnc", {
+      url: "/tnc",
+      templateUrl: "/views/tnc/index.html"
     })
     //no item page
     .state("noitem", {
@@ -222,10 +227,9 @@
   include "./controllers/home.js"
   include "./controllers/project.js"
   include "./controllers/blog.js"
+  include "./controllers/discussion.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"
   include "./controllers/moderation.js"
-
-  return app
-
-})();
+  //return app
+//})();
