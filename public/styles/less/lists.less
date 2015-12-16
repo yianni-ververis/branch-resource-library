@@ -242,36 +242,64 @@
 }
 
 .comment-list{
-  li{
-    &.author-comment{
-      background-color: @green3;
-    }
-  }
-  .thumb-container, .comment-content{
-    display: inline-block;
-  }
-  .thumb-container{
-    width: 80px;
-    overflow: hidden;
-    img{
-      max-width: 80px;
-      border-radius: 50%;
-    }
-  }
-  .comment-content{
+  
+  li {  
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
     padding: 5px;
-    vertical-align: top;
-    width: ~"calc(100% - 85px)";
-    span{
+    margin-bottom: 5px;
+    border-bottom: 1px solid @content-border;
+    
+    &.author-comment {
+      .thumb-container img {
+        border: 2px solid @green;
+      }
+    }
+    
+  }
+  
+  .thumb-container {
+    flex: 0 0 80px;
+    max-width: 80px;
+    padding: 5px;
+    justify-content: center;
+
+    img {
+      max-width: 60px;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+    
+  }
+  
+  .comment-container {
+    padding: 5px;
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    
+  }
+  
+  .comment-content{
+    flex: 1 1 100%;  
+    p {
       color:@default-text;
     }
     img{
       max-width: 100%;
     }
   }
-  .comment-header{
-    span:last-of-type{
-      float: right;
+  .comment-header {
+    flex: 1 1 100%;
+    display: flex;
+    p {
+      flex: 1;
+      font-size: 12px;
+      margin-bottom: 5px;
+      &:last-of-type {
+        text-align: right;
+      }
     }
   }
 }

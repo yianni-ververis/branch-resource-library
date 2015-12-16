@@ -7,7 +7,9 @@ html(ng-app="branch" ng-strict-di)
     link(rel="stylesheet" href="/bower_components/summernote/dist/summernote.css")  
     link(rel="stylesheet" href="/bower_components/visualcaptcha.angular/visualcaptcha.css")  
     link(rel="stylesheet" href="/css/main.css")    
-    link(rel='https://fonts.googleapis.com/css?family=Fira+Sans:400,300,300italic,400italic,500italic,500,700,700italic')
+    script(src="https://use.typekit.net/rqj4zil.js")
+    script(type='text/javascript').
+      try{Typekit.load({ async: true });}catch(e){}
     script(src="/bower_components/jquery/dist/jquery.min.js")
     script(src="/bower_components/d3/d3.min.js")
     script(src="/bower_components/angular/angular.js")
