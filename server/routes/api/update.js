@@ -13,7 +13,6 @@ module.exports = {
     var user = req.user;
     var userPermissions = req.user.role.permissions[entity];
     var data = req.body;
-    //console.log(userPermissions);
     //check that the user has sufficient permissions for this operation
     if(!userPermissions || userPermissions.update!=true){
       res.json(Error.insufficientPermissions);

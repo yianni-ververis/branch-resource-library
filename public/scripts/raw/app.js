@@ -1,7 +1,7 @@
 //(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, notificationsConfigProvider, confirmConfigProvider, commentsConfig, moderationConfig, ratingConfig, subscribeConfig) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -11,10 +11,20 @@
       templateUrl: "/views/home/index.html",
       controller: "homeController"
     })
+    //Terms & Conditions
+    .state("tnc", {
+      url: "/tnc",
+      templateUrl: "/views/tnc/index.html"
+    })
     //no item page
     .state("noitem", {
       url: "/noitem",
       templateUrl: "/views/noitem.html"
+    })
+    //no item page
+    .state("badbrowser", {
+      url: "/badbrowser",
+      templateUrl: "/views/badbrowser.html"
     })
     //login and signup page
     .state("loginsignup", {
@@ -179,43 +189,47 @@
       }
     })
   }]);
-  
-  app.run(function($rootScope) {
+
+  app.run(['$rootScope',function($rootScope) {
     $rootScope.$on('$stateChangeSuccess', function() {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     });
-  });
-  
+  }]);
 
-  // //directives
-  // include "./directives/header.js"
-  // include "./directives/confirm-dialog.js"
-  // include "./directives/notification-dialog.js"
-  // include "./directives/comments.js"
-  // include "./directives/moderation.js"
-  // include "./directives/rating.js"
-  // include "./directives/subscribe.js"
-  // include "./directives/search-input.js"
-  // include "./directives/search-filter.js"
-  // include "./directives/search-results.js"
-  // //services
-  // include "./services/user-manager.js"
-  // include "./services/result-handler.js"
-  // include "./services/search-exchange.js"
-  // include "./services/picklists.js"
-  // include "./services/publisher.js"
-  // include "./services/templater.js"
-  // //controllers
-  // include "./controllers/admin.js"
-  // include "./controllers/moderator.js"
-  // include "./controllers/auth.js"
-  // include "./controllers/home.js"
-  // include "./controllers/project.js"
-  // include "./controllers/blog.js"
-  // include "./controllers/comment.js"
-  // include "./controllers/user.js"
-  // include "./controllers/moderation.js"
+  if (!window.WebSocket){
+    window.location = "#badbrowser";
+  }
 
-//  return app
-
+  //directives
+  include "./directives/header.js"
+  include "./directives/footer.js"
+  include "./directives/branchtree.js"
+  include "./directives/confirm-dialog.js"
+  include "./directives/notification-dialog.js"
+  include "./directives/comments.js"
+  include "./directives/moderation.js"
+  include "./directives/rating.js"
+  include "./directives/subscribe.js"
+  include "./directives/search-input.js"
+  include "./directives/search-filter.js"
+  include "./directives/search-results.js"
+  //services
+  include "./services/user-manager.js"
+  include "./services/result-handler.js"
+  include "./services/search-exchange.js"
+  include "./services/picklists.js"
+  include "./services/publisher.js"
+  include "./services/templater.js"
+  //controllers
+  include "./controllers/admin.js"
+  include "./controllers/moderator.js"
+  include "./controllers/auth.js"
+  include "./controllers/home.js"
+  include "./controllers/project.js"
+  include "./controllers/blog.js"
+  include "./controllers/discussion.js"
+  include "./controllers/comment.js"
+  include "./controllers/user.js"
+  include "./controllers/moderation.js"
+  //return app
 //})();

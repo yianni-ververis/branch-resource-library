@@ -27,8 +27,6 @@ module.exports = {
           query["userid"] = {$ne: user["_id"] };
         }
         MasterController.getIds(req.query, query, entity, function(results){
-          console.log('hidden');
-          console.log(results);
           res.json(results);
         });
       }
@@ -58,7 +56,6 @@ module.exports = {
             || (!user)){
             query["userid"] = user._id;
         }
-        console.log(query);
         MasterController.get(req.query, query, entity, function(results){
           res.json(results);
         });

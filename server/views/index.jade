@@ -1,7 +1,7 @@
 doctype html
-html(ng-app="branch")
+html(ng-app="branch" ng-strict-di)
   head
-    title Qlik Branch
+    title Qlik Branch 
     link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")    
     link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css")    
     link(rel="stylesheet" href="/bower_components/summernote/dist/summernote.css")  
@@ -50,13 +50,27 @@ html(ng-app="branch")
       script(src="/debug/services/user-manager.js")   
       script(src="/debug/services/templater.js")      
     else
-      script(src="/js/app.js")
-    meta(name="viewport" content="width=device-width, initial-scale=1")
-  body        
+      script(src="/js/app.min.js")
+      meta(content="text/html charset=utf-8" http-equiv="Content-Type")
+      meta(name="viewport" content="width=device-width, initial-scale=1")
+  body      
+    script(type='text/javascript').
+      var dataLayer = [{'site':'branch'}];
+    // Google Tag Manager
+    noscript
+      iframe(src='//www.googletagmanager.com/ns.html?id=GTM-P7VJSX', height='0', width='0', style='display:none;visibility:hidden')
+    script.
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-P7VJSX');  
     confirm-dialog
     div(header)
     div.main(ui-view)
     div(footer)
     script(src="/bower_components/bootstrap/dist/js/bootstrap.min.js")
     script(src="/bower_components/visualcaptcha.angular/visualcaptcha.angular.src.js")
+    script(type='text/javascript').
+      (function(d,w,g){var s=d.createElement(g),e=d.getElementsByTagName(g)[0];s.type='text/javascript';s.async=true;s.src='http://global.qlik.com/javascripts/cookieBanner.min.js';e.parentNode.insertBefore(s,e);})(document,window,'script');
     

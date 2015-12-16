@@ -174,8 +174,14 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
         $scope.gitProjects = result.repos;
       }
       else{
-        var msg = JSON.parse(result.errText);
-        $scope.gitError = msg.message;
+        var msg;
+        try{
+          var msg = JSON.parse(result.errText);
+          $scope.gitError = msg.message;
+        }
+        catch(err){
+          $scope.gitError = result.errText;
+        }
         $scope.gitLoading = false;
       }
     });
@@ -332,13 +338,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   };
 
   $scope.search = function(){
-    console.log('mode is search');
     searchExchange.clear();
     $scope.searching = true;
   };
 
   $scope.browse = function(){
-    console.log('mode is browse');
     searchExchange.clear();
     $scope.searching = false;
   };

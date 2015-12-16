@@ -8,24 +8,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
-    atob = require("atob"),
-    git = require("github"),
-    GitCredentials = require("../../../gitCredentials"),
-    GitHub = new git({
-        // required
-        version: "3.0.0",
-        // optional
-        debug: false,
-        protocol: "https",
-        host: "api.github.com", // should be api.github.com for GitHub
-        pathPrefix: "", // for some GHEs; none for GitHub
-        timeout: 5000,
-        headers: {
-            "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
-        }
-    });
-
-GitHub.authenticate({type: "token", token: GitCredentials.token });
+    atob = require("atob");    
 
 module.exports = function(req, res){
   //This route is for creating a new record on the 'Project' entity and returning the new record
@@ -122,7 +105,6 @@ module.exports = function(req, res){
       else{
         record.thumbnail = "/attachments/default/"+req.params.entity+".png";
       }
-      console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
         if(!newrecord.errCode){
           //send an notification to all subscribers of the item
@@ -136,10 +118,7 @@ module.exports = function(req, res){
         record.image = "/attachments/default/"+req.params.entity+".png";
         record.thumbnail = "/attachments/default/"+req.params.entity+".png";
       }
-      console.log(query);
       MasterController.save(query, record, entities[req.params.entity], function(newrecord){
-        console.log('new record saved');
-        console.log(newrecord);
         if(!newrecord.errCode){
           if(isNew){
             //most likely a comment but we'll check anyway

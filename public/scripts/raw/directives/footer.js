@@ -6,14 +6,13 @@ app.directive('footer', ['userManager', '$state', '$interpolate', function (user
 
     },
     templateUrl: "/views/footer.html",
-    link: function(scope){
-      scope.userManager = userManager;
-      scope.breadcrumb;
+    controller: ['$scope', function($scope){
+      $scope.userManager = userManager;
+      $scope.breadcrumb;
 
-      scope.$on("$stateChangeStart", function(){
-        scope.breadcrumb = null;
+      $scope.$on("$stateChangeStart", function(){
+        $scope.breadcrumb = null;
       });
-
-    }
+    }]
   }
 }]);

@@ -41,9 +41,6 @@
 				orientation: "="
 			},
       templateUrl: "/views/moderation.html",
-      link: function(scope){
-
-      },
       controller: "moderationController"
     }
   }]);
