@@ -17,12 +17,11 @@
           </div>
           <div class="comment-container">
             <div class="comment-header">
-              <p><a href="#/user/{{comment.userid._id}}"><strong>{{comment.userid.username}}</strong></a></p><p>{{comment.createdate | date:'dd MMM yy HH:mm'}}</p>
+              <p><a href="#/user/{{comment.userid._id}}"><strong>{{comment.userid.username}}</strong></a> - {{comment.createdate | date:'dd MMM yy HH:mm'}} </p>
             </div>
             <div class="comment-content" ng-bind-html="getCommentText(comment.content)"></div>           
-          </div>
           <moderation orientation="horizontal" entity="'comment'" entityid="comment._id" approved="comment.approved" size="'medium'" flagged="flagged[comment._id]" editable="false"></moderation>
-
+          </div>
         </li>
       </ul>
     </div>
