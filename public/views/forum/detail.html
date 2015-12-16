@@ -1,5 +1,5 @@
 <div class="container page">
-  
+
   <div class="row content card">
     <notification-dialog></notification-dialog>
     <div class="col-md-12">
@@ -12,7 +12,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="row">
     <div class="col-md-12 no-padding">
       <moderation entity="'discussion'" entityid="discussions[0]._id" approved="discussions[0].approved" owner="discussions[0].userid._id" size="'large'" editable="true"></moderation>
@@ -20,9 +20,9 @@
       <button class="branch-button" type="button" name="button" ng-click="reOpen(discussions[0]._id)" ng-show="canReopen">Re-open</button>
     </div>
   </div>
-  
-  <div comments entity="'discussion'" entityid="discussionId"></div>     
-  
+
+  <div comments entity="'discussion'" entityid="discussionId" parent="discussions[0]"></div>
+
   <div class="loading-cover" ng-show="blogLoading">
     <span></span>
     <span></span>
