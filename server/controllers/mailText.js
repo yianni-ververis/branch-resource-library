@@ -37,5 +37,13 @@ module.exports = {
       subject: "Someone has commented on {{record.parent.title}}",
       html: "{{record.comment.plaintext}}"
     }
+  },
+  mailTemplate:{
+    header:{
+      html: "<style>font-family:Arial,sans-serif;font-size:12px;color:pink;</style><img src='http://branch-test.qlik.com/resources/qlik-typemarks/QlikBranchTypemark-Horizontal-Web.png' alt='Qlik Branch Logo' height='50' width='267' border='0'><br><br>"
+    },
+    footer:{
+      html:""
+    }
   }
 }

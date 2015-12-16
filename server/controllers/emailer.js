@@ -6,6 +6,7 @@ MailText = require('./mailText');
 module.exports = {
   sendMail: function(action, entity, data, callbackFn){
     var templateOptions = MailText[action][entity];
+    //var emailHTMLHeader = '<style>font-family:Arial,sans-serif;font-size:12px;</style><img src="/resources/qlik-typemarks/QlikBranchTypemark-Horizontal-Web.png" height="50" width="267" border="0"><br><br>';
     if(templateOptions){
       var toTemplate = new Templater(templateOptions.to);
       var subjectTemplate = new Templater(templateOptions.subject);
@@ -14,7 +15,7 @@ module.exports = {
         from: 'Qlik Branch <svc-branchadminmail@qlik.com>',
         to: toTemplate.getHTML(data),
         subject: subjectTemplate.getHTML(data),
-        html: htmlTemplate.getHTML(data)
+        html: MailText["mailTemplate"]["header"].html + htmlTemplate.getHTML(data)
       }
       console.log(mailOptions);
       nodemailer.sendMail(mailOptions, function(error, info){
