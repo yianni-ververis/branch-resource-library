@@ -22,7 +22,7 @@ module.exports = function(grunt) {
     watch: {
       styles: {
         files: ['public/styles/less/**/*.less', 'public/scripts/raw/**/*.js'], // which files to watch
-        tasks: ['less','includes','postcss'],
+        tasks: ['less','includes','postcss','uglify'],
         options: {
           nospawn: true,
           livereload: true
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
         beautify : false,
         mangle   : true
       },
-      my_target: {
+      build: {
         files: {
           'public/scripts/build/app.min.js': ['public/scripts/build/app.js']
         }
@@ -66,8 +66,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-includes');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-postcss');
-  grunt.registerTask('default', ['includes','less','postcss','watch','copy', 'uglify']);
+  grunt.registerTask('default', ['includes','uglify','less','postcss','watch']);
 };
