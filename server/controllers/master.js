@@ -19,20 +19,7 @@ module.exports = {
             var pageStart = 0;
             var pageNum = 1;
             responseObj.total = count;
-            if(entity.limit){
-              responseObj.pages = [];
-              while(pageStart < count){
-                responseObj.pages.push({
-                  pageNum: pageNum,
-                  pageStart: pageStart,
-                  pageEnd: Math.min(parseInt(pageStart)+parseInt(entity.limit), count)
-                })
-                pageNum++;
-                pageStart+=parseInt(entity.limit);
-              }
-              responseObj.currentPage = (parseInt(entity.skip) / parseInt(entity.limit)) + 1 || 1;
-            }
-            responseObj.query = parsedQuery;
+            //responseObj.query = parsedQuery;
             responseObj.skip = parseInt(entity.skip) + parseInt(entity.limit);
             responseObj.limit = entity.limit;
             responseObj.data = results
