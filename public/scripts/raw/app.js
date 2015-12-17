@@ -16,6 +16,11 @@
       url: "/tnc",
       templateUrl: "/views/tnc/index.html"
     })
+    //About Branch
+    .state("aboutBranch", {
+      url: "/aboutBranch",
+      templateUrl: "/views/aboutBranch.html"
+    })
     //no item page
     .state("noitem", {
       url: "/noitem",
