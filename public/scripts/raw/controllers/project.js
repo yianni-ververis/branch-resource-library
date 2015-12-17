@@ -382,7 +382,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       $(".qlikview-filter").removeClass('active');
     }
     searchExchange.subscribe('reset', "projects", function(){
-      console.trace();
       searchExchange.init(defaultSelection);
       searchExchange.unsubscribe('reset', "projects");
     });
@@ -468,7 +467,6 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             }
             //searchExchange.init(defaultSelection);
             searchExchange.subscribe('reset', "projects", function(){
-              console.trace();
               searchExchange.init(defaultSelection);
               searchExchange.unsubscribe('reset', "projects");
             });

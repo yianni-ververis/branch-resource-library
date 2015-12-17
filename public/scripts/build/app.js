@@ -370,9 +370,9 @@
             .attr('y2', y2)
 
         };
-
+        
         create();
-
+        
         $scope.$on('$destroy', function() {
           $scope.$destroy();
           $scope = null;
@@ -2619,7 +2619,6 @@
         iteration++;
         var repeatBlokHTML = '';
         var oriString = fn['htmlItem'];
-        console.log(oriString)
         if(compiledHTML.indexOf(oriString) !== -1){
             for (var t in data){
                 repeatBlokHTML += getRepeatBlock.call(this, fn, t, data[t], iteration);
@@ -3659,7 +3658,6 @@
         $(".qlikview-filter").removeClass('active');
       }
       searchExchange.subscribe('reset', "projects", function(){
-        console.trace();
         searchExchange.init(defaultSelection);
         searchExchange.unsubscribe('reset', "projects");
       });
@@ -3745,7 +3743,6 @@
               }
               //searchExchange.init(defaultSelection);
               searchExchange.subscribe('reset', "projects", function(){
-                console.trace();
                 searchExchange.init(defaultSelection);
                 searchExchange.unsubscribe('reset', "projects");
               });

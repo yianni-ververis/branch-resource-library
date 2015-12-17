@@ -371,7 +371,6 @@ var Templater = (function(){
       iteration++;
       var repeatBlokHTML = '';
       var oriString = fn['htmlItem'];
-      console.log(oriString)
       if(compiledHTML.indexOf(oriString) !== -1){
           for (var t in data){
               repeatBlokHTML += getRepeatBlock.call(this, fn, t, data[t], iteration);

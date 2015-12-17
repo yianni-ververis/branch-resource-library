@@ -113,9 +113,9 @@ app.directive("branchtree", ['$interval', function($interval) {
           .attr('y2', y2)
 
       };
-
+      
       create();
-
+      
       $scope.$on('$destroy', function() {
         $scope.$destroy();
         $scope = null;
