@@ -3,7 +3,7 @@
 # Qlik Branch
 ###### That's right branch.qlik.com is open source.
 
-For better or for worse Branch contains a lot of moving parts. Before setting out on your Branch adventure you'll need to be familiar with [Qlik Sense](), [The Generic REST Connector for Qlik Sense](), [MongoDB](), [NodeJS](), [ExpressJS]() and [AngularJS]()
+For better or for worse Branch contains a lot of moving parts. Before setting out on your Branch adventure you'll need to be familiar with **Qlik Sense**, **The Generic REST Connector for Qlik Sense**, **MongoDB**, **NodeJS**, **ExpressJS** and **AngularJS**
 
 ### Environment
 To setup Branch you'll need the following available environments - 

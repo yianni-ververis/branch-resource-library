@@ -186,6 +186,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         // - the git details have not been updated for an hour +
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
+        console.log(Config.git.token);
         GitHub.authenticate({type: "token", token: Config.git.token });
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           if(err){
