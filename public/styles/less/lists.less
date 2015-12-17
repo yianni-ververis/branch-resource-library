@@ -282,7 +282,8 @@
   }
   
   .comment-content{
-    flex: 1 1 100%;  
+    flex: 1 1 100%;
+    word-break: break-word;  
     p {
       color:@default-text;
     }
@@ -295,11 +296,8 @@
     display: flex;
     p {
       flex: 1;
-      font-size: 12px;
+      font-size: 0.9em;
       margin-bottom: 5px;
-      &:last-of-type {
-        text-align: right;
-      }
     }
   }
 }
