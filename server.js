@@ -68,11 +68,45 @@ app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user, mode: mode});
 });
 
+//This route is to accommodate for links from Old Branch (only applied to projects)
+//The Url parameter is used to obtain the old projectId which is then used to get the new projectId
+//The server then redirects to /#projects/:id
+
 var Project = require('./server/models/project.js');
+
+app.get("/projects/showthread.php", function(req, res, next){
+  console.log(req.query);
+  for(var key in req.query){
+    var oldId = key.split("-")[0].trim();
+    var query = {};
+    break;
+  }
+  query.threadid = parseInt(oldId);
+  Project.findOne(query, function(err, result){
+    if(err){
+      res.redirect('/404');
+    }
+    else{
+      if(result && result._id){
+        res.redirect("/#project/"+result._id);
+      }
+      else{
+        res.redirect('/404');
+      }
+    }
+  });
+});
 
 app.use('/api', apiRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);
 app.use('/visualcaptcha', vcRoutes);
+
+app.use('/404', function(req, res){
+  res.render(__dirname+'/server/views/404.jade');
+});
+app.use('/*', function(req, res){
+  res.redirect('/404');
+});
 
 app.listen(process.env.PORT || 3001);
