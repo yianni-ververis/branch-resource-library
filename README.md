@@ -19,4 +19,4 @@ All data is stored and maintained in MongoDB however we load that data into a Ql
 
 If you intend to customise and/or repurpose Branch you'll need to understand how to retrieve the data you need from Qlik Sense. You can read more about that in the **Customising the Sense Integration section**
 
-To contribute to or implement your own version of Branch, see the Wiki pages for more information.
+To contribute to or implement your own version of Branch, see the [Wiki](wiki) pages for more information.
