@@ -21,7 +21,7 @@ var projectSchema = new Schema({
   git_repo: String,
   git_user: String,
   download_link: String,
-  threadid: String,
+  threadid: Number,
   tags: String,
   votenum: Number,
   votetotal: Number,
