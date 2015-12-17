@@ -11,7 +11,8 @@ var ratingSchema = new Schema({
   },
   createdate: Date,
   createdate_num: Number,
-  rating: Number
+  rating: Number,
+  points: Number
 });
 
 module.exports = mongoose.model('rating', ratingSchema)

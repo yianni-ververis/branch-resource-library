@@ -8,7 +8,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
-    atob = require("atob");    
+    atob = require("atob");
 
 module.exports = function(req, res){
   //This route is for creating a new record on the 'Project' entity and returning the new record
