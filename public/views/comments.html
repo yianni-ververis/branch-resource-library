@@ -29,7 +29,7 @@
       No {{entity === "discussion" ? "Replies" : "Comments"}}
     </div>
     <div class="show-more" ng-if="commentInfo.total > comments.length">
-      <button class="branch-light-button" type="button" name="button" ng-click="more()">More</button>
+      <button class="button-outline" type="button" name="button" ng-click="more()">More</button>
     </div>
     <div ng-show="userManager.canCreate('comment')">
       <div id="summernote" class="">

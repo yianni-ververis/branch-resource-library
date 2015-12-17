@@ -1,23 +1,23 @@
 <div ng-class="{'vertical':orientation=='vertical'}">
-  <button class="branch-light-button" ng-if="hasUser && !userManager.canFlag(entity)" ng-click="flagEntity('spam')" ng-class="{flagged: flagged==true}" data-flagcount="{{spamcount}}">
+  <button class="button-outline" ng-if="hasUser && !userManager.canFlag(entity)" ng-click="flagEntity('spam')" ng-class="{flagged: flagged==true}" data-flagcount="{{spamcount}}">
     <i class="fa fa-flag"></i>Report Spam
   </button>
-  <button class="branch-light-button" ng-if="userManager.canFlag(entity)" ng-click="flagEntity('flag')" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
+  <button class="button-outline" ng-if="userManager.canFlag(entity)" ng-click="flagEntity('flag')" ng-class="{flagged: flagged==true}" data-flagcount="{{flagcount}}">
     <i class="fa fa-flag"></i>Flag
   </button>
-  <button class="branch-light-button" ng-if="(userManager.canApprove(entity) && !isApproved()) || (userManager.canHide(entity) && !isApproved())" ng-click="approveEntity()">
+  <button class="button-outline" ng-if="(userManager.canApprove(entity) && !isApproved()) || (userManager.canHide(entity) && !isApproved())" ng-click="approveEntity()">
     <i class="fa fa-thumbs-up"></i>Approve
   </button>
-  <button class="branch-light-button" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
+  <button class="button-outline" ng-if="(userManager.canHide(entity) && isApproved())" ng-click="hideEntity()">
     <i class="fa fa-ban"></i>Unapprove
   </button>
-  <button class="branch-light-button" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
+  <button class="button-outline" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
     <i class="fa fa-trash-o"></i>Delete
   </button>
-  <button class="branch-light-button" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">
+  <button class="button-outline" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">
     <i class="fa fa-pencil"></i>Edit
   </button>
-  <button class="branch-light-button" ng-if="userManager.hasUser() && download" ng-click="downloadEntity()">
+  <button class="button-outline" ng-if="userManager.hasUser() && download" ng-click="downloadEntity()">
     <i class="fa fa-download"></i>Download
   </button>
 </div>
