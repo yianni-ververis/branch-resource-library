@@ -9,7 +9,7 @@
       <h2>{{projects[0].title}}</h2>
       <p>created by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a></p>
       <p>{{projects[0].short_description}}</p>
-      <a href="{{projects[0].download_link}}"><button class="branch-light-button"><i class="fa fa-download"></i>Download project</button></a>
+      <a href="{{projects[0].download_link}}"><button class="button-outline"><i class="fa fa-download"></i>Download project</button></a>
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
     </div>
     <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
