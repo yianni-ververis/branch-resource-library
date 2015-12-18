@@ -37,6 +37,16 @@ router.get("/updatereadme/:id", function(req, res){
           if(result.userid==req.user._id || req.user.role.name=="admin"){
             var repo = result.git_repo;
             var gituser = result.git_user;
+            var parts = result.project_site.split("/");
+            parts = parts.filter(Boolean);
+            if(parts){
+              if(!repo){  //if the repo has not been set correctly we'll grab it from the project_site.
+                var repo = parts.pop();
+                result.git_repo = repo;
+                var gituser = parts.pop();        //chances are if the repo is bad then the owner is bad too        
+                result.git_user = gituser;
+              }
+            }
             GitHub.authenticate({type: "token", token: Config.git.token });
             GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
               if(err){
