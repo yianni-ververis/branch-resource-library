@@ -42,6 +42,7 @@ require('./server/controllers/passport/passport.js')(passport);
 
 //route controllers
 var apiRoutes = require(__dirname+'/server/routes/api/api');
+var gitRoutes = require(__dirname+'/server/routes/git/git');
 var authRoutes = require(__dirname+'/server/routes/auth');
 var systemRoutes = require(__dirname+'/server/routes/system/system');
 var vcRoutes = require(__dirname+'/server/routes/visualCaptcha');
@@ -98,6 +99,7 @@ app.get("/projects/showthread.php", function(req, res, next){
 });
 
 app.use('/api', apiRoutes);
+app.use('/git', gitRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);
 app.use('/visualcaptcha', vcRoutes);
