@@ -1,5 +1,6 @@
 app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function($scope, $rootScope, $resource, $state, $stateParams, userManager, resultHandler, confirm, title){
   var Entity = $resource("/api/"+$scope.entity+"/:entityId/:function", {entityId: "@entityId", function: "@function"});
+  var GitReadme = $resource("/git/updatereadme/:projectId", {projectId: "@projectId"});  //currently only applies to projects
 
   $scope.userManager = userManager;
 
@@ -43,6 +44,14 @@ app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$s
 
   $scope.editEntity = function(){
     window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
+  };
+
+  $scope.updateReadme = function(){
+    GitReadme.get({projectId: $scope.entityid}, function(result){
+      if(resultHandler.process(result)){
+        window.location.reload();
+      }
+    })
   };
 
   $scope.deleteEntity = function(){
