@@ -186,7 +186,6 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         // - the git details have not been updated for an hour +
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
-        console.log(Config.git.token);
         GitHub.authenticate({type: "token", token: Config.git.token });
         GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
           if(err){
@@ -194,11 +193,12 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
           }
           else{
             //update the update date and git check data
-            var hasChanged = results.data[0].last_updated_num!=(new Date(gitresult.updated_at)).getTime();
+            //Note: Using pushed_at instead of updated_at from Github to fetch latest commit date.
+            //TODO <akl@qlik.com>: Only trigger on updates to the master branch.
+            var hasChanged = results.data[0].last_updated_num!=(new Date(gitresult.pushed_at)).getTime();
             if(hasChanged){
-              console.log('it has changed');
-              results.data[0].last_updated = new Date(gitresult.updated_at);
-              results.data[0].last_updated_num = (new Date(gitresult.updated_at)).getTime();
+              results.data[0].last_updated = new Date(gitresult.pushed_at);
+              results.data[0].last_updated_num = (new Date(gitresult.pushed_at)).getTime();
               results.data[0].last_git_check = Date.now();
               GitHub.authenticate({type: "token", token: Config.git.token });
               GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
