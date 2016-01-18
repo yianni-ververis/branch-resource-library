@@ -103,7 +103,7 @@ function buildMenu(user){
     if(user.role.name=="admin"){
       basicMenu.splice(0,0, {
         label: "Admin Console",
-        href: "#admin"
+        href: "#shouldntbeabletoguessthisurl"
       });
     }
     topMenu.items[0].items = basicMenu;

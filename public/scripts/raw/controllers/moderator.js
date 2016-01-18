@@ -89,8 +89,9 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
             }
           }
         }
+        console.log($scope.isModerator);
         if(!$scope.isModerator){
-            window.location = "#/";
+            window.location = "/";
         }
         //this effectively initiates the results
         searchExchange.subscribe('reset', "moderator", function(){
@@ -111,6 +112,9 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
             values: [{qText: entities[i]}]
           }]
         }
+      }
+      if(!$scope.isModerator){
+          window.location = "/";
       }
       searchExchange.subscribe('reset', "moderator", function(){
         searchExchange.init(defaultSelection);

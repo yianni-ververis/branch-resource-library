@@ -53,7 +53,7 @@
     })
     //used to navigate to the admin console
     .state("admin", {
-      url: "/admin",
+      url: "/shouldntbeabletoguessthisurl",
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })

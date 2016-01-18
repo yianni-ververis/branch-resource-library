@@ -53,7 +53,7 @@
     })
     //used to navigate to the admin console
     .state("admin", {
-      url: "/admin",
+      url: "/shouldntbeabletoguessthisurl",
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })
@@ -2698,6 +2698,19 @@
 
     $scope.userManager = userManager;
 
+    $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+      userManager.refresh(function(hasUser){      
+        if(!hasUser){
+          window.location = "/";
+        }
+        else{
+          if(userManager.userInfo.role.name!="admin"){
+            window.location = "/";
+          }
+        }
+      });
+    });
+
     $scope.doingStuff = false;
 
     $scope.collections = [
@@ -3094,8 +3107,9 @@
               }
             }
           }
+          console.log($scope.isModerator);
           if(!$scope.isModerator){
-              window.location = "#/";
+              window.location = "/";
           }
           //this effectively initiates the results
           searchExchange.subscribe('reset', "moderator", function(){
@@ -3116,6 +3130,9 @@
               values: [{qText: entities[i]}]
             }]
           }
+        }
+        if(!$scope.isModerator){
+            window.location = "/";
         }
         searchExchange.subscribe('reset', "moderator", function(){
           searchExchange.init(defaultSelection);
