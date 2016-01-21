@@ -32,11 +32,26 @@ router.get('/userInfo', function(req, res){
 
 router.post('/git/projects', function(req, res){
   try{
-    GitHub.authenticate({type: "basic", username: req.body.user, password: req.body.password});
-    GitHub.repos.getAll({user:req.body.user}, function(err, repos){
+    console.log(req.body);
+    var code = req.body.code;
+    var authType = code?"2fa":"basic";
+    console.log(authType);
+    GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
+    GitHub.repos.getAll({user:req.body.user}, function(err, repos){      
       if(err){
-        console.log(err);
-        res.json(Error.custom(err.message));
+        if(err.code == 9999){
+          //then the user has 2 factor authentication enabled
+          console.log('needs 2fa');
+          res.json({status: "2fa"});
+        }
+        else if(err.code == 401){
+          console.log(err);
+          res.json(Error.custom(err.message));
+        }
+        else{
+          console.log(err);
+          res.json(Error.custom(err.message));
+        }
       }
       else{
         res.json({repos: repos});
@@ -44,6 +59,7 @@ router.post('/git/projects', function(req, res){
     });
   }
   catch(ex){
+    console.log(ex);
     res.json(Error.custom("Unable to authenticate"));
   }
 });
