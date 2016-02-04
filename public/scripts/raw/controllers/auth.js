@@ -1,4 +1,4 @@
-app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
+app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "lastError", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, lastError){
   var Login = $resource("auth/login");
   var Signup = $resource("auth/signup");
   var Reset = $resource("auth/reset");
@@ -6,6 +6,14 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
 
   $scope.authLoading = false;
   $scope.resetting = false;
+
+  $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+    lastError.checkForErrors(function(error){
+      if(error.errCode){
+        notifications.notify(error.errText, [], {sentiment: "warning"});
+      }
+    });
+  });
 
   if($stateParams.url){
     $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');

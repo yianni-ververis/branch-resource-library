@@ -34,6 +34,10 @@ var userProfileSchema = new Schema({
   avatar: Buffer,
   profilepicture: Buffer,
   github_user: String,
+  linked_to_github: {
+    type: Boolean,
+    default: false
+  },
   facebook: String,
   twitter: String,
   website: String,

@@ -2229,6 +2229,17 @@
 
   }]);
 
+  app.service('lastError', ['$resource', function($resource){
+    var LastError = $resource("system/lasterror");
+
+    this.checkForErrors = function(callbackFn){
+      LastError.get({}, function(result){
+        callbackFn.call(null, result);
+      });
+    };
+
+  }]);
+
   app.service('publisher', ["$rootScope", function($rootScope){
     var that = this;
     this.catalog = {};
@@ -3148,7 +3159,7 @@
 
   }]);
 
-  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
+  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "lastError", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, lastError){
     var Login = $resource("auth/login");
     var Signup = $resource("auth/signup");
     var Reset = $resource("auth/reset");
@@ -3156,6 +3167,14 @@
 
     $scope.authLoading = false;
     $scope.resetting = false;
+
+    $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+      lastError.checkForErrors(function(error){
+        if(error.errCode){
+          notifications.notify(error.errText, [], {sentiment: "warning"});
+        }
+      });
+    });
 
     if($stateParams.url){
       $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');
@@ -3468,6 +3487,7 @@
         code: code
       };
       Git.save({path:"projects"}, creds, function(result){
+        console.log(result);
         if(resultHandler.process(result)){
           console.log(result);
           if(result.status=="2fa"){
@@ -3744,12 +3764,22 @@
               if($stateParams.projectId!="new"){
                 $scope.getProjectData($scope.query); //get initial data set
               }
+              else{
+                if(userManager.userInfo.linked_to_github==true){
+                  $scope.getGitProjects();
+                }
+              }
             }
           });
         }
         else{
           if($stateParams.projectId!="new"){
             $scope.getProjectData($scope.query); //get initial data set
+          }
+          else{
+            if(userManager.userInfo.linked_to_github==true){
+              $scope.getGitProjects();
+            }
           }
         }
       }
@@ -4701,7 +4731,7 @@
       //If there are errors we need to notify the user
       if(errors.length > 0){
         //show the errors
-        notifications.notify("The blog post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+        notifications.notify("The user could not be saved. Please review the following...", errors, {sentiment: "warning"});
         window.scrollTo(100,0);
       }
       else{

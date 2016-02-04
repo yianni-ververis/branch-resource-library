@@ -58,12 +58,14 @@
     </div>
   </div>
   <div class="content">
-    <h2>Details</h2>
-    <span>All projects must be hosted on GitHub. To begin please login to your GitHub Account.</span>
+    <div class="" ng-hide="userManager.userInfo.linked_to_github==true">
+      <h2>Details</h2>
+      <span>All projects must be hosted on GitHub. To begin please login to your GitHub Account.</span>
+    </div>
     <div class="row">
       <div class="col-md-4 underline" ng-show="projects[0].git_clone_url || isNew">
         <div ng-if="isNew">
-          <div class="" ng-if="gitProjects.length==0">
+          <div class="" ng-if="gitProjects.length==0 && userManager.userInfo.linked_to_github==false">
             <form ng-submit="getGitProjects(gituser, gitpassword, code)" class="loginsignup">
               <h3>Log in to GitHub</h3>
               <input type="text" ng-model="gituser" class="form-control" placeholder="GitHub Username"/>
@@ -81,13 +83,21 @@
               <span></span>
             </div>
           </div>
-          <div class="" ng-if="gitProjects.length>0">
+          <div class="" ng-if="gitProjects.length>0 || userManager.userInfo.linked_to_github==true">
             <h3>Select a Project</h3>
+            <span class="red" ng-show="gitError">{{gitError}}</span>
             <ul class="plainlist gitlist">
               <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)" ng-class="{'highlight' : projects[0].git_repo==project.name}">
                 {{project.name}}
               </li>
             </ul>
+            <div class="loading-cover git" ng-show="gitLoading">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         </div>
         <div ng-if="!isNew">
