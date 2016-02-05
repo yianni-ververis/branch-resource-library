@@ -86,7 +86,7 @@ router.get("/updatereadme/:id", function(req, res){
 });
 
 router.get("/link", function(req, res){
-  authorizeGit("http://localhost:3001/git/linkauthorized", req, res);
+  authorizeGit("http://branch.qlik.com/git/linkauthorized", req, res);
 });
 
 router.get("/unlink", function(req, res){
