@@ -136,7 +136,7 @@ router.use("/linkauthorized", function(req, res){
 
 router.get("/login", function(req, res){
   console.log('logging in with GitHub');
-  authorizeGit("http://localhost:3001/git/loginsuccessful", req, res);
+  authorizeGit("http://branch.qlik.com/git/loginsuccessful", req, res);
 });
 
 router.use("/loginsuccessful", function(req, res, next){
@@ -170,7 +170,7 @@ router.use("/loginsuccessful", function(req, res, next){
             else{
               //we need to login now
               req.session.lastError = null;
-              req.session.gitToken = data.response.access_token;              
+              req.session.gitToken = data.response.access_token;
               req.body.username = data.user.login;
               req.body.password = "na";
               console.log(req.body);
