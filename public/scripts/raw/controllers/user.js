@@ -184,7 +184,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     //If there are errors we need to notify the user
     if(errors.length > 0){
       //show the errors
-      notifications.notify("The blog post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+      notifications.notify("The user could not be saved. Please review the following...", errors, {sentiment: "warning"});
       window.scrollTo(100,0);
     }
     else{

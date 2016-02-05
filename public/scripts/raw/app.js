@@ -223,6 +223,7 @@
   include "./services/result-handler.js"
   include "./services/search-exchange.js"
   include "./services/picklists.js"
+  include "./services/lastError.js"
   include "./services/publisher.js"
   include "./services/templater.js"
   //controllers

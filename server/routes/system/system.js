@@ -30,14 +30,35 @@ router.get('/userInfo', function(req, res){
   });
 });
 
+router.get('/lasterror', function(req, res){
+  console.log(req.session.lastError);
+  if(req.session && req.session.lastError){
+    res.json(req.session.lastError);
+  }
+  else{
+    res.json({});
+  }
+});
+
 router.post('/git/projects', function(req, res){
   try{
     console.log(req.body);
     var code = req.body.code;
     var authType = code?"2fa":"basic";
+    var gitUser;
     console.log(authType);
-    GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
-    GitHub.repos.getAll({user:req.body.user}, function(err, repos){      
+    if(req.body.user){
+      GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
+      gitUser = req.body.user;
+    }
+    else if (req.session.gitToken) {
+      GitHub.authenticate({type: "oauth", token: req.session.gitToken});
+      gitUser = req.user.github_user;
+    }
+    else {
+      res.json(Error.custom("Unable to authenticate. Please contact branch.admin@qlik.com"));
+    }
+    GitHub.repos.getAll({user:gitUser}, function(err, repos){
       if(err){
         if(err.code == 9999){
           //then the user has 2 factor authentication enabled

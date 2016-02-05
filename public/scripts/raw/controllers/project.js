@@ -170,6 +170,7 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
       code: code
     };
     Git.save({path:"projects"}, creds, function(result){
+      console.log(result);
       if(resultHandler.process(result)){
         console.log(result);
         if(result.status=="2fa"){
@@ -446,12 +447,22 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             if($stateParams.projectId!="new"){
               $scope.getProjectData($scope.query); //get initial data set
             }
+            else{
+              if(userManager.userInfo.linked_to_github==true){
+                $scope.getGitProjects();
+              }
+            }
           }
         });
       }
       else{
         if($stateParams.projectId!="new"){
           $scope.getProjectData($scope.query); //get initial data set
+        }
+        else{
+          if(userManager.userInfo.linked_to_github==true){
+            $scope.getGitProjects();
+          }
         }
       }
     }
