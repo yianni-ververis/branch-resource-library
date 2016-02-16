@@ -79,15 +79,17 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
           window.location = "#login?url=moderator";
         }
         else{
+          var ents = [];
           for(var i=0;i<entities.length;i++){
             if(userManager.canApprove(entities[i])){
               $scope.isModerator = true;
-              defaultSelection = [{
-                field: "DocType",
-                values: [{qText: entities[i]}]
-              }]
+              ents.push({qText: entities[i]});
             }
           }
+          defaultSelection = [{
+            field: "DocType",
+            values: ents
+          }];
         }
         console.log($scope.isModerator);
         if(!$scope.isModerator){
@@ -104,15 +106,17 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
       });
     }
     else{
+      var ents = [];
       for(var i=0;i<entities.length;i++){
         if(userManager.canApprove(entities[i])){
           $scope.isModerator = true;
-          defaultSelection = [{
-            field: "DocType",
-            values: [{qText: entities[i]}]
-          }]
+          ents.push({qText: entities[i]});
         }
       }
+      defaultSelection = [{
+        field: "DocType",
+        values: ents
+      }];
       if(!$scope.isModerator){
           window.location = "/";
       }

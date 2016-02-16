@@ -4,6 +4,7 @@
         <h2 class='user-name'>{{users[0].fullname || users[0].username}}</h2>
         <span class="user-user" ng-if="users[0].fullname">{{users[0].username}}</span>
         <span class="user-joined">Joined {{users[0].createdate | date:'MMMM dd, yyyy'}}</span>
+        <span class="user-role">{{users[0].role.name}}</span>
         <p>
           {{users[0].bio}}
         </p>

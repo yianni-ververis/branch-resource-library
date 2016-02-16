@@ -15,6 +15,12 @@
         <input class="form-control" ng-model="users[0].fullname">
         <label>Bio:</label>
         <textarea class="form-control" rows="3" ng-model="users[0].bio"></textarea>
+        <div class="" ng-if="userManager.userInfo.role.name=='admin'">
+          <label>Role:</label>
+          <select class="form-control" name="" ng-model="users[0].role._id">
+            <option ng-repeat="role in roles" value="{{role._id}}">{{role.name}}</option>
+          </select>
+        </div>
       </div>
       <div class="col-md-6">
         <label>Thumbnail:</label>
