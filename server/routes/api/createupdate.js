@@ -49,6 +49,17 @@ module.exports = function(req, res){
       if(userPermissions.update!=true){
         res.json(Error.insufficientPermissions());
       }
+      else if (entity=="userprofile" && req.user.role.name!="admin") {
+        //get the existing user
+        entities["userprofile"].model.findOne({_id: record._id}).populate("role").exec( function(err, result){
+          console.log(result.role._id);
+          console.log(record.role._id);
+          if(result && result.role._id != record.role._id){
+            res.json(Error.insufficientPermissions());
+            //this will crash node but in theory we should never make it here
+          }
+        });
+      }
     }
     if(userPermissions.allOwners!=true && !isNew && req.params.entity != "userprofile"){
       query["userid"]=user._id;

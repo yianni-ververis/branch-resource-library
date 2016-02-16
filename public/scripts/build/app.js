@@ -3108,15 +3108,17 @@
             window.location = "#login?url=moderator";
           }
           else{
+            var ents = [];
             for(var i=0;i<entities.length;i++){
               if(userManager.canApprove(entities[i])){
                 $scope.isModerator = true;
-                defaultSelection = [{
-                  field: "DocType",
-                  values: [{qText: entities[i]}]
-                }]
+                ents.push({qText: entities[i]});
               }
             }
+            defaultSelection = [{
+              field: "DocType",
+              values: ents
+            }];
           }
           console.log($scope.isModerator);
           if(!$scope.isModerator){
@@ -3133,15 +3135,17 @@
         });
       }
       else{
+        var ents = [];
         for(var i=0;i<entities.length;i++){
           if(userManager.canApprove(entities[i])){
             $scope.isModerator = true;
-            defaultSelection = [{
-              field: "DocType",
-              values: [{qText: entities[i]}]
-            }]
+            ents.push({qText: entities[i]});
           }
         }
+        defaultSelection = [{
+          field: "DocType",
+          values: ents
+        }];
         if(!$scope.isModerator){
             window.location = "/";
         }
@@ -4547,6 +4551,7 @@
 
   app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
     var User = $resource("api/userprofile/:userId", {userId: "@userId"});
+    var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
     var ChangePassword = $resource("auth/change");
@@ -4555,8 +4560,16 @@
     $scope.projectCount = 0;
 
     $scope.userLoading = true;
-
+    $scope.userManager = userManager;
     var defaultSelection = [];
+
+    UserRoles.get({}, function(result){
+      if(resultHandler.process(result)){
+        $scope.roles = result.data;
+        $scope.roleInfo = result;
+        delete $scope.roleInfo["data"];      
+      }
+    });
 
     if($stateParams.userId){
       $scope.query.userId = $stateParams.userId;
