@@ -20,6 +20,7 @@ mongoose.connect(envconfig.mongoconnectionstring);
 //load the models
 require('./server/models/project.js');
 require('./server/models/blog.js');
+require('./server/models/resource.js');
 require('./server/models/projectcategory.js');
 require('./server/models/user.js');
 require('./server/models/userrole.js');

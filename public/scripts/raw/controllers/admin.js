@@ -10,7 +10,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   $scope.userManager = userManager;
 
   $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
-    userManager.refresh(function(hasUser){      
+    userManager.refresh(function(hasUser){
       if(!hasUser){
         window.location = "/";
       }
@@ -33,6 +33,7 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "comment",
     "blog",
     "discussion",
+    "resource",
     "picklist",
     "picklistitem",
     "flag",
