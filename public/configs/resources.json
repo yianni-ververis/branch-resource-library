@@ -1,0 +1,99 @@
+{
+  "fields":[
+    {
+      "dimension": "resourceId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "title",
+      "suppressNull": false
+    },
+    {
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
+      "dimension": "userId",
+      "suppressNull": true
+    },
+    {
+      "dimension": "username",
+      "suppressNull": true
+    },
+    {
+      "dimension": "resourceType",
+      "suppressNull": true
+    },
+    {
+      "dimension": "createdate_num",
+      "suppressNull": false
+    },
+    {
+      "dimension": "last_updated_num",
+      "suppressNull": false
+    },
+    {
+      "dimension": "approved",
+      "suppressNull": false
+    },
+    {
+      "measure": "sum(points)",
+      "label": "rating",
+      "sortType" : "qSortByNumeric",
+      "order" : -1
+    },
+    {
+      "measure": "sum(viewNum)",
+      "label": "views"
+    },
+    {
+      "measure" : "count(DISTINCT commentId)",
+      "label" : "commentcount"
+    }
+  ],
+  "template": "/views/resourcecenter/resource-results.html",
+  "sorting":{
+    "last_updated_num": {
+      "id": "last_updated_num",
+      "name": "Last Updated",
+      "order": -1,
+      "field": "last_updated_num",
+      "sortType": "qSortByNumeric"
+    },
+    "createdate_num": {
+      "id": "createdate_num",
+      "name": "Newest",
+      "order": -1,
+      "field": "createdate_num",
+      "sortType": "qSortByNumeric"
+    },
+    "title": {
+      "id": "title",
+      "name": "A-Z",
+      "order": 1,
+      "field": "title",
+      "sortType": "qSortByAscii"
+    },
+    "username": {
+      "id": "username",
+      "name": "User",
+      "order": 1,
+      "field": "username",
+      "sortType": "qSortByAscii"
+    },
+    "rating": {
+      "id": "rating",
+      "name": "Most Popular",
+      "order": -1,
+      "field": "rating",
+      "sortType": "qSortByNumeric"
+    }
+  },
+  "defaultSort": "last_updated_num",
+  "primaryKey" : "resourceId",
+  "searchFields": ["SearchField"],
+  "suggestFields": ["title","username","tags"],
+  "nullSuppressor": 0,
+  "entity": "resource",
+  "pagesize" : 20
+}

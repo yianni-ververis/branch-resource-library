@@ -102,6 +102,12 @@ function buildMenu(user){
       label: "My Profile",
       href: "#user/" + user._id
     });
+    if(user.role.permissions && user.role.permissions.resource && user.role.permissions.resource.create==true){
+      basicMenu.splice(0,0,{
+        label: "Create Resource",
+        href: "#resource/new/edit"
+      });
+    }
     if(user.role.permissions && user.role.permissions.discussion && user.role.permissions.discussion.create==true){
       basicMenu.splice(0,0,{
         label: "Create Discussion",

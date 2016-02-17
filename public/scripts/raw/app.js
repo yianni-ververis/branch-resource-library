@@ -141,6 +141,32 @@
         }
       }
     })
+    //used to navigate to the rc list page
+    .state("rc", {
+      url: "/resource",
+      templateUrl: "/views/resourcecenter/index.html",
+      controller: "resourceController"
+    })
+    //used to navigate to a given blog detail page
+    .state("rc.detail", {
+      url: "/:resourceId?status",
+      views:{
+        "@":{
+          templateUrl: "/views/resourcecenter/detail.html",
+          controller: "resourceController",
+        }
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("rc.addedit", {
+      url: "/:resourceId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/resourcecenter/addedit.html",
+          controller: "resourceController",
+        }
+      }
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/user?sort",
@@ -233,6 +259,7 @@
   include "./controllers/home.js"
   include "./controllers/project.js"
   include "./controllers/blog.js"
+  include "./controllers/resource.js"
   include "./controllers/discussion.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"

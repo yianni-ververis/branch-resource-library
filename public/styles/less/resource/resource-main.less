@@ -1,0 +1,145 @@
+ul.resource-listing {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+
+  li.resource-item {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100px;
+    margin-bottom: 10px;
+
+    .resource-info {
+      flex: 1 1 100%;
+      display: flex;
+      overflow: hidden;
+      @media screen and (min-width: @tablet-width) {
+          flex: 4;
+      }
+
+    }
+    .resource-summary {
+      flex: 2;
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .resource-summary-heading {
+        flex: 1 1 100%;
+      }
+      .list-title {
+        font-size: 22px;
+        line-height: 24px;
+      }
+      .resource-bottom {
+        flex: 1 1 100%;
+        align-self: flex-end;
+      }
+
+    }
+
+    .resource-details {
+      flex: 1;
+      border-left: 1px solid @content-border;
+      background: rgb(237,237,237);
+      padding: 10px;
+
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      @media screen and (max-width: @tablet-width) {
+        flex-wrap: nowrap;
+        flex-direction: row-reverse;
+      }
+
+      h1 {
+        flex: 1 1 100%;
+        font-size: 46px;
+        font-weight: 400;
+        color: @green;
+        margin: 0;
+        align-self: flex-end;
+        text-align: center;
+
+        @media screen and (max-width: @tablet-width) {
+          font-size: 32px;
+          text-align: right;
+        }
+
+      }
+
+      .mini-details {
+        flex: 1 1 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-around;
+
+        div {
+          flex: 0 0 auto;
+          align-self: flex-end;
+
+          p {
+            margin: 0;
+          }
+
+          span {
+            font-size: 10px;
+          }
+
+        }
+
+      }
+
+    }
+  }
+}
+
+.resource-detail{
+  display: flex;
+  overflow: hidden;
+  padding: 20px 0;
+  .resource-header{
+    flex: 1;
+    padding-right: 20px;
+
+    @media screen and (max-width: @tablet-width) {
+      padding-right: 0;
+      text-align: center;
+    }
+  }
+}
+
+.resource-type {
+  flex: 0 0 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+
+  @media screen and (min-width: @tablet-width) {
+    min-width: 200px
+  }
+
+  font-family: branch-icons;
+  font-size: 50px;
+  color: @dark-grey;
+  &.Tutorial{
+    &:before{
+      content: "\E823";
+    }
+  }
+  &.Snippet{
+    &:before{
+      content: "\E825";
+    }
+  }
+  &.Video{
+    &:before{
+      content: "\E826";
+    }
+  }
+}
