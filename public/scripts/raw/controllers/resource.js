@@ -104,7 +104,7 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
 
   $scope.getResourceContent = function(text){
     if(text && text.data){
-      var buffer = _arrayBufferToBase64(text.data);
+      var buffer = _arrayBufferToBase64(text.data);      
       return marked(buffer);
     }
     else{

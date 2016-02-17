@@ -4253,6 +4253,8 @@
     $scope.getResourceContent = function(text){
       if(text && text.data){
         var buffer = _arrayBufferToBase64(text.data);
+        console.log(window.btoa(text.data));
+        console.log(marked(buffer));
         return marked(buffer);
       }
       else{
