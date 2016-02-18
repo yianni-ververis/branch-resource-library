@@ -134,7 +134,6 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.saveBlog = function(){
     $scope.blogLoading = true;
     //temp fix for special chars not formatting in summernote
-    console.info("REPLACE");
     $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
     $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
     var data = {
@@ -165,7 +164,7 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
   $scope.getBlogContent = function(text){
     if(text && text.data){
       var buffer = _arrayBufferToBase64(text.data);
-      return marked(buffer);
+      return buffer;
     }
     else{
       return "";
