@@ -28,7 +28,7 @@
           </ul>
         </li>
         <li ng-if="userManager.hasUser() && userManager.userInfo.role.name=='admin'"><a href="#resource"><span>Resource Center</span></a></li>
-        <li><a href="#discussion"><span>Forum</span></a></li>
+        <li><a href="#discussion" ng-click="shutit()"><span>Forum</span></a></li>
         <li><a href="#blog"><span>Blog</span></a></li>
         <li><a href="#project"><span>Projects</span></a></li>
       </ul>
