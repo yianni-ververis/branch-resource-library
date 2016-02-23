@@ -232,41 +232,46 @@
   }
 
   //directives
-  app.directive('header', ['userManager', '$state', '$interpolate', function (userManager, $state, $interpolate) {
-    return {
-      restrict: "A",
-      replace: true,
-      scope:{
+  app.directive('header', ['userManager', '$state', '$interpolate', function(userManager, $state, $interpolate) {
+      return {
+          restrict: "A",
+          replace: true,
+          scope: {
 
-      },
-      templateUrl: "/views/header.html",
-      controller: ['$scope',function($scope){
-        $scope.userManager = userManager;
-        $scope.breadcrumb;
+          },
+          templateUrl: "/views/header.html",
+          controller: ['$scope', function($scope) {
+              $scope.userManager = userManager;
+              $scope.breadcrumb;
 
-        $scope.$on("$stateChangeStart", function(){
-          $scope.breadcrumb = null;
-        });
+              $scope.$on("$stateChangeStart", function() {
+                  $scope.breadcrumb = null;
+              });
 
-        $scope.$on('setCrumb', function(event, crumb){
-          $scope.breadcrumb = crumb;
-        });
+              $scope.$on('setCrumb', function(event, crumb) {
+                  $scope.breadcrumb = crumb;
+              });
 
-        $scope.getLoginUrl = function(){
-          var suffix = "";
+              $("#navbar").on("click", "li a", null, function() {
+                  if (!$(this).hasClass("dropdown-toggle")) {
+                      $("#navbar").collapse('hide');
+                  }
+              });
 
-          if($state.$current.name!="home"){
-            suffix += "?url=";
-          }
-          if(window.location.hash.indexOf('login')==-1 && window.location.hash.indexOf('reset')==-1){
-            suffix += window.location.hash.replace("#/","");
-          }
-          return "#loginsignup"+suffix;
-        }
-      }]
-    }
+              $scope.getLoginUrl = function() {
+                  var suffix = "";
+
+                  if ($state.$current.name != "home") {
+                      suffix += "?url=";
+                  }
+                  if (window.location.hash.indexOf('login') == -1 && window.location.hash.indexOf('reset') == -1) {
+                      suffix += window.location.hash.replace("#/", "");
+                  }
+                  return "#loginsignup" + suffix;
+              }
+          }]
+      }
   }]);
-
   app.directive('footer', ['userManager', '$state', '$interpolate', function (userManager, $state, $interpolate) {
     return {
       restrict: "A",
