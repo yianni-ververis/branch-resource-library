@@ -1,5 +1,6 @@
 app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
+  var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
   var ChangePassword = $resource("auth/change");
@@ -8,8 +9,16 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
   $scope.projectCount = 0;
 
   $scope.userLoading = true;
-
+  $scope.userManager = userManager;
   var defaultSelection = [];
+
+  UserRoles.get({}, function(result){
+    if(resultHandler.process(result)){
+      $scope.roles = result.data;
+      $scope.roleInfo = result;
+      delete $scope.roleInfo["data"];      
+    }
+  });
 
   if($stateParams.userId){
     $scope.query.userId = $stateParams.userId;
@@ -184,7 +193,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     //If there are errors we need to notify the user
     if(errors.length > 0){
       //show the errors
-      notifications.notify("The blog post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+      notifications.notify("The user could not be saved. Please review the following...", errors, {sentiment: "warning"});
       window.scrollTo(100,0);
     }
     else{

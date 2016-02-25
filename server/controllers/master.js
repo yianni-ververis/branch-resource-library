@@ -98,7 +98,7 @@ module.exports = {
       console.log('query');
       console.log(query);
       console.log('data');
-      console.log(data);
+      console.log(data);      
       if(query._id){
         entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
           if(err){

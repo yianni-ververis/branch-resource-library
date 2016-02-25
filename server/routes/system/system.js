@@ -30,13 +30,49 @@ router.get('/userInfo', function(req, res){
   });
 });
 
+router.get('/lasterror', function(req, res){
+  console.log(req.session.lastError);
+  if(req.session && req.session.lastError){
+    res.json(req.session.lastError);
+  }
+  else{
+    res.json({});
+  }
+});
+
 router.post('/git/projects', function(req, res){
   try{
-    GitHub.authenticate({type: "basic", username: req.body.user, password: req.body.password});
-    GitHub.repos.getAll({user:req.body.user}, function(err, repos){
+    console.log(req.body);
+    var code = req.body.code;
+    var authType = code?"2fa":"basic";
+    var gitUser;
+    console.log(authType);
+    if(req.body.user){
+      GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
+      gitUser = req.body.user;
+    }
+    else if (req.session.gitToken) {
+      GitHub.authenticate({type: "oauth", token: req.session.gitToken});
+      gitUser = req.user.github_user;
+    }
+    else {
+      res.json(Error.custom("Unable to authenticate. Please contact branch.admin@qlik.com"));
+    }
+    GitHub.repos.getAll({user:gitUser}, function(err, repos){
       if(err){
-        console.log(err);
-        res.json(Error.custom(err.message));
+        if(err.code == 9999){
+          //then the user has 2 factor authentication enabled
+          console.log('needs 2fa');
+          res.json({status: "2fa"});
+        }
+        else if(err.code == 401){
+          console.log(err);
+          res.json(Error.custom(err.message));
+        }
+        else{
+          console.log(err);
+          res.json(Error.custom(err.message));
+        }
       }
       else{
         res.json({repos: repos});
@@ -44,6 +80,7 @@ router.post('/git/projects', function(req, res){
     });
   }
   catch(ex){
+    console.log(ex);
     res.json(Error.custom("Unable to authenticate"));
   }
 });
@@ -65,6 +102,12 @@ function buildMenu(user){
       label: "My Profile",
       href: "#user/" + user._id
     });
+    if(user.role.permissions && user.role.permissions.resource && user.role.permissions.resource.create==true){
+      basicMenu.splice(0,0,{
+        label: "Create Resource",
+        href: "#resource/new/edit"
+      });
+    }
     if(user.role.permissions && user.role.permissions.discussion && user.role.permissions.discussion.create==true){
       basicMenu.splice(0,0,{
         label: "Create Discussion",
@@ -103,7 +146,7 @@ function buildMenu(user){
     if(user.role.name=="admin"){
       basicMenu.splice(0,0, {
         label: "Admin Console",
-        href: "#admin"
+        href: "#shouldntbeabletoguessthisurl"
       });
     }
     topMenu.items[0].items = basicMenu;

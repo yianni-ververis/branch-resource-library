@@ -2516,7 +2516,7 @@
 
       // toolbar
       toolbar: [
-       // ['style', ['style']],
+        ['style', ['style']],
         ['font', ['bold', 'italic', 'underline', 'clear']],
         // ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
         //['fontname', ['fontname']],
@@ -2554,7 +2554,7 @@
       ],
 
       // style tag
-      styleTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+      styleTags: ['p', 'blockquote', 'pre'/*, 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'*/],
 
       // default fontName
       defaultFontName: 'Helvetica Neue',

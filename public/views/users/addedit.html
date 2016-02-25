@@ -15,6 +15,12 @@
         <input class="form-control" ng-model="users[0].fullname">
         <label>Bio:</label>
         <textarea class="form-control" rows="3" ng-model="users[0].bio"></textarea>
+        <div class="" ng-if="userManager.userInfo.role.name=='admin'">
+          <label>Role:</label>
+          <select class="form-control" name="" ng-model="users[0].role._id">
+            <option ng-repeat="role in roles" value="{{role._id}}">{{role.name}}</option>
+          </select>
+        </div>
       </div>
       <div class="col-md-6">
         <label>Thumbnail:</label>
@@ -42,14 +48,32 @@
         <input class="form-control" ng-model="users[0].country" placeholder="We think you get the idea...">
       </div>
       <div class="col-md-6">
+        <label>Email:</label>
+        <input class="form-control" ng-model="users[0].email" placeholder="What is your email?">
         <label>Twitter Handle:</label>
         <input class="form-control" ng-model="users[0].twitter" placeholder="Share your twitter handle">
         <label>GitHub Username:</label>
-        <input class="form-control" ng-model="users[0].github_user" placeholder="Let us know your GitHub user">
+        <input ng-disabled="users[0].linked_to_github" class="form-control" ng-model="users[0].github_user" placeholder="Let us know your GitHub user">
         <label>Website:</label>
         <input class="form-control" ng-model="users[0].website" placeholder="Do you have a website?">
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2>GitHub Account</h2>
+      </div>
+      <div class="col-md-6">
+        <p ng-show="users[0].linked_to_github==false">
+          The following button allows you to link your Branch account to your GitHub account. Once enabled you will be able to login using GitHub and will no longer need to provide any GitHub login credentials to create new projects.
+        </p>
+        <p ng-show="users[0].linked_to_github==true">
+          Your account is linked to the GitHub user <strong>{{users[0].github_user}}</strong>
+        </p>
+        <a ng-show="users[0].linked_to_github==false" href="/git/link" type="button" class="button-outline-fill green-bg white" name="button">Link to GitHub</a>
+        <a ng-show="users[0].linked_to_github==true" href="/git/unlink" type="button" class="button-outline-fill orange-bg white" name="button">Unlink</a>
+      </div>
+    </div>
+    <br>
     <button class="button-outline-fill" type="button" name="button" ng-click="validateNewUserData()">Save</button>
   </div>
   <div class="loading-cover" ng-show="userLoading">

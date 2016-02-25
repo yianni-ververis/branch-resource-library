@@ -1,0 +1,25 @@
+<ul class="resource-listing">
+  <li class="resource-item card" id="{{resource.resourceId}}" qs-repeat="resource in items" qs-hide="resource.hidden==true">
+    <div class="resource-info">
+      <div class="resource-type {{resource.resourceType}}">        
+      </div>
+      <div class="resource-summary">
+        <div class="resource-summary-heading">
+          <a class="list-title" href="#resource/{{resource.resourceId}}">{{resource.title}}</a>
+          by <a class="user-link" href="#user/{{resource.userId}}">{{resource.username}}</a>
+        </div>
+        <div class="resource-bottom">
+          <span class="emphasize">Tags: </span><span>{{resource.tags}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="resource-details">
+      <h1 ng-class="{na: resource.rating === '-'}">{{resource.rating}}</h1>
+      <div class="mini-details">
+        <div><span>VIEWS</span><p>{{resource.views}}</p></div>
+        <div><span>COMMENTS</span><p>{{resource.commentcount}}</p></div>
+        <div><span>LAST UPDATED</span><p>{{resource.last_updated_num:Date}}</p></div>
+      </div>
+    </div>
+  </li>
+</ul>

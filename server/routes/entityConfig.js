@@ -38,6 +38,19 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
+    resource:{
+      collection: "resources",
+      model: require("../models/resource"),
+      populates: "userid resourceType",
+      exemptFromOwnership: false,
+      exemptFromApproval: false,
+      logViews: true,
+      sort: {
+        dateline: -1
+      },
+      limit: 20,
+      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
+    },
     discussion:{
       collection: "discussions",
       model: require("../models/discussion"),

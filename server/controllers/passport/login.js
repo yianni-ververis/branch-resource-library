@@ -2,13 +2,13 @@ var LocalStrategy    = require('passport-local').Strategy;
 var md5 						 = require('MD5');
 
 module.exports = function(passport, User, UserProfile, LoginHistory){
-
 	passport.use('local', new LocalStrategy({
             usernameField : 'username',
             passwordField : 'password',
             passReqToCallback : true
         },
         function(req, username, password, done) {
+					console.log('nnndff');
             // check in mongo if a user with username exists or not
 						var regExp = new RegExp("^"+username+"$", "i");
             UserProfile.findOne({ 'username' : {$regex: regExp} },
@@ -24,6 +24,9 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
                         return done('User Not Found with username - '+username, false);
                         //return done(null, false, req.flash('message', 'User Not found.'));
                     }
+										if(userProfile.linked_to_github==true){
+											return done("Your user account has been linked to the GitHub user "+ userProfile.github_user+". Please use the 'Login With GitHub' option below.", false);
+										}
 										if(userProfile.approved==false){
 											return done("Your user account has been blocked. Please contact branch.admin@qlik.com", false);
 										}

@@ -53,7 +53,7 @@
     })
     //used to navigate to the admin console
     .state("admin", {
-      url: "/admin",
+      url: "/shouldntbeabletoguessthisurl",
       templateUrl: "/views/admin/index.html",
       controller: "adminController"
     })
@@ -141,6 +141,32 @@
         }
       }
     })
+    //used to navigate to the rc list page
+    .state("rc", {
+      url: "/resource",
+      templateUrl: "/views/resourcecenter/index.html",
+      controller: "resourceController"
+    })
+    //used to navigate to a given blog detail page
+    .state("rc.detail", {
+      url: "/:resourceId?status",
+      views:{
+        "@":{
+          templateUrl: "/views/resourcecenter/detail.html",
+          controller: "resourceController",
+        }
+      }
+    })
+    //used to navigate to a the blog add/edit page
+    .state("rc.addedit", {
+      url: "/:resourceId/edit",
+      views:{
+        "@":{
+          templateUrl: "/views/resourcecenter/addedit.html",
+          controller: "resourceController",
+        }
+      }
+    })
     //used to navigate to a user list page (not currently used)
     .state("users", {
       url: "/user?sort",
@@ -206,41 +232,46 @@
   }
 
   //directives
-  app.directive('header', ['userManager', '$state', '$interpolate', function (userManager, $state, $interpolate) {
-    return {
-      restrict: "A",
-      replace: true,
-      scope:{
+  app.directive('header', ['userManager', '$state', '$interpolate', function(userManager, $state, $interpolate) {
+      return {
+          restrict: "A",
+          replace: true,
+          scope: {
 
-      },
-      templateUrl: "/views/header.html",
-      controller: ['$scope',function($scope){
-        $scope.userManager = userManager;
-        $scope.breadcrumb;
+          },
+          templateUrl: "/views/header.html",
+          controller: ['$scope', function($scope) {
+              $scope.userManager = userManager;
+              $scope.breadcrumb;
 
-        $scope.$on("$stateChangeStart", function(){
-          $scope.breadcrumb = null;
-        });
+              $scope.$on("$stateChangeStart", function() {
+                  $scope.breadcrumb = null;
+              });
 
-        $scope.$on('setCrumb', function(event, crumb){
-          $scope.breadcrumb = crumb;
-        });
+              $scope.$on('setCrumb', function(event, crumb) {
+                  $scope.breadcrumb = crumb;
+              });
 
-        $scope.getLoginUrl = function(){
-          var suffix = "";
+              $("#navbar").on("click", "li a", null, function() {
+                  if (!$(this).hasClass("dropdown-toggle")) {
+                      $("#navbar").collapse('hide');
+                  }
+              });
 
-          if($state.$current.name!="home"){
-            suffix += "?url=";
-          }
-          if(window.location.hash.indexOf('login')==-1 && window.location.hash.indexOf('reset')==-1){
-            suffix += window.location.hash.replace("#/","");
-          }
-          return "#loginsignup"+suffix;
-        }
-      }]
-    }
+              $scope.getLoginUrl = function() {
+                  var suffix = "";
+
+                  if ($state.$current.name != "home") {
+                      suffix += "?url=";
+                  }
+                  if (window.location.hash.indexOf('login') == -1 && window.location.hash.indexOf('reset') == -1) {
+                      suffix += window.location.hash.replace("#/", "");
+                  }
+                  return "#loginsignup" + suffix;
+              }
+          }]
+      }
   }]);
-
   app.directive('footer', ['userManager', '$state', '$interpolate', function (userManager, $state, $interpolate) {
     return {
       restrict: "A",
@@ -2229,6 +2260,17 @@
 
   }]);
 
+  app.service('lastError', ['$resource', function($resource){
+    var LastError = $resource("system/lasterror");
+
+    this.checkForErrors = function(callbackFn){
+      LastError.get({}, function(result){
+        callbackFn.call(null, result);
+      });
+    };
+
+  }]);
+
   app.service('publisher', ["$rootScope", function($rootScope){
     var that = this;
     this.catalog = {};
@@ -2698,6 +2740,19 @@
 
     $scope.userManager = userManager;
 
+    $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+      userManager.refresh(function(hasUser){
+        if(!hasUser){
+          window.location = "/";
+        }
+        else{
+          if(userManager.userInfo.role.name!="admin"){
+            window.location = "/";
+          }
+        }
+      });
+    });
+
     $scope.doingStuff = false;
 
     $scope.collections = [
@@ -2709,6 +2764,7 @@
       "comment",
       "blog",
       "discussion",
+      "resource",
       "picklist",
       "picklistitem",
       "flag",
@@ -3084,18 +3140,21 @@
             window.location = "#login?url=moderator";
           }
           else{
+            var ents = [];
             for(var i=0;i<entities.length;i++){
               if(userManager.canApprove(entities[i])){
                 $scope.isModerator = true;
-                defaultSelection = [{
-                  field: "DocType",
-                  values: [{qText: entities[i]}]
-                }]
+                ents.push({qText: entities[i]});
               }
             }
+            defaultSelection = [{
+              field: "DocType",
+              values: ents
+            }];
           }
+          console.log($scope.isModerator);
           if(!$scope.isModerator){
-              window.location = "#/";
+              window.location = "/";
           }
           //this effectively initiates the results
           searchExchange.subscribe('reset', "moderator", function(){
@@ -3108,14 +3167,19 @@
         });
       }
       else{
+        var ents = [];
         for(var i=0;i<entities.length;i++){
           if(userManager.canApprove(entities[i])){
             $scope.isModerator = true;
-            defaultSelection = [{
-              field: "DocType",
-              values: [{qText: entities[i]}]
-            }]
+            ents.push({qText: entities[i]});
           }
+        }
+        defaultSelection = [{
+          field: "DocType",
+          values: ents
+        }];
+        if(!$scope.isModerator){
+            window.location = "/";
         }
         searchExchange.subscribe('reset', "moderator", function(){
           searchExchange.init(defaultSelection);
@@ -3131,7 +3195,7 @@
 
   }]);
 
-  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
+  app.controller("authController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "lastError", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, lastError){
     var Login = $resource("auth/login");
     var Signup = $resource("auth/signup");
     var Reset = $resource("auth/reset");
@@ -3139,6 +3203,14 @@
 
     $scope.authLoading = false;
     $scope.resetting = false;
+
+    $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+      lastError.checkForErrors(function(error){
+        if(error.errCode){
+          notifications.notify(error.errText, [], {sentiment: "warning"});
+        }
+      });
+    });
 
     if($stateParams.url){
       $scope.returnUrl = $stateParams.url.replace(/%2F/gi, '');
@@ -3442,17 +3514,26 @@
       window.location = "#project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
 
-    $scope.getGitProjects = function(gituser, gitpassword){
+    $scope.getGitProjects = function(gituser, gitpassword, code){
       $scope.gitLoading = true;
       $scope.gitError = null;
       var creds = {
         user: gituser,
-        password: gitpassword
+        password: gitpassword,
+        code: code
       };
       Git.save({path:"projects"}, creds, function(result){
+        console.log(result);
         if(resultHandler.process(result)){
+          console.log(result);
+          if(result.status=="2fa"){
+            console.log('need 2fa');
+            $scope.is2fa = true;
+          }
+          else{
+            $scope.gitProjects = result.repos;
+          }
           $scope.gitLoading = false;
-          $scope.gitProjects = result.repos;
         }
         else{
           var msg;
@@ -3719,12 +3800,22 @@
               if($stateParams.projectId!="new"){
                 $scope.getProjectData($scope.query); //get initial data set
               }
+              else{
+                if(userManager.userInfo.linked_to_github==true){
+                  $scope.getGitProjects();
+                }
+              }
             }
           });
         }
         else{
           if($stateParams.projectId!="new"){
             $scope.getProjectData($scope.query); //get initial data set
+          }
+          else{
+            if(userManager.userInfo.linked_to_github==true){
+              $scope.getGitProjects();
+            }
           }
         }
       }
@@ -3913,7 +4004,8 @@
 
     $scope.saveBlog = function(){
       $scope.blogLoading = true;
-      $scope.blogs[0].content = $("#blogContent").code();
+      //temp fix for special chars not formatting in summernote
+      $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
       $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
       var data = {
         standard: $scope.blogs[0]
@@ -3943,7 +4035,7 @@
     $scope.getBlogContent = function(text){
       if(text && text.data){
         var buffer = _arrayBufferToBase64(text.data);
-        return marked(buffer);
+        return buffer;
       }
       else{
         return "";
@@ -4034,6 +4126,230 @@
           searchExchange.subscribe('reset', "blogs", function(){
             searchExchange.init(defaultSelection);
             searchExchange.unsubscribe('reset', "blogs");
+          });
+          if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+            searchExchange.clear(true);
+          }
+        }
+      }
+    });
+
+    function _arrayBufferToBase64( buffer ) {
+      var binary = '';
+      var bytes = new Uint8Array( buffer );
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+          binary += String.fromCharCode( bytes[ i ] );
+      }
+      return binary ;
+    }
+
+    function cleanUpContent(text){
+      var noImg = text.replace(/<img[^>]*>/g,"[image]");
+      noHTML = noImg.replace(/<\/?[^>]+(>|$)/g, "");
+      return noHTML;
+    }
+
+  }]);
+
+  app.controller("resourceController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+    var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
+
+    $scope.pageSize = 20;
+    $scope.query = {};
+
+    $scope.resourceLoading = $stateParams.resourceId!="new";
+    $scope.isNew = $stateParams.resourceId=="new";
+    $scope.resourceTypes;
+
+    picklistService.getPicklistItems("Resource Type", function(items){
+      $scope.resourceTypes = items;
+      $scope.newresourceType = items[0];
+    });
+
+    if($stateParams.resourceId){
+      $scope.query.resourceId = $stateParams.resourceId;
+      $scope.resourceId = $stateParams.resourceId;
+    }
+
+    $scope.getResourceData = function(query, append){
+      Resource.get(query, function(result){
+        $scope.resourceLoading = false;
+        if(resultHandler.process(result)){
+          if(result.data && result.data.length > 0){
+            if($stateParams.status){
+              if($stateParams.status=='created'){
+                notifications.notify("Your resource has been successfully submitted for approval.", null, {sentiment:"positive"});
+              }
+              else if ($stateParams.status=='updated') {
+                notifications.notify("Your resource has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, {sentiment:"positive"});
+              }
+            }
+            if(append && append==true){
+              $scope.resources = $scope.resources.concat(result.data);
+            }
+            else{
+              $scope.resources = result.data;
+              //if this is the detail view we'll update the breadcrumbs
+            }
+            if($state.current.name=="rc.addedit"){
+              $("#resourceContent").code(_arrayBufferToBase64(result.data[0].content.data));
+            }
+            $scope.resourceInfo = result;
+            delete $scope.resourceInfo["data"];
+          }
+          else{
+            window.location = "#noitem";
+          }
+        }
+      });
+    };
+
+    $scope.validateNewResourceData = function(){
+      //We're validating client side so that we don't keep passing image data back and forth
+      //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
+      var errors = [];
+      //Verify the blog has a name
+      if(!$scope.resources[0].title || $scope.resources[0].title==""){
+        errors.push("Please specify a title");
+      }
+      //Verify the blog has a type
+      if(!$scope.resources[0].resourceType){
+        errors.push("Please select a Type");
+      }
+      //Verify the blog has content
+      if($("#resourceContent").code().length==0 || $("#resourceContent").code().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
+        errors.push("Please add some content");
+      }
+      //If there are errors we need to notify the user
+      if(errors.length > 0){
+        //show the errors
+        notifications.notify("The resource post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+        window.scrollTo(100,0);
+      }
+      else{
+        //Save the record
+        $scope.saveResource();
+      }
+    };
+
+    $scope.saveResource = function(){
+      $scope.resourceLoading = true;
+      $scope.resources[0].content = $("#resourceContent").code();
+      $scope.resources[0].plaintext = cleanUpContent($scope.resources[0].content);
+      var data = {
+        standard: $scope.resources[0]
+      };
+      var query = {};
+      if($scope.resources[0]._id){
+        query.resourceId = $scope.resources[0]._id;
+      }
+      Resource.save(query, data, function(result){
+        $scope.resourceLoading = false;
+        if(resultHandler.process(result)){
+          var status = $scope.isNew ? "created" : "updated";
+          window.location = "#resource/"+result._id+"?status="+status;
+        }
+        else{
+          notifications.notify(result.errText, null, {sentiment: "negative"});
+        }
+      });
+    };
+
+    $scope.getResourceContent = function(text){
+      if(text && text.data){
+        var buffer = _arrayBufferToBase64(text.data);      
+        return marked(buffer);
+      }
+      else{
+        return "";
+      }
+    };
+
+    $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
+      if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
+         if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
+          searchExchange.publish("executeSearch");
+         }
+      }
+      if(toState.name!="loginsignup"){
+        searchExchange.view = toState.name.split(".")[0];
+      }
+      if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+        searchExchange.clear(true);
+      }
+      defaultSelection = [];
+      if($state.current.name=="rc.detail"){
+        $scope.getResourceData($scope.query); //get initial data set
+        userManager.refresh(function(hasUser){
+          $scope.currentuserid = userManager.userInfo._id;
+        });
+      }
+      else if($state.current.name=="rc.addedit"){
+        $("#resourceContent").summernote({
+          height: 400
+        });
+        picklistService.getPicklistItems("Resource Type", function(items){
+          $scope.resourceTypes = items;
+        });
+        if($stateParams.resourceId=="new"){
+          $scope.resources = [{}];
+        }
+        var hasUser = userManager.hasUser();
+        if(!hasUser){
+          userManager.refresh(function(hasUser){
+            if(!hasUser){
+              window.location = "#login?url=resource/"+$stateParams.resourceId+"/edit"
+            }
+            else{
+              if($stateParams.resourceId!="new"){
+                $scope.getResourceData($scope.query); //get initial data set
+              }
+            }
+          });
+        }
+        else{
+          if($stateParams.resourceId!="new"){
+            $scope.getResourceData($scope.query); //get initial data set
+          }
+        }
+      }
+      else{ //this should be the list page
+        if(!userManager.hasUser()){
+          userManager.refresh(function(hasUser){
+            if(!hasUser){
+              defaultSelection = [{
+                field: "approved",
+                values: [{qText: "True"}]
+              }]
+            }
+            else{
+              if(!userManager.canApprove('resource')){
+                defaultSelection = [{
+                  field: "approved",
+                  values: [{qText: "True"}]
+                }]
+              }
+            }
+            searchExchange.subscribe('reset', "resources", function(){
+              searchExchange.init(defaultSelection);
+              searchExchange.unsubscribe('reset', "resources");
+            });
+            if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
+              searchExchange.clear(true);
+            }
+          });
+        }
+        else{
+          if(!userManager.canApprove('resource')){
+            defaultSelection = [{
+              field: "approved",
+              values: [{qText: "True"}]
+            }]
+          }
+          searchExchange.subscribe('reset', "resources", function(){
+            searchExchange.init(defaultSelection);
+            searchExchange.unsubscribe('reset', "resources");
           });
           if((fromState.name.split(".")[0]!=toState.name.split(".")[0]) || fromState.name=="loginsignup"){
             searchExchange.clear(true);
@@ -4492,6 +4808,7 @@
 
   app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
     var User = $resource("api/userprofile/:userId", {userId: "@userId"});
+    var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
     var ChangePassword = $resource("auth/change");
@@ -4500,8 +4817,16 @@
     $scope.projectCount = 0;
 
     $scope.userLoading = true;
-
+    $scope.userManager = userManager;
     var defaultSelection = [];
+
+    UserRoles.get({}, function(result){
+      if(resultHandler.process(result)){
+        $scope.roles = result.data;
+        $scope.roleInfo = result;
+        delete $scope.roleInfo["data"];      
+      }
+    });
 
     if($stateParams.userId){
       $scope.query.userId = $stateParams.userId;
@@ -4676,7 +5001,7 @@
       //If there are errors we need to notify the user
       if(errors.length > 0){
         //show the errors
-        notifications.notify("The blog post could not be saved. Please review the following...", errors, {sentiment: "warning"});
+        notifications.notify("The user could not be saved. Please review the following...", errors, {sentiment: "warning"});
         window.scrollTo(100,0);
       }
       else{

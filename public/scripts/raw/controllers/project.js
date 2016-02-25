@@ -161,17 +161,26 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
     window.location = "#project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
-  $scope.getGitProjects = function(gituser, gitpassword){
+  $scope.getGitProjects = function(gituser, gitpassword, code){
     $scope.gitLoading = true;
     $scope.gitError = null;
     var creds = {
       user: gituser,
-      password: gitpassword
+      password: gitpassword,
+      code: code
     };
     Git.save({path:"projects"}, creds, function(result){
+      console.log(result);
       if(resultHandler.process(result)){
+        console.log(result);
+        if(result.status=="2fa"){
+          console.log('need 2fa');
+          $scope.is2fa = true;
+        }
+        else{
+          $scope.gitProjects = result.repos;
+        }
         $scope.gitLoading = false;
-        $scope.gitProjects = result.repos;
       }
       else{
         var msg;
@@ -438,12 +447,22 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
             if($stateParams.projectId!="new"){
               $scope.getProjectData($scope.query); //get initial data set
             }
+            else{
+              if(userManager.userInfo.linked_to_github==true){
+                $scope.getGitProjects();
+              }
+            }
           }
         });
       }
       else{
         if($stateParams.projectId!="new"){
           $scope.getProjectData($scope.query); //get initial data set
+        }
+        else{
+          if(userManager.userInfo.linked_to_github==true){
+            $scope.getGitProjects();
+          }
         }
       }
     }

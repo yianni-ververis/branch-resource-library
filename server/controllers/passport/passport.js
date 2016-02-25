@@ -5,6 +5,8 @@ var LoginHistory = require('../../models/loginhistory');
 module.exports = function(passport){
 
   passport.serializeUser(function(user, done) {
+    console.log('is the error here then');
+    console.log(user);
     done(null, user._id);
   });
 
@@ -14,8 +16,9 @@ module.exports = function(passport){
     });
   });
 
-  //Configure login strategy
+  //Configure login strategies
   require('./login.js')(passport, User, UserProfile, LoginHistory);
+  require('./gitlogin.js')(passport, User, UserProfile, LoginHistory);
 
   //configure signup strategy
   require('./signup.js')(passport, User, UserProfile);
