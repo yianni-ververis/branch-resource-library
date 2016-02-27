@@ -1,28 +1,23 @@
-<ul class="blog-list plainlist blog">
-  <li id="{{blog.blogId}}" qs-repeat="blog in items" qs-hide="blog.hidden==true">
-    <div class="blog-image blog-thumbnail" qs-hide="blog.image=='-'">
-      <img src="{{blog.image}}">
-    </div>
-    <div class="row">
-      <div class="col-md-9">
-        <div class="blog-summary">
-          <h2><a href="#blog/{{blog.blogId}}">{{blog.title}}</a></h2>
-          <p>{{blog.short_description}}</p>
-          <span>Posted {{blog.createdate_num:Date}} at {{blog.createdate_num:Time}} by <a class="user-link" href="#user/{{blog.userId}}">{{blog.username}}</a></span>
-        </div>
+<section class="card-grid">
+  <article id="{{blog.blogId}}" qs-repeat="blog in items" qs-hide="blog.hidden==true" class="card">
+      
+      <div class="card-content">
+          <a href="#blog/{{blog.blogId}}">
+            <div class="card-hero" qs-hide="blog.image=='-'">
+                <img src="{{blog.image}}">
+            </div>
+          </a>
+          <div class="card-avatar">
+              <img src="/attachments/{{blog.userId}}/thumbnail.png" alt="">
+          </div>
+          <a href="#blog/{{blog.blogId}}">
+            <h4 class="card-heading">{{blog.title}}</h4>
+            <p class="card-description">{{blog.short_description}}</p>
+          </a>
+          <div class="card-meta">
+              <span>Posted {{blog.createdate_num:Date}} - {{blog.views}} reads</span>
+          </div>
       </div>
-      <div class="col-md-3">
-        <ul class="stats plainlist">
-          <!-- <li>
-            <ul class="plainlist rating">
-              <li qs-repeat="star in stars" class="icon medium star filled"></li>
-              <span qs-if="blog.rating=='-'">Not yet rated</span>
-            </ul>
-          </li>-->
-          <li><i>{{blog.views}}</i> Views</li>
-          <li><i>{{blog.commentcount}}</i> Comments</li>
-        </ul>
-      </div>
-    </div>
-  </li>
-</ul>
+
+  </article>
+</section>
