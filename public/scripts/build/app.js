@@ -3912,7 +3912,6 @@
                       }
                       else {
                           $scope.blogs = result.data;
-                          //if this is the detail view we'll update the breadcrumbs
                       }
                       if ($state.current.name == "blogs.addedit") {
                           $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
