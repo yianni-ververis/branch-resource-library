@@ -4,7 +4,7 @@
     <div class="blog-detail card">
       <h2>{{blogs[0].title}}</h2>
       <span>Posted {{blogs[0].createdate |  date:'MMM dd, yyyy'}} at {{ blogs[0].createdate |  date:'HH:mm'}} by <a class="user-link" href="#user/{{blogs[0].userid._id}}">{{blogs[0].userid.username}}</a></span>
-      <div class="blog-content" ng-bind-html="::getBlogContent(blogs[0].content)"></div>
+      <div class="blog-content" ng-bind-html="getBlogContent(blogs[0].content)"></div>
       <moderation entity="'blog'" entityid="blogs[0]._id" approved="blogs[0].approved" owner="blogs[0].userid._id" size="'large'" editable="true"></moderation>
     </div>
     <div class="blog-comments" comments entity="'blog'" entityid="blogId"></div>
