@@ -9,7 +9,7 @@ app.controller("discussionController", ["$rootScope","$scope", "$resource", "$st
   $scope.discussions = [];
 
   $scope.discussionLoading = $stateParams.discussionId!="new";
-  $rootScope.headTitle = "Discussions and Questions";
+  $rootScope.headTitle = "Discussions and Questions: Qlik Branch";
   $rootScope.metaKeys = "Branch, Qlik Branch, Forum, Discussions, Questions, Help, Qlik Sense, Qlik, Open Source";
   $rootScope.metaDesc = "Our Discussion section is a place for our community of web developers to ask questions and start conversations."
   

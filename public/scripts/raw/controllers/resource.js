@@ -7,6 +7,10 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
   $scope.resourceLoading = $stateParams.resourceId!="new";
   $scope.isNew = $stateParams.resourceId=="new";
   $scope.resourceTypes;
+  $rootScope.headTitle = "Resource Center: Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+  $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+  
 
   picklistService.getPicklistItems("Resource Type", function(items){
     $scope.resourceTypes = items;
@@ -42,6 +46,11 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
             $("#resourceContent").code(_arrayBufferToBase64(result.data[0].content.data));
           }
           $scope.resourceInfo = result;
+          /*console.log(result.data[0]);
+          $rootScope.headTitle = "Resource Center: Qlik Branch";
+          $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+          $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+          */  
           delete $scope.resourceInfo["data"];
         }
         else{

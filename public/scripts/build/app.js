@@ -3879,11 +3879,12 @@
 
   }]);
 
-  app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+  app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
       var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
       $scope.pageSize = 20;
       $scope.query = {};
-
+      
+      
       $scope.blogLoading = $stateParams.blogId != "new";
 
       $scope.isNew = $stateParams.blogId == "new";
@@ -3893,6 +3894,10 @@
       var defaultSelection;
 
       $scope.blogTypes;
+      $rootScope.headTitle = "Blog: Qlik Branch";
+      $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
+      $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
+    
 
       if ($stateParams.blogId) {
           $scope.query.blogId = $stateParams.blogId;
@@ -3926,6 +3931,10 @@
                       if ($state.current.name == "blogs.addedit") {
                           $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
                       }
+                      $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
+                      $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
+                      $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog"
+                  
                       $scope.blogInfo = result;
                       delete $scope.blogInfo["data"];
                   }
@@ -4170,6 +4179,10 @@
     $scope.resourceLoading = $stateParams.resourceId!="new";
     $scope.isNew = $stateParams.resourceId=="new";
     $scope.resourceTypes;
+    $rootScope.headTitle = "Resource Center: Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+    $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+    
 
     picklistService.getPicklistItems("Resource Type", function(items){
       $scope.resourceTypes = items;
@@ -4205,6 +4218,11 @@
               $("#resourceContent").code(_arrayBufferToBase64(result.data[0].content.data));
             }
             $scope.resourceInfo = result;
+            /*console.log(result.data[0]);
+            $rootScope.headTitle = "Resource Center: Qlik Branch";
+            $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+            $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+            */  
             delete $scope.resourceInfo["data"];
           }
           else{
@@ -4396,7 +4414,7 @@
     $scope.discussions = [];
 
     $scope.discussionLoading = $stateParams.discussionId!="new";
-    $rootScope.headTitle = "Discussions and Questions";
+    $rootScope.headTitle = "Discussions and Questions: Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Forum, Discussions, Questions, Help, Qlik Sense, Qlik, Open Source";
     $rootScope.metaDesc = "Our Discussion section is a place for our community of web developers to ask questions and start conversations."
     
@@ -4889,7 +4907,7 @@
           }
           $scope.userInfo = result;
           console.log(result.data);
-          $rootScope.headTitle = result.data[0].username + " - Qlik Branch Users";
+          $rootScope.headTitle = result.data[0].username + " : Qlik Branch Users";
           $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
           $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
           
