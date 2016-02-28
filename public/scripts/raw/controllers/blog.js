@@ -1,8 +1,9 @@
-app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
     var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
     $scope.pageSize = 20;
     $scope.query = {};
-
+    
+    
     $scope.blogLoading = $stateParams.blogId != "new";
 
     $scope.isNew = $stateParams.blogId == "new";
@@ -12,6 +13,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
     var defaultSelection;
 
     $scope.blogTypes;
+    $rootScope.headTitle = "Blog: Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
+    $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
+  
 
     if ($stateParams.blogId) {
         $scope.query.blogId = $stateParams.blogId;
@@ -45,6 +50,10 @@ app.controller("blogController", ["$scope", "$resource", "$state", "$stateParams
                     if ($state.current.name == "blogs.addedit") {
                         $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
                     }
+                    $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
+                    $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
+                    $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog"
+                
                     $scope.blogInfo = result;
                     delete $scope.blogInfo["data"];
                 }
