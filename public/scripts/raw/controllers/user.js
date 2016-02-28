@@ -1,4 +1,4 @@
-app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
+app.controller("userController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
@@ -16,6 +16,7 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
     if(resultHandler.process(result)){
       $scope.roles = result.data;
       $scope.roleInfo = result;
+      
       delete $scope.roleInfo["data"];      
     }
   });
@@ -62,6 +63,11 @@ app.controller("userController", ["$scope", "$resource", "$state", "$stateParams
           $scope.users = result.data;
         }
         $scope.userInfo = result;
+        console.log(result.data);
+        $rootScope.headTitle = result.data[0].username + " - Qlik Branch Users";
+        $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
+        $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
+        
         //$scope.setTab(0);
         delete $scope.userInfo["data"];
       }

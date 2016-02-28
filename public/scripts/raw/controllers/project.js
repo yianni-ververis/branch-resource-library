@@ -1,4 +1,4 @@
-app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
+app.controller("projectController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
   var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -7,7 +7,11 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
   var MyRating = $resource("api/rating/rating/my");
 
   var defaultSelection;
-
+  
+  $rootScope.headTitle = "Open Source Projects on Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
+  $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
+  
   $scope.dirtyThumbnail = false;
 
   $scope.userManager = userManager;
@@ -82,6 +86,9 @@ app.controller("projectController", ["$scope", "$resource", "$state", "$statePar
           else{
             $scope.projects = result.data;
           }
+          $rootScope.headTitle = $scope.projects[0].title + ": Qlik Branch Projects";
+          $rootScope.metaKeys = $scope.projects[0].tags + ", Open Source, Github, Projects, QAP, Qlik Analytics Platform";
+          $rootScope.metaDesc = $scope.projects[0].short_description;
         }
         else{
           window.location = "#noitem";

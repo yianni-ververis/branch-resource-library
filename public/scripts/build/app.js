@@ -3307,14 +3307,17 @@
 
   }]);
 
-  app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+  app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
 
     $scope.featuredProject = {};
     $scope.featuredArticle = {};
-
+    
+    $rootScope.headTitle = "Welcome to Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Data Analytics, Data Visualization, QlikView, Developers, APIs, Github, Open Source, Developer Relations, Innovation";
+    $rootScope.metaDesc = "Qlik Branch is a game-changing platform for web developersusing Qlik's APIs to accelerate innovation in bringing the best ideas to market. Rooted in open source philosophy, all projects are freely distributed and modified, allowing faster collaboration and innovation."
     Feature.get({}, function(result){
       if(resultHandler.process(result)){
         $scope.features = result.data;
@@ -3351,7 +3354,7 @@
 
   }]);
 
-  app.controller("projectController", ["$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
+  app.controller("projectController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
@@ -3360,7 +3363,11 @@
     var MyRating = $resource("api/rating/rating/my");
 
     var defaultSelection;
-
+    
+    $rootScope.headTitle = "Open Source Projects on Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
+    $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
+    
     $scope.dirtyThumbnail = false;
 
     $scope.userManager = userManager;
@@ -3435,6 +3442,9 @@
             else{
               $scope.projects = result.data;
             }
+            $rootScope.headTitle = $scope.projects[0].title + ": Qlik Branch Projects";
+            $rootScope.metaKeys = $scope.projects[0].tags + ", Open Source, Github, Projects, QAP, Qlik Analytics Platform";
+            $rootScope.metaDesc = $scope.projects[0].short_description;
           }
           else{
             window.location = "#noitem";
@@ -4376,7 +4386,7 @@
 
   }]);
 
-  app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+  app.controller("discussionController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
     var Discussion = $resource("api/discussion/:discussionId", {discussionId: "@discussionId"});
     $scope.pageSize = 20;
     $scope.query = {};
@@ -4387,7 +4397,10 @@
     $scope.discussions = [];
 
     $scope.discussionLoading = $stateParams.discussionId!="new";
-
+    $rootScope.headTitle = "Discussions and Questions";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Forum, Discussions, Questions, Help, Qlik Sense, Qlik, Open Source";
+    $rootScope.metaDesc = "Our Discussion section is a place for our community of web developers to ask questions and start conversations."
+    
     $scope.isNew = $stateParams.discussionId=="new";
 
     var defaultSelection;
@@ -4503,6 +4516,11 @@
         $scope.discussionLoading = false;
         if(resultHandler.process(result)){
           if(result.data && result.data.length > 0){
+            
+            $rootScope.headTitle = result.data[0].title + " by " + result.data[0].userid.username + ": Discussions on Qlik Branch";
+            $rootScope.metaKeys = result.data[0].tags;
+            $rootScope.metaDesc = result.data[0].status.name + " discussion: " + result.data[0].title;
+              
             if($stateParams.status){
               if($stateParams.status=='created'){
                 notifications.notify("Your discussion has been successfully created.", null, {sentiment:"positive"});
@@ -4806,7 +4824,7 @@
 
   }]);
 
-  app.controller("userController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
+  app.controller("userController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications){
     var User = $resource("api/userprofile/:userId", {userId: "@userId"});
     var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
@@ -4824,6 +4842,7 @@
       if(resultHandler.process(result)){
         $scope.roles = result.data;
         $scope.roleInfo = result;
+        
         delete $scope.roleInfo["data"];      
       }
     });
@@ -4870,6 +4889,11 @@
             $scope.users = result.data;
           }
           $scope.userInfo = result;
+          console.log(result.data);
+          $rootScope.headTitle = result.data[0].username + " - Qlik Branch Users";
+          $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
+          $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
+          
           //$scope.setTab(0);
           delete $scope.userInfo["data"];
         }
