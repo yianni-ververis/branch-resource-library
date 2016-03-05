@@ -5,8 +5,8 @@ var mongoose = require('mongoose'),
     expressSession = require('express-session'),
     bodyParser = require('body-parser');
 
-var mode = "release";
-//var mode = "debug";
+//var mode = "release";
+var mode = "debug";
 
 config = require('config');
 
