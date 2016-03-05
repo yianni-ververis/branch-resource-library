@@ -1,11 +1,14 @@
-app.controller("homeController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
   var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
 
   $scope.featuredProject = {};
   $scope.featuredArticle = {};
-
+  
+  $rootScope.headTitle = "Welcome to Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Data Analytics, Data Visualization, QlikView, Developers, APIs, Github, Open Source, Developer Relations, Innovation";
+  $rootScope.metaDesc = "Qlik Branch is a game-changing platform for web developersusing Qlik's APIs to accelerate innovation in bringing the best ideas to market. Rooted in open source philosophy, all projects are freely distributed and modified, allowing faster collaboration and innovation."
   Feature.get({}, function(result){
     if(resultHandler.process(result)){
       $scope.features = result.data;

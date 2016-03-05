@@ -1,4 +1,4 @@
-app.controller("discussionController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+app.controller("discussionController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Discussion = $resource("api/discussion/:discussionId", {discussionId: "@discussionId"});
   $scope.pageSize = 20;
   $scope.query = {};
@@ -9,7 +9,10 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
   $scope.discussions = [];
 
   $scope.discussionLoading = $stateParams.discussionId!="new";
-
+  $rootScope.headTitle = "Discussions and Questions: Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Forum, Discussions, Questions, Help, Qlik Sense, Qlik, Open Source";
+  $rootScope.metaDesc = "Our Discussion section is a place for our community of web developers to ask questions and start conversations."
+  
   $scope.isNew = $stateParams.discussionId=="new";
 
   var defaultSelection;
@@ -125,6 +128,11 @@ app.controller("discussionController", ["$scope", "$resource", "$state", "$state
       $scope.discussionLoading = false;
       if(resultHandler.process(result)){
         if(result.data && result.data.length > 0){
+          
+          $rootScope.headTitle = result.data[0].title + " by " + result.data[0].userid.username + ": Discussions on Qlik Branch";
+          $rootScope.metaKeys = result.data[0].tags;
+          $rootScope.metaDesc = result.data[0].status.name + " discussion: " + result.data[0].title;
+            
           if($stateParams.status){
             if($stateParams.status=='created'){
               notifications.notify("Your discussion has been successfully created.", null, {sentiment:"positive"});

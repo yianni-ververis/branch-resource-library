@@ -1,7 +1,10 @@
 doctype html
 html(ng-app="branch" ng-strict-di)
   head
-    title Qlik Branch 
+    title(ng-bind="headTitle") Qlik Branch 
+    meta(name="description" content="{{metaDesc}}")
+    meta(name="keywords" content="{{metaKeys}}")
+
     link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")    
     link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css")    
     link(rel="stylesheet" href="/bower_components/summernote/dist/summernote.css")  
@@ -45,7 +48,7 @@ html(ng-app="branch" ng-strict-di)
       script(src="/debug/directives/search-input.js")
       script(src="/debug/directives/search-results.js")    
       script(src="/debug/directives/branchtree.js")
-      script(src="/debug/directives/fallbackimage.js")       
+      script(src="/debug/directives/fallbackimage.js") 
       script(src="/debug/services/picklists.js")
       script(src="/debug/services/publisher.js")
       script(src="/debug/services/lastError.js")
