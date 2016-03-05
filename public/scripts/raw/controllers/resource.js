@@ -1,4 +1,4 @@
-app.controller("resourceController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+app.controller("resourceController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
 
   $scope.pageSize = 20;
@@ -10,7 +10,7 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
   $rootScope.headTitle = "Resource Center: Qlik Branch";
   $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
   $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
-  
+
 
   picklistService.getPicklistItems("Resource Type", function(items){
     $scope.resourceTypes = items;
@@ -50,7 +50,7 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
           $rootScope.headTitle = "Resource Center: Qlik Branch";
           $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
           $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
-          */  
+          */
           delete $scope.resourceInfo["data"];
         }
         else{
@@ -113,7 +113,7 @@ app.controller("resourceController", ["$scope", "$resource", "$state", "$statePa
 
   $scope.getResourceContent = function(text){
     if(text && text.data){
-      var buffer = _arrayBufferToBase64(text.data);      
+      var buffer = _arrayBufferToBase64(text.data);
       return marked(buffer);
     }
     else{
