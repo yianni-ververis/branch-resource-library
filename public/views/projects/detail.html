@@ -11,6 +11,7 @@
       <p>{{projects[0].short_description}}</p>
       <p><a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a></p>
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
+      <a href="{{projects[0].project_site}}/issues" target="_blank"><button class="button-outline"><i class="fa fa-exclamation-circle"></i>Raise Issue</button></a>
     </div>
     <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
   </div>
