@@ -8,17 +8,14 @@
     <div class="project-heading">
       <h2>{{projects[0].title}}</h2>
       <p>created by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a></p>
-      <p>{{projects[0].short_description}}</p>      
+      <p>{{projects[0].short_description}}</p>
+      <p><a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a></p>
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
     </div>
     <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
   </div>
 
   <div class="row card content project-metadata">
-    <div>
-      <p class="meta-label">Project Website</p>
-      <a class="blue" href="{{projects[0].project_site}}" target="_blank">{{projects[0].project_site}}</a>
-    </div>
     <div>
       <p class="meta-label">Updated</p>
       <p>{{projects[0].last_updated | date:'dd MMM yy HH:mm'}}</p>
