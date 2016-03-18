@@ -5,16 +5,15 @@
     <div class="project-thumbnail">
       <img src="{{projects[0].thumbnail}}">
     </div>
-    <div class="project-heading">  
+    <div class="project-heading">
       <h2>{{projects[0].title}}</h2>
       <p>created by <a class="user-link" href="#user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a></p>
-      <p>{{projects[0].short_description}}</p>
-      <a href="{{projects[0].download_link}}"><button class="button-outline"><i class="fa fa-download"></i>Download project</button></a>
+      <p>{{projects[0].short_description}}</p>      
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
     </div>
     <rating entity="'project'" entityid="projects[0]._id" user="currentuserid"></rating>
   </div>
-  
+
   <div class="row card content project-metadata">
     <div>
       <p class="meta-label">Project Website</p>
@@ -26,19 +25,19 @@
     </div>
     <div>
       <p class="meta-label">Product</p>
-      <p>{{projects[0].product.name}}</p>  
+      <p>{{projects[0].product.name}}</p>
     </div>
     <div>
       <p class="meta-label">Project State</p>
-      <p>{{projects[0].status.name || 'None Specified'}}</p>  
+      <p>{{projects[0].status.name || 'None Specified'}}</p>
     </div>
     <div>
       <p class="meta-label">Views</p>
-      <p>{{projects[0].views}}</p>    
-    </div>    
+      <p>{{projects[0].views}}</p>
+    </div>
     <div>
       <p class="meta-label">Tags</p>
-      <p>{{projects[0].tags}}</p>    
+      <p>{{projects[0].tags}}</p>
     </div>
   </div>
 
@@ -46,13 +45,13 @@
     <div class="col-md-12 markdown-body project-detail" ng-bind-html="getPageText()">
     </div>
   </div>
- 
+
    <div ng-show="currentuserid" class="row">
     <div class="col-md-12">
       <moderation entity="'project'" entityid="projects[0]._id" approved="projects[0].approved" owner="projects[0].userid._id" size="'large'" editable="true"></moderation>
     </div>
    </div>
-   
+
    <div comments entity="'project'" entityid="projectId" parent="projects[0]">
 
   </div>
