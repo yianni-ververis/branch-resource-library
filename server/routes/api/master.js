@@ -81,6 +81,7 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
   var entity = queryObj.entity;
   var user = req.user;
   var userPermissions;
+  console.log(query);
   //check that the user has sufficient permissions for this operation
   if(req.user){
     userPermissions = req.user.role.permissions[req.params.entity];

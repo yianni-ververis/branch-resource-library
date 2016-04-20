@@ -72,6 +72,7 @@ module.exports = {
   },
   count: function(query, parsedQuery, entity, callbackFn){
     entity.model.count(parsedQuery, function(err, result){
+      console.log(result);
       if(err){
         console.log(err);
         callbackFn.call(null, Error.errorGetting(err.message));
@@ -98,7 +99,7 @@ module.exports = {
       console.log('query');
       console.log(query);
       console.log('data');
-      console.log(data);      
+      console.log(data);
       if(query._id){
         entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
           if(err){

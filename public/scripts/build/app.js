@@ -3356,6 +3356,7 @@
 
   app.controller("projectController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
+    var Views = $resource("api/view/count");
     var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
     var PicklistItem = $resource("api/picklistitem/:picklistitemId", {picklistitemId: "@picklistitemId"});
     var Git = $resource("system/git/:path", {path: "@path"});
@@ -3363,11 +3364,11 @@
     var MyRating = $resource("api/rating/rating/my");
 
     var defaultSelection;
-    
+
     $rootScope.headTitle = "Open Source Projects on Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
     $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
-    
+
     $scope.dirtyThumbnail = false;
 
     $scope.userManager = userManager;
@@ -3436,12 +3437,19 @@
         if(resultHandler.process(result)){
           $scope.projectLoading = false;
           if(result.data && result.data.length > 0){
+
             if(append && append==true){
               $scope.projects = $scope.projects.concat(result.data);
             }
             else{
               $scope.projects = result.data;
             }
+            Views.get({entityId:result.data[0]._id}, function(result){
+              console.log(result);
+              if(resultHandler.process(result)){
+                $scope.projects[0].views = result.count;
+              }
+            });
             $rootScope.headTitle = $scope.projects[0].title + ": Qlik Branch Projects";
             $rootScope.metaKeys = $scope.projects[0].tags + ", Open Source, Github, Projects, QAP, Qlik Analytics Platform";
             $rootScope.metaDesc = $scope.projects[0].short_description;
