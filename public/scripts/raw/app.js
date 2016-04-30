@@ -1,7 +1,7 @@
 //(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider, $locationProvider) {
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -219,6 +219,8 @@
         }
       }
     })
+
+    $locationProvider.hashPrefix('!');
   }]);
 
   app.run(['$rootScope',function($rootScope) {
@@ -228,7 +230,7 @@
   }]);
 
   if (!window.WebSocket){
-    window.location = "#badbrowser";
+    window.location = "#!badbrowser";
   }
 
   //directives

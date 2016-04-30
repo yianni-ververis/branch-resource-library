@@ -2,7 +2,7 @@
   <article id="{{blog.blogId}}" qs-repeat="blog in items" qs-hide="blog.hidden==true" class="card-item">
       
       <div class="card-content">
-          <a href="#blog/{{blog.blogId}}">
+          <a href="#!blog/{{blog.blogId}}">
             <div class="card-hero" qs-hide="blog.image=='-'">
                 <img src="{{blog.image}}">
             </div>
@@ -10,7 +10,7 @@
           <div class="card-avatar">
               <img src="/attachments/{{blog.userId}}/thumbnail.png" onError="this.src='/attachments/default/userprofile.png'" alt="">
           </div>
-          <a href="#blog/{{blog.blogId}}">
+          <a href="#!blog/{{blog.blogId}}">
             <h4 class="card-heading">{{blog.title}}</h4>
             <p class="card-description">{{blog.short_description}}</p>
           </a>
