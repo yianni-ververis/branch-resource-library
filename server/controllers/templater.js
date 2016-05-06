@@ -21,7 +21,7 @@ var Templater = (function(){
     }
 
     function parse(html){
-        var pattern = /({{([^#^/].*?)}})/g;
+        var pattern = /({{([^#^!^/].*?)}})/g;
         var pieces = [];
         while (s=pattern.exec(html)){
             pieces.push({what:s[0], item:s[0].replace("{{","").replace("}}","")});

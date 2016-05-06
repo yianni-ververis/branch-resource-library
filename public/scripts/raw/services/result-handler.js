@@ -4,7 +4,7 @@ app.service('resultHandler', ["notifications", function(notifications){
     if(result.redirect && !preventRedirect){  //should only redirect a user to the login page
       if(!this.processing){
         this.processing = true;
-        window.location = result.redirect + "?url=" + window.location.hash.replace("#/","");
+        window.location = result.redirect + "?url=" + window.location.hash.replace("#!/","");
       }
       return false;
     }

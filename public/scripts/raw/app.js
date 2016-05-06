@@ -1,8 +1,17 @@
 //(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
-    $urlRouterProvider.otherwise("/");
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider, $locationProvider) {
+    $urlRouterProvider.otherwise(function($injector,$location) {
+      // if the url starts with "#%2F" it means that the url that
+      // was attempted was actually a "/#/" link (ie. /#/project). Since we converted
+      // from # to #! after releasing, we need to handle these links
+      // properly. Turns out $location.$$hash has that value we need
+      if ($location.$$url.substr(0,4) === "#%2F") {
+        return $location.$$hash;
+      }
+      return "/";
+    });
 
     $stateProvider
     //home page
@@ -219,6 +228,8 @@
         }
       }
     })
+
+    $locationProvider.hashPrefix('!');
   }]);
 
   app.run(['$rootScope',function($rootScope) {
@@ -228,7 +239,7 @@
   }]);
 
   if (!window.WebSocket){
-    window.location = "#badbrowser";
+    window.location = "#!badbrowser";
   }
 
   //directives
