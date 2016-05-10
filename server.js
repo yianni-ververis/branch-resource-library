@@ -15,8 +15,13 @@ var envconfig = require('./config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
 
-if (envconfig.prerenderServiceUrl != null && envconfig !== "")
+if (envconfig.prerenderServiceUrl != null && envconfig.prerenderServiceUrl !== "")
   app.use(require('prerender-node').set("prerenderServiceUrl",envconfig.prerenderServiceUrl));
+
+if (envconfig.twitterHandle != null && envconfig.twitterHandle !== "")
+  twitterHandle = envconfig.twitterHandle;
+else
+  twitterHandle = "";
 
 //load the models
 require('./server/models/project.js');

@@ -9,7 +9,8 @@ html(ng-app="branch" ng-strict-di)
     meta(name="og:title" content="{{headTitle}}")
     meta(name="og:description" content="{{metaDesc}}")
     meta(name="twitter:card" content="summary")
-    meta(name="twitter:site" content="@qlikbranch")
+    if twitterHandle != ""
+      meta(name="twitter:site" content=twitterHandle)
     meta(name="twitter:title" content="{{headTitle}}")
     meta(name="twitter:description" content="{{metaDesc}}")
 
