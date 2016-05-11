@@ -1,7 +1,7 @@
 //(function() {
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
-  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider, $locationProvider) {
+  app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider) {
     $urlRouterProvider.otherwise("/");
 
     $stateProvider
@@ -219,8 +219,6 @@
         }
       }
     })
-
-    $locationProvider.hashPrefix('!');
   }]);
 
   app.run(['$rootScope',function($rootScope) {
@@ -230,7 +228,7 @@
   }]);
 
   if (!window.WebSocket){
-    window.location = "#!badbrowser";
+    window.location = "#badbrowser";
   }
 
   //directives
@@ -267,9 +265,9 @@
                       suffix += "?url=";
                   }
                   if (window.location.hash.indexOf('login') == -1 && window.location.hash.indexOf('reset') == -1) {
-                      suffix += window.location.hash.replace("#!/", "");
+                      suffix += window.location.hash.replace("#/", "");
                   }
-                  return "#!loginsignup" + suffix;
+                  return "#loginsignup" + suffix;
               }
           }]
       }
@@ -1812,7 +1810,7 @@
       if(result.redirect && !preventRedirect){  //should only redirect a user to the login page
         if(!this.processing){
           this.processing = true;
-          window.location = result.redirect + "?url=" + window.location.hash.replace("#!/","");
+          window.location = result.redirect + "?url=" + window.location.hash.replace("#/","");
         }
         return false;
       }
@@ -2322,7 +2320,7 @@
      }
 
       function parse(html){
-          var pattern = /({{([^#^!^/].*?)}})/g;
+          var pattern = /({{([^#^/].*?)}})/g;
           var pieces = [];
           while (s=pattern.exec(html)){
               pieces.push({what:s[0], item:s[0].replace("{{","").replace("}}","")});
@@ -3139,7 +3137,7 @@
       if(!userManager.hasUser()){
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#!login?url=moderator";
+            window.location = "#login?url=moderator";
           }
           else{
             var ents = [];
@@ -3239,7 +3237,7 @@
         if(resultHandler.process(result)){
           userManager.refresh();
           searchExchange.clear(true);
-          window.location = "#!" + $scope.returnUrl || "/";
+          window.location = "#" + $scope.returnUrl || "/";
         }
         else{
           $scope.authLoading = false;
@@ -3265,7 +3263,7 @@
             }, function(result) {
               if(resultHandler.process(result)){
                 userManager.refresh();
-                window.location = "#!" + $scope.returnUrl || "/";
+                window.location = "#" + $scope.returnUrl || "/";
               }
               else{
                 $scope.authLoading = false;
@@ -3457,7 +3455,7 @@
             $rootScope.metaDesc = $scope.projects[0].short_description;
           }
           else{
-            window.location = "#!noitem";
+            window.location = "#noitem";
           }
           if($stateParams.status){
             if($stateParams.status=='created'){
@@ -3531,7 +3529,7 @@
     };
 
     $scope.applySort = function(){
-      window.location = "#!project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
+      window.location = "#project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
 
     $scope.getGitProjects = function(gituser, gitpassword, code){
@@ -3711,7 +3709,7 @@
         $scope.projectLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!project/"+result._id+"?status="+status;
+          window.location = "#project/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -3814,7 +3812,7 @@
         if(!hasUser){
           userManager.refresh(function(hasUser){
             if(!hasUser){
-              window.location = "#!login?url=project/"+$stateParams.projectId+"/edit"
+              window.location = "#login?url=project/"+$stateParams.projectId+"/edit"
             }
             else{
               if($stateParams.projectId!="new"){
@@ -3949,7 +3947,7 @@
                       delete $scope.blogInfo["data"];
                   }
                   else {
-                      window.location = "#!noitem";
+                      window.location = "#noitem";
                   }
               }
           });
@@ -4036,13 +4034,14 @@
           $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
           $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
           var data = {
-              standard: $scope.blogs[0]
+              standard: $scope.blogs[0],
+              special: {
+                  content: $scope.blogs[0].content
+              }
           };
           if ($scope.dirtyThumbnail) {
-              data.special = {
-                  image: $scope.image,
-                  thumbnail: $scope.thumbnail
-              }
+              data.special.image = $scope.image;
+              data.special.thumbnail = $scope.thumbnail;
           }
           var query = {};
           if ($scope.blogs[0]._id) {
@@ -4052,7 +4051,7 @@
               $scope.blogLoading = false;
               if (resultHandler.process(result)) {
                   var status = $scope.isNew ? "created" : "updated";
-                  window.location = "#!blog/" + result._id + "?status=" + status;
+                  window.location = "#blog/" + result._id + "?status=" + status;
               }
               else {
                   notifications.notify(result.errText, null, { sentiment: "negative" });
@@ -4103,7 +4102,7 @@
               if (!hasUser) {
                   userManager.refresh(function (hasUser) {
                       if (!hasUser) {
-                          window.location = "#!login?url=blog/" + $stateParams.blogId + "/edit"
+                          window.location = "#login?url=blog/" + $stateParams.blogId + "/edit"
                       }
                       else {
                           if ($stateParams.blogId != "new") {
@@ -4236,7 +4235,7 @@
             delete $scope.resourceInfo["data"];
           }
           else{
-            window.location = "#!noitem";
+            window.location = "#noitem";
           }
         }
       });
@@ -4275,7 +4274,10 @@
       $scope.resources[0].content = $("#resourceContent").code();
       $scope.resources[0].plaintext = cleanUpContent($scope.resources[0].content);
       var data = {
-        standard: $scope.resources[0]
+        standard: $scope.resources[0],
+        special: {
+          content: $scope.resources[0].content
+        }
       };
       var query = {};
       if($scope.resources[0]._id){
@@ -4285,7 +4287,7 @@
         $scope.resourceLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!resource/"+result._id+"?status="+status;
+          window.location = "#resource/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -4336,7 +4338,7 @@
         if(!hasUser){
           userManager.refresh(function(hasUser){
             if(!hasUser){
-              window.location = "#!login?url=resource/"+$stateParams.resourceId+"/edit"
+              window.location = "#login?url=resource/"+$stateParams.resourceId+"/edit"
             }
             else{
               if($stateParams.resourceId!="new"){
@@ -4526,11 +4528,17 @@
       if($scope.discussions[0]._id){
         query.discussionId = $scope.discussions[0]._id;
       }
-      Discussion.save(query, $scope.discussions[0], function(result){
+      var data = {
+        standard: $scope.discussions[0],
+        special: {
+          content: $scope.discussions[0].content
+        }
+      }
+      Discussion.save(query, data, function(result){
         $scope.discussionLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!discussion/"+result._id+"?status="+status;
+          window.location = "#discussion/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -4572,7 +4580,7 @@
             delete $scope.discussionInfo["data"];
           }
           else{
-            window.location = "#!noitem";
+            window.location = "#noitem";
           }
         }
       });
@@ -4618,7 +4626,7 @@
         if(!hasUser){
           userManager.refresh(function(hasUser){
             if(!hasUser){
-              window.location = "#!login?url=discussion/"+$stateParams.discussionId+"/edit"
+              window.location = "#login?url=discussion/"+$stateParams.discussionId+"/edit"
             }
             else{
               if($stateParams.discussionId!="new"){
@@ -4809,12 +4817,18 @@
 
     $scope.saveComment = function(){
       var commentText = $("#summernote").code();
-      Comment.save({}, {
-        entityId: $scope.entityid,
-        entity: $scope.entity,
-        content: commentText,
-        plaintext: cleanUpComment(commentText)
-      }, function(result){
+      var data = {
+        standard: {
+          entityId: $scope.entityid,
+          entity: $scope.entity,
+          content: commentText,
+          plaintext: cleanUpComment(commentText)
+        },
+        special: {
+          content: commentText
+        }
+      };
+      Comment.save({}, data, function(result){
         if(resultHandler.process(result)){
           $("#summernote").code("");
           //fetch the comments again to resolve any sorting/countnig issues
@@ -4982,7 +4996,7 @@
         //need to implement edit stuff
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#!login?url=user/"+$stateParams.userId+"/edit"
+            window.location = "#login?url=user/"+$stateParams.userId+"/edit"
           }
           else{
             if($stateParams.userId!="new"){
@@ -5080,7 +5094,7 @@
         $scope.userLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!user/"+result._id+"?status="+status;
+          window.location = "#user/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -5135,7 +5149,7 @@
     };
 
     $scope.editEntity = function(){
-      window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
+      window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
     };
 
     $scope.updateReadme = function(){
@@ -5152,7 +5166,7 @@
           Entity.delete({entityId: $scope.entityid}, function(result){
               if(resultHandler.process(result)){
                 if($scope.entity!="comment"){
-                  window.location = "#!"+$scope.entity;
+                  window.location = "#"+$scope.entity;
                 }
                 $rootScope.$broadcast("listItemDeleted", $scope.entityid);
               }
