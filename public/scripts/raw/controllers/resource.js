@@ -93,10 +93,7 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
     $scope.resources[0].content = $("#resourceContent").code();
     $scope.resources[0].plaintext = cleanUpContent($scope.resources[0].content);
     var data = {
-      standard: $scope.resources[0],
-      special: {
-        content: $scope.resources[0].content
-      }
+      standard: $scope.resources[0]
     };
     var query = {};
     if($scope.resources[0]._id){

@@ -3,7 +3,6 @@ var MasterController = require("../../controllers/master"),
     Error = require("../../controllers/error"),
     Notifier = require("../../controllers/notifier"),
     Mailer = require("../../controllers/emailer"),
-    ImageHandler = require("summernote-imagehandler"),
     fs = require('fs'),
     attachmentDir = require("../../../attachmentDir"),
     entities = require("../entityConfig"),
@@ -90,18 +89,6 @@ module.exports = function(req, res){
       //we have image data to deal with
       if(!fs.existsSync(attachmentDir+record._id.toString())){
         fs.mkdirSync(attachmentDir+record._id.toString());
-      }
-      if(data.special.content) {
-        var imageHandler = new ImageHandler(data.special.content);
-        for (var i = 0; i < imageHandler.files.length; i++) {
-          var contentFile = attachmentDir + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-          fs.createReadStream(imageHandler.files[i].file).pipe(fs.createWriteStream(contentFile));
-          var contentUrl = "/attachments/" + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-
-          imageHandler.setSrc(imageHandler.files[i].id, contentUrl);
-        }
-        imageHandler.cleanupFiles();
-        record.content = imageHandler.getSource();
       }
       if(data.special.image){
         //write the image to disk and store the Url
