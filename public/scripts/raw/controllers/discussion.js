@@ -121,7 +121,7 @@ app.controller("discussionController", ["$rootScope","$scope", "$resource", "$st
       $scope.discussionLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#discussion/"+result._id+"?status="+status;
+        window.location = "#!discussion/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -163,7 +163,7 @@ app.controller("discussionController", ["$rootScope","$scope", "$resource", "$st
           delete $scope.discussionInfo["data"];
         }
         else{
-          window.location = "#noitem";
+          window.location = "#!noitem";
         }
       }
     });
@@ -209,7 +209,7 @@ app.controller("discussionController", ["$rootScope","$scope", "$resource", "$st
       if(!hasUser){
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#login?url=discussion/"+$stateParams.discussionId+"/edit"
+            window.location = "#!login?url=discussion/"+$stateParams.discussionId+"/edit"
           }
           else{
             if($stateParams.discussionId!="new"){

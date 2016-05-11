@@ -96,34 +96,34 @@ function buildMenu(user){
   if(user){
     basicMenu.splice(0,0,{
       label: "Change Password",
-      href: "#user/changepassword"
+      href: "#!user/changepassword"
     });
     basicMenu.splice(0,0, {
       label: "My Profile",
-      href: "#user/" + user._id
+      href: "#!user/" + user._id
     });
     if(user.role.permissions && user.role.permissions.resource && user.role.permissions.resource.create==true){
       basicMenu.splice(0,0,{
         label: "Create Resource",
-        href: "#resource/new/edit"
+        href: "#!resource/new/edit"
       });
     }
     if(user.role.permissions && user.role.permissions.discussion && user.role.permissions.discussion.create==true){
       basicMenu.splice(0,0,{
         label: "Create Discussion",
-        href: "#discussion/new/edit"
+        href: "#!discussion/new/edit"
       });
     }
     if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){
       basicMenu.splice(0,0,{
         label: "Create Blog",
-        href: "#blog/new/edit"
+        href: "#!blog/new/edit"
       });
     }
     if(user.role.permissions && user.role.permissions.project && user.role.permissions.project.create==true){
       basicMenu.splice(0,0,{
         label: "Create Project",
-        href: "#project/new/edit"
+        href: "#!project/new/edit"
       });
     }
     topMenu = {
@@ -138,7 +138,7 @@ function buildMenu(user){
       if(strPerm.indexOf('"hide":true')!=-1 || strPerm.indexOf('"approve":true')!=-1 || strPerm.indexOf('"flag":true')!=-1){
         basicMenu.splice(0,0, {
           label: "Moderator Console",
-          href: "#moderator"
+          href: "#!moderator"
         });
       }
     }
@@ -146,7 +146,7 @@ function buildMenu(user){
     if(user.role.name=="admin"){
       basicMenu.splice(0,0, {
         label: "Admin Console",
-        href: "#shouldntbeabletoguessthisurl"
+        href: "#!shouldntbeabletoguessthisurl"
       });
     }
     topMenu.items[0].items = basicMenu;
@@ -155,7 +155,7 @@ function buildMenu(user){
     topMenu = {
       items:[{
         label: "Login",
-        href: "#loginsignup",
+        href: "#!loginsignup",
         items: []
       }]
     };

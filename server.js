@@ -15,7 +15,8 @@ var envconfig = require('./config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
 
-
+if (envconfig.prerenderServiceUrl != null && envconfig !== "")
+  app.use(require('prerender-node').set("prerenderServiceUrl",envconfig.prerenderServiceUrl));
 
 //load the models
 require('./server/models/project.js');
@@ -90,7 +91,7 @@ app.get("/projects/showthread.php", function(req, res, next){
     }
     else{
       if(result && result._id){
-        res.redirect("/#project/"+result._id);
+        res.redirect("/#!project/"+result._id);
       }
       else{
         res.redirect('/404');

@@ -76,7 +76,7 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
     if(!userManager.hasUser()){
       userManager.refresh(function(hasUser){
         if(!hasUser){
-          window.location = "#login?url=moderator";
+          window.location = "#!login?url=moderator";
         }
         else{
           var ents = [];

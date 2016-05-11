@@ -4,7 +4,7 @@
     <notification-dialog></notification-dialog>
     <div class="col-md-12">
       <h2>{{discussions[0].title}}</h2>
-      <span>started by <a class="user-link" href="#user/{{discussions[0].userid._id}}">{{discussions[0].userid.username}}</a></span>
+      <span>started by <a class="user-link" href="#!user/{{discussions[0].userid._id}}">{{discussions[0].userid.username}}</a></span>
       <div class="content">
         <div class="" ng-bind-html="getDiscussionContent(discussions[0].content)">
 

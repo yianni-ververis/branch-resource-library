@@ -43,7 +43,7 @@ app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$s
   };
 
   $scope.editEntity = function(){
-    window.location = "#"+$scope.entity+"/"+$scope.entityid+"/edit";
+    window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
   };
 
   $scope.updateReadme = function(){
@@ -60,7 +60,7 @@ app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$s
         Entity.delete({entityId: $scope.entityid}, function(result){
             if(resultHandler.process(result)){
               if($scope.entity!="comment"){
-                window.location = "#"+$scope.entity;
+                window.location = "#!"+$scope.entity;
               }
               $rootScope.$broadcast("listItemDeleted", $scope.entityid);
             }
