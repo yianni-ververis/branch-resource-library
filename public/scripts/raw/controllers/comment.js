@@ -112,18 +112,12 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.saveComment = function(){
     var commentText = $("#summernote").code();
-    var data = {
-      standard: {
-        entityId: $scope.entityid,
-        entity: $scope.entity,
-        content: commentText,
-        plaintext: cleanUpComment(commentText)
-      },
-      special: {
-        content: commentText
-      }
-    };
-    Comment.save({}, data, function(result){
+    Comment.save({}, {
+      entityId: $scope.entityid,
+      entity: $scope.entity,
+      content: commentText,
+      plaintext: cleanUpComment(commentText)
+    }, function(result){
       if(resultHandler.process(result)){
         $("#summernote").code("");
         //fetch the comments again to resolve any sorting/countnig issues
