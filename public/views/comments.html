@@ -13,11 +13,11 @@
       <ul class="plainlist comment-list">
         <li class="card" ng-repeat="comment in comments" ng-class="{'author-comment': comment.userid._id==parent.userid._id}">
           <div class="thumb-container">
-            <a href="#/user/{{comment.userid._id}}"><img src="{{comment.userid.thumbnail}}"/></a>
+            <a href="#!/user/{{comment.userid._id}}"><img src="{{comment.userid.thumbnail}}"/></a>
           </div>
           <div class="comment-container">
             <div class="comment-header">
-              <p><a href="#/user/{{comment.userid._id}}"><strong>{{comment.userid.username}}</strong></a> - {{comment.createdate | date:'dd MMM yy HH:mm'}} </p>
+              <p><a href="#!/user/{{comment.userid._id}}"><strong>{{comment.userid.username}}</strong></a> - {{comment.createdate | date:'dd MMM yy HH:mm'}} </p>
             </div>
             <div class="comment-content" ng-bind-html="getCommentText(comment.content)"></div>           
           <moderation orientation="horizontal" entity="'comment'" entityid="comment._id" approved="comment.approved" size="'medium'" flagged="flagged[comment._id]" editable="false"></moderation>

@@ -54,7 +54,7 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
           delete $scope.resourceInfo["data"];
         }
         else{
-          window.location = "#noitem";
+          window.location = "#!noitem";
         }
       }
     });
@@ -103,7 +103,7 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
       $scope.resourceLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#resource/"+result._id+"?status="+status;
+        window.location = "#!resource/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -154,7 +154,7 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
       if(!hasUser){
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#login?url=resource/"+$stateParams.resourceId+"/edit"
+            window.location = "#!login?url=resource/"+$stateParams.resourceId+"/edit"
           }
           else{
             if($stateParams.resourceId!="new"){

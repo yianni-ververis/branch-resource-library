@@ -99,7 +99,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
           $rootScope.metaDesc = $scope.projects[0].short_description;
         }
         else{
-          window.location = "#noitem";
+          window.location = "#!noitem";
         }
         if($stateParams.status){
           if($stateParams.status=='created'){
@@ -173,7 +173,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
   };
 
   $scope.applySort = function(){
-    window.location = "#project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
+    window.location = "#!project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
   $scope.getGitProjects = function(gituser, gitpassword, code){
@@ -353,7 +353,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
       $scope.projectLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#project/"+result._id+"?status="+status;
+        window.location = "#!project/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -456,7 +456,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
       if(!hasUser){
         userManager.refresh(function(hasUser){
           if(!hasUser){
-            window.location = "#login?url=project/"+$stateParams.projectId+"/edit"
+            window.location = "#!login?url=project/"+$stateParams.projectId+"/edit"
           }
           else{
             if($stateParams.projectId!="new"){

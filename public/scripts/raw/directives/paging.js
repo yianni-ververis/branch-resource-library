@@ -40,19 +40,19 @@
 	          <label>Page {{info.currentPage}} of {{info.pages.length}}</label>\
 	          <ul class="page-list plainlist">\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#{{url}}?page=1&sort={{sort.id}}" class="icon first"></a>\
+	              <a href="#!{{url}}?page=1&sort={{sort.id}}" class="icon first"></a>\
 	            </li>\
 	            <li ng-hide="info.currentPage==1">\
-	              <a href="#{{url}}?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
+	              <a href="#!{{url}}?page={{info.currentPage-1}}&sort={{sort.id}}" class="icon prev"></a>\
 	            </li>\
 	            <li ng-repeat="page in info.pages" ng-show="pageInRange(page.pageNum)" ng-class="{active: page.pageNum==info.currentPage}">\
-	              <a href="#{{url}}?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
+	              <a href="#!{{url}}?page={{page.pageNum}}&sort={{sort.id}}">{{page.pageNum}}</a>\
 	            </li>\
 	            <li ng-show="info.currentPage < info.pages.length">\
-	              <a href="#{{url}}?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
+	              <a href="#!{{url}}?page={{info.currentPage+1}}&sort={{sort.id}}" class="icon next"></a>\
 	            </li>\
 	            <li ng-show="info.currentPage < info.pages.length">\
-	              <a href="#{{url}}?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
+	              <a href="#!{{url}}?page={{info.pages.length}}&sort={{sort.id}}" class="icon last"></a>\
 	            </li>\
 	          </ul>\
 	        </div>';
@@ -85,7 +85,7 @@
 					return (pageIndex >= minPage && pageIndex <= maxPage);
 				};
 				$scope.applySort = function(){
-			    window.location = "#"+$scope.url+"?page="+$scope.info.currentPage+"&sort="+ $scope.sort.id;
+			    window.location = "#!"+$scope.url+"?page="+$scope.info.currentPage+"&sort="+ $scope.sort.id;
 			  };
       }
     }

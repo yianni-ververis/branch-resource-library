@@ -1,9 +1,11 @@
 doctype html
 html(ng-app="branch" ng-strict-di)
   head
+    base(href="#!")
     title(ng-bind="headTitle") Qlik Branch 
     meta(name="description" content="{{metaDesc}}")
     meta(name="keywords" content="{{metaKeys}}")
+    meta(name="fragment" content="!")
 
     link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")    
     link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css")    

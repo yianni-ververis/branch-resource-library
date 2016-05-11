@@ -29,7 +29,7 @@ module.exports = {
                   next();
                 }
                 else {
-                  res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"});
+                  res.json({errorCode: 401, errorText: "User not logged in", redirect: "#!login"});
                 }
               }
               else{
@@ -37,7 +37,7 @@ module.exports = {
             });
           }
           else{
-            res.json({errorCode: 401, errorText: "User does not exist", redirect: "#login"});
+            res.json({errorCode: 401, errorText: "User does not exist", redirect: "#!login"});
           }
         });
       }
@@ -57,19 +57,19 @@ module.exports = {
                   next();
                 }
                 else {
-                  res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
+                  res.json({errorCode: 401, errorText: "User not logged in", redirect: "#!login"})
                 }
               }
             });
           }
           else{
-            res.json({errorCode: 401, errorText: "User does not exist", redirect: "#login"})
+            res.json({errorCode: 401, errorText: "User does not exist", redirect: "#!login"})
           }
         });
       }
     }
     else{
-      res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"})
+      res.json({errorCode: 401, errorText: "User not logged in", redirect: "#!login"})
     }
   }
 }
