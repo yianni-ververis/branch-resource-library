@@ -7,7 +7,7 @@
         <p>
           A place to share and collaborate on open source projects and ignite innovation leveraging Qlik products
         </p>
-        <branchtree width="350" height="380"></branchtree>
+        <branchtree width="350" height="350"></branchtree>
       </div>
     </div>
   </div>
@@ -25,9 +25,9 @@
           <h2>Latest Projects</h2>
           <ul class="plainlist">
             <li ng-repeat="project in latestProjects">
-              <a href="#/project/{{project._id}}">{{project.title}}</a>
+              <a href="#!/project/{{project._id}}">{{project.title}}</a>
               <div class="footnote">
-                by <a href="#/user/{{project.userid._id}}">{{project.userid.username}}</a>
+                by <a href="#!/user/{{project.userid._id}}">{{project.userid.username}}</a>
               </div>
             </li>
           </ul>
@@ -36,9 +36,9 @@
         <h2>Latest Blog Posts</h2>
         <ul class="plainlist">
           <li ng-repeat="article in latestArticles">
-            <a href="#/blog/{{article._id}}">{{article.title}}</a>
+            <a href="#!/blog/{{article._id}}">{{article.title}}</a>
             <div class="footnote">
-              by <a href="#user/{{article.userid._id}}">{{article.userid.username}}</a>
+              by <a href="#!user/{{article.userid._id}}">{{article.userid.username}}</a>
             </div>
           </li>
         </ul>

@@ -31,9 +31,9 @@ app.directive('header', ['userManager', '$state', '$interpolate', function(userM
                     suffix += "?url=";
                 }
                 if (window.location.hash.indexOf('login') == -1 && window.location.hash.indexOf('reset') == -1) {
-                    suffix += window.location.hash.replace("#/", "");
+                    suffix += window.location.hash.replace("#!/", "");
                 }
-                return "#loginsignup" + suffix;
+                return "#!loginsignup" + suffix;
             }
         }]
     }

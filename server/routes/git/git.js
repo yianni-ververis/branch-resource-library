@@ -26,7 +26,7 @@ var express = require("express"),
 
 router.get("/updatereadme/:id", function(req, res){
   if(!req.user){
-    res.json({errorCode: 401, errorText: "User not logged in", redirect: "#login"});
+    res.json({errorCode: 401, errorText: "User not logged in", redirect: "#!login"});
   }
   else{
     Project.findOne({_id: req.params.id}, function(err, result){
@@ -98,7 +98,7 @@ router.get("/unlink", function(req, res){
     }
     else{
       //res.json({});
-      res.redirect("/#user/"+req.user._id+"/edit");
+      res.redirect("/#!user/"+req.user._id+"/edit");
     }
   });
 });
@@ -126,7 +126,7 @@ router.use("/linkauthorized", function(req, res){
           }
           else{
             //res.json({});
-            res.redirect("/#user/"+req.user._id+"/edit");
+            res.redirect("/#!user/"+req.user._id+"/edit");
           }
         });
       }
@@ -160,12 +160,12 @@ router.use("/loginsuccessful", function(req, res, next){
           if(results.data.length == 0){
             req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered on Branch and would like to link your user to GitHub you can do so in your 'My Profile' section.");
             console.log(req.session.lastError);
-            res.redirect('/#loginsignup');
+            res.redirect('/#!loginsignup');
           }
           else{
             if(results.data[0].linked_to_github==false){
               req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered on Branch and would like to link your user to GitHub you can do so in your 'My Profile' section.");
-              res.redirect('/#loginsignup');
+              res.redirect('/#!loginsignup');
             }
             else{
               //we need to login now
@@ -178,7 +178,7 @@ router.use("/loginsuccessful", function(req, res, next){
                 console.log('and here');
                 if(err){
                   req.session.lastError = Error.custom(err);
-                  res.redirect('/#loginsignup');
+                  res.redirect('/#!loginsignup');
                 }
                 else{
                   req.logIn(user, function(err){
@@ -186,7 +186,7 @@ router.use("/loginsuccessful", function(req, res, next){
                     console.log(err);
                     if(err){
                       req.session.lastError = Error.custom(err);
-                      res.redirect('/#loginsignup');
+                      res.redirect('/#!loginsignup');
                     }
                     else{
                       res.redirect('/');

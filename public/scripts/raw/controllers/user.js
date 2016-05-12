@@ -129,7 +129,7 @@ app.controller("userController", ["$rootScope","$scope", "$resource", "$state", 
       //need to implement edit stuff
       userManager.refresh(function(hasUser){
         if(!hasUser){
-          window.location = "#login?url=user/"+$stateParams.userId+"/edit"
+          window.location = "#!login?url=user/"+$stateParams.userId+"/edit"
         }
         else{
           if($stateParams.userId!="new"){
@@ -227,7 +227,7 @@ app.controller("userController", ["$rootScope","$scope", "$resource", "$state", 
       $scope.userLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#user/"+result._id+"?status="+status;
+        window.location = "#!user/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});

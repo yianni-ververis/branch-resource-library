@@ -58,7 +58,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
                     delete $scope.blogInfo["data"];
                 }
                 else {
-                    window.location = "#noitem";
+                    window.location = "#!noitem";
                 }
             }
         });
@@ -161,7 +161,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
             $scope.blogLoading = false;
             if (resultHandler.process(result)) {
                 var status = $scope.isNew ? "created" : "updated";
-                window.location = "#blog/" + result._id + "?status=" + status;
+                window.location = "#!blog/" + result._id + "?status=" + status;
             }
             else {
                 notifications.notify(result.errText, null, { sentiment: "negative" });
@@ -212,7 +212,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
             if (!hasUser) {
                 userManager.refresh(function (hasUser) {
                     if (!hasUser) {
-                        window.location = "#login?url=blog/" + $stateParams.blogId + "/edit"
+                        window.location = "#!login?url=blog/" + $stateParams.blogId + "/edit"
                     }
                     else {
                         if ($stateParams.blogId != "new") {
