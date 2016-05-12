@@ -18,7 +18,12 @@ module.exports = {
       }
       else{
         var ascii = req.headers.authorization.split(" ").pop();
-        var credentials = atob(ascii).split(":");
+        if(ascii.split(":").length==2){
+          credentials = ascii.split(":");
+        }
+        else {
+          credentials = atob(ascii).split(":");
+        }
         var username = credentials[0], password = credentials[1];
         UserProfile.findOne({username: username}).populate("role").exec(function(err, userProfile){
           if(userProfile){
