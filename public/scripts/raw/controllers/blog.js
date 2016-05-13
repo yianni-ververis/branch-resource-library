@@ -145,13 +145,14 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
         $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
         $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
         var data = {
-            standard: $scope.blogs[0]
+            standard: $scope.blogs[0],
+            special: {
+                content: $scope.blogs[0].content
+            }
         };
         if ($scope.dirtyThumbnail) {
-            data.special = {
-                image: $scope.image,
-                thumbnail: $scope.thumbnail
-            }
+            data.special.image = $scope.image;
+            data.special.thumbnail = $scope.thumbnail;
         }
         var query = {};
         if ($scope.blogs[0]._id) {
