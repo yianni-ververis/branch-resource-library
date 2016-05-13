@@ -111,7 +111,13 @@ app.controller("discussionController", ["$rootScope","$scope", "$resource", "$st
     if($scope.discussions[0]._id){
       query.discussionId = $scope.discussions[0]._id;
     }
-    Discussion.save(query, $scope.discussions[0], function(result){
+    var data = {
+      standard: $scope.discussions[0],
+      special: {
+        content: $scope.discussions[0].content
+      }
+    }
+    Discussion.save(query, data, function(result){
       $scope.discussionLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";

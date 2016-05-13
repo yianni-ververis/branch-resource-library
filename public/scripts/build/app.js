@@ -4045,13 +4045,14 @@
           $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
           $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
           var data = {
-              standard: $scope.blogs[0]
+              standard: $scope.blogs[0],
+              special: {
+                  content: $scope.blogs[0].content
+              }
           };
           if ($scope.dirtyThumbnail) {
-              data.special = {
-                  image: $scope.image,
-                  thumbnail: $scope.thumbnail
-              }
+              data.special.image = $scope.image;
+              data.special.thumbnail = $scope.thumbnail;
           }
           var query = {};
           if ($scope.blogs[0]._id) {
@@ -4284,7 +4285,10 @@
       $scope.resources[0].content = $("#resourceContent").code();
       $scope.resources[0].plaintext = cleanUpContent($scope.resources[0].content);
       var data = {
-        standard: $scope.resources[0]
+        standard: $scope.resources[0],
+        special: {
+          content: $scope.resources[0].content
+        }
       };
       var query = {};
       if($scope.resources[0]._id){
@@ -4535,7 +4539,13 @@
       if($scope.discussions[0]._id){
         query.discussionId = $scope.discussions[0]._id;
       }
-      Discussion.save(query, $scope.discussions[0], function(result){
+      var data = {
+        standard: $scope.discussions[0],
+        special: {
+          content: $scope.discussions[0].content
+        }
+      }
+      Discussion.save(query, data, function(result){
         $scope.discussionLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
@@ -4818,12 +4828,18 @@
 
     $scope.saveComment = function(){
       var commentText = $("#summernote").code();
-      Comment.save({}, {
-        entityId: $scope.entityid,
-        entity: $scope.entity,
-        content: commentText,
-        plaintext: cleanUpComment(commentText)
-      }, function(result){
+      var data = {
+        standard: {
+          entityId: $scope.entityid,
+          entity: $scope.entity,
+          content: commentText,
+          plaintext: cleanUpComment(commentText)
+        },
+        special: {
+          content: commentText
+        }
+      };
+      Comment.save({}, data, function(result){
         if(resultHandler.process(result)){
           $("#summernote").code("");
           //fetch the comments again to resolve any sorting/countnig issues
