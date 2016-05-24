@@ -6,6 +6,13 @@ html(ng-app="branch" ng-strict-di)
     meta(name="description" content="{{metaDesc}}")
     meta(name="keywords" content="{{metaKeys}}")
     meta(name="fragment" content="!")
+    meta(name="og:title" content="{{headTitle}}")
+    meta(name="og:description" content="{{metaDesc}}")
+    meta(name="twitter:card" content="summary")
+    if twitterHandle != ""
+      meta(name="twitter:site" content=twitterHandle)
+    meta(name="twitter:title" content="{{headTitle}}")
+    meta(name="twitter:description" content="{{metaDesc}}")
 
     link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css")    
     link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css")    
