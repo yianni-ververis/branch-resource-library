@@ -16,6 +16,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     $rootScope.headTitle = "Blog: Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
     $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
+    $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
   
 
     if ($stateParams.blogId) {
@@ -52,7 +53,10 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
                     }
                     $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
                     $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
-                    $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog"
+                    $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog";
+                    if ($scope.data[0].image != null && $scope.data[0].image != "") {
+                        $rootScope.metaImage = $scope.data[0].image;
+                    }
                 
                     $scope.blogInfo = result;
                     delete $scope.blogInfo["data"];
