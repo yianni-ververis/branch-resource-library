@@ -12,6 +12,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
   $rootScope.headTitle = "Open Source Projects on Qlik Branch";
   $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Open Source, Github, Projects, Extensions, Mash-ups, API, QAP, Qlik Analytics Platform";
   $rootScope.metaDesc = "Qlik Branch integrates with Github to host open source projects leveraging Qlik's extensibility and APIs.  Find code to use as a foundation for your next project, share your work, or get inspired."
+  $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
   $scope.dirtyThumbnail = false;
 
@@ -97,6 +98,10 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
           $rootScope.headTitle = $scope.projects[0].title + ": Qlik Branch Projects";
           $rootScope.metaKeys = $scope.projects[0].tags + ", Open Source, Github, Projects, QAP, Qlik Analytics Platform";
           $rootScope.metaDesc = $scope.projects[0].short_description;
+          if ($scope.projects[0].image != null && $scope.projects[0].image != "") {
+            $rootScope.metaImage = $scope.projects[0].image;
+          }
+
         }
         else{
           window.location = "#!noitem";
