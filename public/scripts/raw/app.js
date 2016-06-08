@@ -124,32 +124,6 @@
         }
       }
     })
-    //used to navigate to the forum list page
-    .state("forum", {
-      url: "/discussion",
-      templateUrl: "/views/forum/index.html",
-      controller: "discussionController"
-    })
-    //used to navigate to a given blog detail page
-    .state("forum.detail", {
-      url: "/:discussionId?status",
-      views:{
-        "@":{
-          templateUrl: "/views/forum/detail.html",
-          controller: "discussionController",
-        }
-      }
-    })
-    //used to navigate to a the blog add/edit page
-    .state("forum.addedit", {
-      url: "/:discussionId/edit",
-      views:{
-        "@":{
-          templateUrl: "/views/forum/addedit.html",
-          controller: "discussionController",
-        }
-      }
-    })
     //used to navigate to the rc list page
     .state("rc", {
       url: "/resource",
@@ -271,7 +245,6 @@
   include "./controllers/project.js"
   include "./controllers/blog.js"
   include "./controllers/resource.js"
-  include "./controllers/discussion.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"
   include "./controllers/moderation.js"
