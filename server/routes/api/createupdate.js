@@ -104,9 +104,11 @@ module.exports = function(req, res){
           var previousFile = markdown.substring(first, second);
           // the assumption here is that previous will be
           // attachments/tmp/<file>
-          var newFile = "attachments/" + record._id.toString() + "/content_" + count.toString() + previousFile.substring(previousFile.lastIndexOf("."));
-          moveS3File(previousFile, newFile);
-          markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+          if (previousFile.indexOf("/tmp/") >= 0) {
+            var newFile = previousFile.replace("/tmp/", "/" + record._id.toString() + "/");
+            moveS3File(previousFile, newFile);
+            markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+          }
           first = markdown.indexOf(linkStart,first+1);
         }
         record.content = markdown;
