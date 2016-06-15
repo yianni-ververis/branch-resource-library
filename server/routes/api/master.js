@@ -27,6 +27,8 @@ var async = require('async'),
 
 //load in the functions
 var createupdate = require("./createupdate");
+var imageupload = require("./imageupload");
+var imagedelete = require("./imagedelete");
 var read = require("./read");
 var update = require("./update");
 var flag = require("./flag");
@@ -253,6 +255,8 @@ router.get('/:entity/:id/thumbnail', Auth.isLoggedIn, function(req, res){
 
 //router.post("/projects", Auth.isLoggedIn, create.createProject);
 router.post("/:entity", Auth.isLoggedIn, createupdate);
+router.post("/:entity/image", Auth.isLoggedIn, imageupload);
+router.delete("/:entity/image/:url", Auth.isLoggedIn, imagedelete);
 //router.post("/projects/:id", Auth.isLoggedIn, update.updateProject);
 router.post("/:entity/:id", Auth.isLoggedIn, createupdate);
 router.post("/:entity/:id/flag", Auth.isLoggedIn, flag.flag);

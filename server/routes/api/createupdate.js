@@ -6,9 +6,11 @@ var MasterController = require("../../controllers/master"),
     ImageHandler = require("summernote-imagehandler"),
     fs = require('fs'),
     attachmentDir = require("../../../attachmentDir"),
+    envconfig = require("../../../config"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
+    AWS = require("aws-sdk");
     atob = require("atob");
 
 module.exports = function(req, res){
@@ -90,6 +92,24 @@ module.exports = function(req, res){
       //we have image data to deal with
       if(!fs.existsSync(attachmentDir+record._id.toString())){
         fs.mkdirSync(attachmentDir+record._id.toString());
+      }
+      if(data.special.markdown) {
+        var linkStart = "//s3.amazonaws.com/" + envconfig.s3.bucket + "/";
+        var markdown = record.content;
+        var first = markdown.indexOf(linkStart);
+        var count = 0;
+        while (first >= 0) {
+          var second = markdown.indexOf(")", first);
+          first += linkStart.length;
+          var previousFile = markdown.substring(first, second);
+          // the assumption here is that previous will be
+          // attachments/tmp/<file>
+          var newFile = "attachments/" + record._id.toString() + "/content_" + count.toString() + previousFile.substring(previousFile.lastIndexOf("."));
+          moveS3File(previousFile, newFile);
+          markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+          first = markdown.indexOf(linkStart,first+1);
+        }
+        record.content = markdown;
       }
       if(data.special.content) {
         var imageHandler = new ImageHandler(data.special.content);
@@ -184,3 +204,21 @@ function hasProps(obj){
   }
   return false;
 }
+
+var moveS3File = function(previousFile,newFile) {
+  var previousWithBucket = envconfig.s3.bucket + "/" + previousFile;
+  var params = {Bucket: envconfig.s3.bucket, CopySource: previousWithBucket, Key: newFile, ACL: "public-read"};
+  var s3obj = new AWS.S3();
+  s3obj.copyObject(params, function(err, result) {
+    if(err) {
+      console.error("Issue with S3 Copy", err);
+    } else {
+      var deleteParams = {Bucket: envconfig.s3.bucket, Key: previousFile};
+      s3obj.deleteObject(deleteParams, function(err, result) {
+        if (err) {
+          console.error("Issue with S3 Delete", err);
+        }
+      });
+    }
+  });
+};

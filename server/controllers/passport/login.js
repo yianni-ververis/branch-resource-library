@@ -8,7 +8,6 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
             passReqToCallback : true
         },
         function(req, username, password, done) {
-					console.log('nnndff');
             // check in mongo if a user with username exists or not
 						var regExp = new RegExp("^"+username+"$", "i");
             UserProfile.findOne({ 'username' : {$regex: regExp} },

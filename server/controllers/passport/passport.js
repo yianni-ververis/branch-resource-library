@@ -5,8 +5,6 @@ var LoginHistory = require('../../models/loginhistory');
 module.exports = function(passport){
 
   passport.serializeUser(function(user, done) {
-    console.log('is the error here then');
-    console.log(user);
     done(null, user._id);
   });
 
