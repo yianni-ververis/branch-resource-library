@@ -32,9 +32,7 @@
       <button class="button-outline" type="button" name="button" ng-click="more()">More</button>
     </div>
     <div ng-show="userManager.canCreate('comment')">
-      <div id="summernote" class="">
-
-      </div>
+      <textarea id="commentContent"></textarea>
     </div>
     <button ng-show="userManager.canCreate('comment')" type="button" class="form-control" ng-click="saveComment()">Reply</button>
   </div>
