@@ -209,7 +209,7 @@ function hasProps(obj){
 
 var moveS3File = function(previousFile,newFile) {
   var previousWithBucket = envconfig.s3.bucket + "/" + previousFile;
-  var params = {Bucket: envconfig.s3.bucket, CopySource: previousWithBucket, Key: newFile, ACL: "public-read"};
+  var params = {Bucket: envconfig.s3.bucket, CopySource: previousWithBucket, Key: newFile };
   var s3obj = new AWS.S3();
   s3obj.copyObject(params, function(err, result) {
     if(err) {

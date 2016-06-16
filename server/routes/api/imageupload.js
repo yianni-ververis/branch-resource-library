@@ -26,7 +26,7 @@ module.exports = function(req, res){
 function uploadFile(identifier, data, extension, next) {
     var key = "attachments/" + identifier + "/" + uuid.v4() + extension;
 
-    var s3obj = new AWS.S3({params: {Bucket: envconfig.s3.bucket, Key: key, ACL: "public-read"}});
+    var s3obj = new AWS.S3({params: {Bucket: envconfig.s3.bucket, Key: key}});
     s3obj.upload({Body: data})
         .send(function(err, result) {
             var result = {
