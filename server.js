@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
+    AWS = require("aws-sdk"),
     bodyParser = require('body-parser');
 
 var mode = "release";
@@ -10,6 +11,7 @@ var mode = "release";
 
 config = require('config');
 
+AWS.config.loadFromPath("./credentials.json");
 
 var envconfig = require('./config')
 

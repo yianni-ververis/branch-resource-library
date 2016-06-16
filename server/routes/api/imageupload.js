@@ -14,7 +14,7 @@ module.exports = function(req, res){
             var extension = files.file.name.substring(files.file.name.lastIndexOf("."));
             uploadFile("tmp",data,extension,function(err, result) {
                 if (err) {
-                    res.status(err.statusCode).json(err);
+                    res.json(err);
                 } else {
                     res.json(result);
                 }
