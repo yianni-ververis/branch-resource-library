@@ -1,4 +1,6 @@
-var Error = require('./error');
+var Error = require('./error'),
+    AWS = require("aws-sdk"),
+    envconfig = require("../../config");
 
 module.exports = {
   get: function(query, parsedQuery, entity, callbackFn){
@@ -156,6 +158,32 @@ module.exports = {
       else{
         callbackFn.call(null, result);
       }
+    });
+
+    var key = "attachments/" + query._id + "/";
+    var s3 = new AWS.S3();
+    var params = {
+      Bucket: envconfig.s3.bucket,
+      Prefix: key
+    };
+
+    s3.listObjects(params, function(err, data) {
+
+      params = {Bucket: envconfig.s3.bucket};
+      params.Delete = {Objects:[]};
+
+      data.Contents.forEach(function(content) {
+        params.Delete.Objects.push({Key: content.Key});
+      });
+
+      s3.deleteObjects(params, function(err, data) {
+        params = {Bucket: envconfig.s3.bucket, Key: key};
+        s3.deleteObject(params, function(err) {
+          if (err) {
+            console.log("Error deleting attachments", err);
+          }
+        })
+      });
     });
   }
 };

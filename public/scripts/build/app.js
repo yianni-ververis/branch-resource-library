@@ -4202,9 +4202,11 @@
 
   app.controller("resourceController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
     var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
+    var Image = $resource("api/resource/image/:url", {url: "@url"});
 
     $scope.pageSize = 20;
     $scope.query = {};
+    $scope.simplemde;
 
     $scope.resourceLoading = $stateParams.resourceId!="new";
     $scope.isNew = $stateParams.resourceId=="new";
@@ -4246,7 +4248,7 @@
               //if this is the detail view we'll update the breadcrumbs
             }
             if($state.current.name=="rc.addedit"){
-              $("#resourceContent").code(_arrayBufferToBase64(result.data[0].content.data));
+              $scope.simplemde.value(_arrayBufferToBase64(result.data[0].content.data));
             }
             $scope.resourceInfo = result;
             /*console.log(result.data[0]);
@@ -4276,7 +4278,7 @@
         errors.push("Please select a Type");
       }
       //Verify the blog has content
-      if($("#resourceContent").code().length==0 || $("#resourceContent").code().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
+      if($scope.simplemde.value().length==0 || $scope.simplemde.value().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
         errors.push("Please add some content");
       }
       //If there are errors we need to notify the user
@@ -4293,12 +4295,12 @@
 
     $scope.saveResource = function(){
       $scope.resourceLoading = true;
-      $scope.resources[0].content = $("#resourceContent").code();
+      $scope.resources[0].content = $scope.simplemde.value();
       $scope.resources[0].plaintext = cleanUpContent($scope.resources[0].content);
       var data = {
         standard: $scope.resources[0],
         special: {
-          content: $scope.resources[0].content
+          markdown: true
         }
       };
       var query = {};
@@ -4327,6 +4329,11 @@
       }
     };
 
+    $scope.addImageToMarkdown = function(url) {
+      var imageContent = "![](" + url + ")";
+      $scope.simplemde.codemirror.replaceSelection(imageContent);
+    };
+
     $scope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams){
       if(fromState.name.split(".")[0]==toState.name.split(".")[0]){ //then we should clear the search state
          if(toState.name.split(".").length==1){ //we only need to do this if we're on a listing page
@@ -4347,9 +4354,33 @@
         });
       }
       else if($state.current.name=="rc.addedit"){
-        $("#resourceContent").summernote({
-          height: 400
+        $scope.simplemde = new SimpleMDE({ element: $("#resourceContent")[0],
+                                           placeholder: "Resource content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+
+        var dropzone = new Dropzone('#resourceImages', {
+          previewTemplate: document.querySelector('#preview-template').innerHTML,
+          addRemoveLinks: true,
+          parallelUploads: 2,
+          thumbnailHeight: 120,
+          thumbnailWidth: 120,
+          maxFilesize: 3,
+          filesizeBase: 1000
         });
+
+        dropzone.on("success", function(file, response) {
+          file.url = response.url;
+          file.previewElement.addEventListener("click", function() {
+            $scope.addImageToMarkdown(response.url);
+          })
+          console.log("FILE UPLOADED", response);
+        });
+
+        dropzone.on("removedfile", function(file) {
+          Image.delete({url: file.url}, function(response) {
+            console.log("Removed", file.url);
+          });
+        })
+
         picklistService.getPicklistItems("Resource Type", function(items){
           $scope.resourceTypes = items;
         });
