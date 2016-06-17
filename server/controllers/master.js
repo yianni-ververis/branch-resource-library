@@ -169,23 +169,21 @@ module.exports = {
 
     s3.listObjects(params, function(err, data) {
 
-      if (data) {
-        params = {Bucket: envconfig.s3.bucket};
-        params.Delete = {Objects:[]};
+      params = {Bucket: envconfig.s3.bucket};
+      params.Delete = {Objects:[]};
 
-        data.Contents.forEach(function(content) {
-          params.Delete.Objects.push({Key: content.Key});
-        });
+      data.Contents.forEach(function(content) {
+        params.Delete.Objects.push({Key: content.Key});
+      });
 
-        s3.deleteObjects(params, function(err, data) {
-          params = {Bucket: envconfig.s3.bucket, Key: key};
-          s3.deleteObject(params, function(err) {
-            if (err) {
-              console.log("Error deleting attachments", err);
-            }
-          })
-        });
-      }
+      s3.deleteObjects(params, function(err, data) {
+        params = {Bucket: envconfig.s3.bucket, Key: key};
+        s3.deleteObject(params, function(err) {
+          if (err) {
+            console.log("Error deleting attachments", err);
+          }
+        })
+      });
     });
   }
 };

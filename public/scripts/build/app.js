@@ -4372,6 +4372,7 @@
           file.previewElement.addEventListener("click", function() {
             $scope.addImageToMarkdown(response.url);
           })
+          console.log("FILE UPLOADED", response);
         });
 
         dropzone.on("removedfile", function(file) {
@@ -4762,7 +4763,9 @@
 
     $scope.userManager = userManager;
 
-    $scope.simplemde = new SimpleMDE({ element: $("#commentContent")[0], placeholder: "Post a comment here." });
+    $("#summernote").summernote({
+      height: 100
+    });
 
     $scope.comments = [];
     $scope.pageSize = 10;
@@ -4867,7 +4870,7 @@
     }
 
     $scope.saveComment = function(){
-      var commentText = $scope.simplemde.value();
+      var commentText = $("#summernote").code();
       var data = {
         standard: {
           entityId: $scope.entityid,
@@ -4881,7 +4884,7 @@
       };
       Comment.save({}, data, function(result){
         if(resultHandler.process(result)){
-          $scope.simplemde.value("");
+          $("#summernote").code("");
           //fetch the comments again to resolve any sorting/countnig issues
           $scope.getCommentData($scope.commentQuery);
         }
