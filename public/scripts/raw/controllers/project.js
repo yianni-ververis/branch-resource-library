@@ -16,7 +16,11 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
 
   $scope.dirtyThumbnail = false;
 
+  $scope.gitCreds = {};
+
   $scope.userManager = userManager;
+
+  $scope.gitAuthenticated = userManager.userInfo.linked_to_github;
   $scope.Confirm = confirm;
 
   $scope.isNew = $stateParams.projectId=="new";
@@ -181,17 +185,23 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
     window.location = "#!project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
-  $scope.getGitProjects = function(gituser, gitpassword, code){
-    $scope.gitLoading = true;
-    $scope.gitError = null;
-    var creds = {
+  $scope.getAllGitProjects = function(gituser, gitpassword, code) {
+    $scope.gitCreds = {
       user: gituser,
       password: gitpassword,
       code: code
     };
-    Git.save({path:"projects"}, creds, function(result){
+    $scope.getGitProjects($scope.gitCreds);
+  };
+
+  $scope.getGitProjects = function(params){
+    $scope.gitLoading = true;
+    $scope.gitError = null;
+
+    Git.save({path:"projects"}, params, function(result){
       console.log(result);
       if(resultHandler.process(result)){
+        $scope.gitAuthenticated = true;
         console.log(result);
         if(result.status=="2fa"){
           console.log('need 2fa');
@@ -203,6 +213,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
         $scope.gitLoading = false;
       }
       else{
+        $scope.gitAuthenticated = $scope.userManager.userInfo.linked_to_github;
         var msg;
         try{
           var msg = JSON.parse(result.errText);
@@ -214,6 +225,12 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
         $scope.gitLoading = false;
       }
     });
+  };
+
+  $scope.searchGithub = function(githubSearch) {
+    var gitParams = angular.copy($scope.gitCreds);
+    gitParams.search = githubSearch;
+    $scope.getGitProjects(gitParams);
   };
 
   $scope.selectGitProject = function(project){
@@ -469,7 +486,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
             }
             else{
               if(userManager.userInfo.linked_to_github==true){
-                $scope.getGitProjects();
+                $scope.getAllGitProjects();
               }
             }
           }
@@ -481,7 +498,7 @@ app.controller("projectController", ["$rootScope","$scope", "$resource", "$state
         }
         else{
           if(userManager.userInfo.linked_to_github==true){
-            $scope.getGitProjects();
+            $scope.getAllGitProjects();
           }
         }
       }
