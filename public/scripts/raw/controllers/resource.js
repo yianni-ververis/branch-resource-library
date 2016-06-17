@@ -170,6 +170,7 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
         file.previewElement.addEventListener("click", function() {
           $scope.addImageToMarkdown(response.url);
         })
+        console.log("FILE UPLOADED", response);
       });
 
       dropzone.on("removedfile", function(file) {
