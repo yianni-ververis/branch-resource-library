@@ -42,11 +42,9 @@ router.get('/lasterror', function(req, res){
 
 router.post('/git/projects', function(req, res){
   try{
-    console.log(req.body);
     var code = req.body.code;
     var authType = code?"2fa":"basic";
     var gitUser;
-    console.log(authType);
     if(req.body.user){
       GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
       gitUser = req.body.user;
@@ -58,6 +56,30 @@ router.post('/git/projects', function(req, res){
     else {
       res.json(Error.custom("Unable to authenticate. Please contact branch.admin@qlik.com"));
     }
+    if (req.body.search) {
+      var query = req.body.search + "+user:" + gitUser;
+      GitHub.search.repos({q: query}, function(err, repos) {
+        if(err){
+          if(err.code == 9999){
+            //then the user has 2 factor authentication enabled
+            console.log('needs 2fa');
+            res.json({status: "2fa"});
+          }
+          else if(err.code == 401){
+            console.log(err);
+            res.json(Error.custom(err.message));
+          }
+          else{
+            console.log(err);
+            res.json(Error.custom(err.message));
+          }
+        }
+        else{
+          res.json({repos: repos && repos.items ? repos.items : [] });
+        }
+      });
+    } else {
+
     GitHub.repos.getAll({user:gitUser}, function(err, repos){
       if(err){
         if(err.code == 9999){
@@ -78,6 +100,7 @@ router.post('/git/projects', function(req, res){
         res.json({repos: repos});
       }
     });
+    }
   }
   catch(ex){
     console.log(ex);
