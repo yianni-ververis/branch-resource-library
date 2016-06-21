@@ -51,19 +51,6 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    discussion:{
-      collection: "discussions",
-      model: require("../models/discussion"),
-      populates: "userid status",
-      exemptFromOwnership: false,
-      exemptFromApproval: false,
-      logViews: true,
-      sort: {
-        dateline: -1
-      },
-      limit: 20,
-      requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
-    },
     rating: {
       collection: "ratings",
       model: require("../models/rating"),

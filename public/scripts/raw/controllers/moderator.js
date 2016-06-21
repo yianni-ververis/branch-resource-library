@@ -5,7 +5,6 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
   var entities = [
     "project",
     "blog",
-    "discussion",
     "comment",
     "user"
   ]
