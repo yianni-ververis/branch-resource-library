@@ -11,5 +11,6 @@ client.pem
 .vscode/
 /public/configs/sense.json
 config.js
+credentials.json
 public/attachments/*
 !public/attachments/default

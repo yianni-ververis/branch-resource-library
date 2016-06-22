@@ -10,7 +10,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
-    AWS = require("aws-sdk");
+    s3 = require("../../s3/s3"),
     atob = require("atob");
 
 module.exports = function(req, res){
@@ -106,7 +106,7 @@ module.exports = function(req, res){
           // attachments/tmp/<file>
           if (previousFile.indexOf("/tmp/") >= 0) {
             var newFile = previousFile.replace("/tmp/", "/" + record._id.toString() + "/");
-            moveS3File(previousFile, newFile);
+            s3.moveFile(previousFile, newFile);
             markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
           }
           first = markdown.indexOf(linkStart,first+1);
@@ -125,38 +125,17 @@ module.exports = function(req, res){
         imageHandler.cleanupFiles();
         record.content = imageHandler.getSource();
       }
-      if(data.special.image){
-        //write the image to disk and store the Url
-        imageBuffer = new Buffer(data.special.image.data, 'base64');
-        fs.writeFile(attachmentDir+record._id.toString()+"/image.png", imageBuffer, function(err){
-          if(err){
-            console.log(err);
+      Promise.all(
+          [checkForImage(data.special, record, req.params.entity),
+           checkForThumbnail(data.special, record, req.params.entity)]
+      ).then(() => {
+        MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+          if(!newrecord.errCode){
+            //send an notification to all subscribers of the item
+            Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
           }
+          res.json(newrecord);
         });
-        record.image = "/attachments/"+record._id.toString()+"/image.png";
-      }
-      else{
-        record.image = "/attachments/default/"+req.params.entity+".png";
-      }
-      if(data.special.thumbnail){
-        //write the image to disk and store the Url
-        imageBuffer = new Buffer(data.special.thumbnail.data, 'base64');
-        fs.writeFile(attachmentDir+record._id.toString()+"/thumbnail.png", imageBuffer, function(err){
-          if(err){
-            console.log(err);
-          }
-        });
-        record.thumbnail = "/attachments/"+record._id.toString()+"/thumbnail.png";
-      }
-      else{
-        record.thumbnail = "/attachments/default/"+req.params.entity+".png";
-      }
-      MasterController.save(query, record, entities[req.params.entity], function(newrecord){
-        if(!newrecord.errCode){
-          //send an notification to all subscribers of the item
-          Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
-        }
-        res.json(newrecord);
       });
     }
     else{
@@ -198,6 +177,49 @@ module.exports = function(req, res){
   }
 };
 
+var checkForImage = (special, record, entity) => {
+  return new Promise((resolve) => {
+    record.image = "/attachments/default/"+entity+".png";
+    if(!special.image) {
+      resolve()
+    } else {
+      //write the image to disk and store the Url
+      var imageBuffer = new Buffer(special.image.data, 'base64');
+      var imageKey = record._id.toString() + "/image.png";
+      s3.uploadFile(imageKey, imageBuffer)
+        .then((result) => {
+          record.image = result.url;
+          resolve();
+        })
+        .catch((err) => {
+          console.log("Error uploading image", err);
+          resolve();
+        });
+    }
+  });
+};
+
+var checkForThumbnail = (special, record, entity) => {
+  return new Promise((resolve) => {
+    record.thumbnail = "/attachments/default/"+entity+".png";
+    if(!special.thumbnail) {
+      resolve()
+    } else {
+      var imageBuffer = new Buffer(special.thumbnail.data, 'base64');
+      var thumbnailKey = record._id.toString() + "/thumbnail.png";
+      s3.uploadFile(thumbnailKey, imageBuffer)
+        .then((result) => {
+          record.thumbnail = result.url;
+          resolve();
+        })
+        .catch((err) => {
+          console.log("Error uploading thumbnail", err);
+          resolve();
+        });
+    }
+  });
+}
+
 function hasProps(obj){
   for (var key in obj){
     if(obj.hasOwnProperty(key)){
@@ -206,21 +228,3 @@ function hasProps(obj){
   }
   return false;
 }
-
-var moveS3File = function(previousFile,newFile) {
-  var previousWithBucket = envconfig.s3.bucket + "/" + previousFile;
-  var params = {Bucket: envconfig.s3.bucket, CopySource: previousWithBucket, Key: newFile };
-  var s3obj = new AWS.S3();
-  s3obj.copyObject(params, function(err, result) {
-    if(err) {
-      console.error("Issue with S3 Copy", err);
-    } else {
-      var deleteParams = {Bucket: envconfig.s3.bucket, Key: previousFile};
-      s3obj.deleteObject(deleteParams, function(err, result) {
-        if (err) {
-          console.error("Issue with S3 Delete", err);
-        }
-      });
-    }
-  });
-};
