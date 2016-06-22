@@ -4,9 +4,7 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
 
   $scope.userManager = userManager;
 
-  $("#summernote").summernote({
-    height: 100
-  });
+  $scope.simplemde = new SimpleMDE({ element: $("#commentContent")[0], placeholder: "Post a comment here." });
 
   $scope.comments = [];
   $scope.pageSize = 10;
@@ -111,7 +109,7 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   }
 
   $scope.saveComment = function(){
-    var commentText = $("#summernote").code();
+    var commentText = $scope.simplemde.value();
     var data = {
       standard: {
         entityId: $scope.entityid,
@@ -125,7 +123,7 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
     };
     Comment.save({}, data, function(result){
       if(resultHandler.process(result)){
-        $("#summernote").code("");
+        $scope.simplemde.value("");
         //fetch the comments again to resolve any sorting/countnig issues
         $scope.getCommentData($scope.commentQuery);
       }

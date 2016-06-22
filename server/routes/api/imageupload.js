@@ -12,9 +12,11 @@ module.exports = function(req, res){
     form.parse(req, function(err, fields, files) {
         fs.readFile(files.file.path,{}, function(err, data) {
             var extension = files.file.name.substring(files.file.name.lastIndexOf("."));
-            uploadFile("tmp",data,extension,function(err, result) {
+            uploadFile(data,extension,function(err, result) {
                 if (err) {
-                    res.json(err);
+                    console.log("Error Uploading to S3", err);
+                    res.status(500);
+                    res.json("There was an issue uploading the file");
                 } else {
                     res.json(result);
                 }
@@ -23,8 +25,8 @@ module.exports = function(req, res){
     });
 };
 
-function uploadFile(identifier, data, extension, next) {
-    var key = "attachments/" + identifier + "/" + uuid.v4() + extension;
+function uploadFile(data, extension, next) {
+    var key = "attachments/tmp/" + uuid.v4() + extension;
 
     var s3obj = new AWS.S3({params: {Bucket: envconfig.s3.bucket, Key: key}});
     s3obj.upload({Body: data})
