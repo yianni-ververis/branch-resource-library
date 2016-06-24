@@ -3,9 +3,7 @@ var MasterController = require("../../controllers/master"),
     Error = require("../../controllers/error"),
     Notifier = require("../../controllers/notifier"),
     Mailer = require("../../controllers/emailer"),
-    ImageHandler = require("summernote-imagehandler"),
     fs = require('fs'),
-    attachmentDir = require("../../../attachmentDir"),
     envconfig = require("../../../config"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
@@ -89,44 +87,9 @@ module.exports = function(req, res){
     }
 
     if(data.special){
-      //we have image data to deal with
-      if(!fs.existsSync(attachmentDir+record._id.toString())){
-        fs.mkdirSync(attachmentDir+record._id.toString());
-      }
-      if(data.special.markdown) {
-        var linkStart = "//s3.amazonaws.com/" + envconfig.s3.bucket + "/";
-        var markdown = record.content;
-        var first = markdown.indexOf(linkStart);
-        var count = 0;
-        while (first >= 0) {
-          var second = markdown.indexOf(")", first);
-          first += linkStart.length;
-          var previousFile = markdown.substring(first, second);
-          // the assumption here is that previous will be
-          // attachments/tmp/<file>
-          if (previousFile.indexOf("/tmp/") >= 0) {
-            var newFile = previousFile.replace("/tmp/", "/" + record._id.toString() + "/");
-            s3.moveFile(previousFile, newFile);
-            markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
-          }
-          first = markdown.indexOf(linkStart,first+1);
-        }
-        record.content = markdown;
-      }
-      if(data.special.content) {
-        var imageHandler = new ImageHandler(data.special.content);
-        for (var i = 0; i < imageHandler.files.length; i++) {
-          var contentFile = attachmentDir + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-          fs.createReadStream(imageHandler.files[i].file).pipe(fs.createWriteStream(contentFile));
-          var contentUrl = "/attachments/" + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-
-          imageHandler.setSrc(imageHandler.files[i].id, contentUrl);
-        }
-        imageHandler.cleanupFiles();
-        record.content = imageHandler.getSource();
-      }
       Promise.all(
-          [checkForImage(data.special, record, req.params.entity),
+          [checkForMarkdown(data.special, record),
+           checkForImage(data.special, record, req.params.entity),
            checkForThumbnail(data.special, record, req.params.entity)]
       ).then(() => {
         MasterController.save(query, record, entities[req.params.entity], function(newrecord){
@@ -177,13 +140,56 @@ module.exports = function(req, res){
   }
 };
 
+var checkForMarkdown = (special, record) => {
+  return new Promise((resolve,reject) => {
+    if(!special.markdown) {
+      resolve();
+    } else {
+      moveMarkdownImages(record.content, record._id)
+        .then((content) => {
+          record.content = content;
+          resolve();
+        });
+    }
+  });
+};
+
+var moveMarkdownImages = (content, identifier, resolver) => {
+  if (!resolver) {
+    return new Promise((resolve) => {
+      moveMarkdownImages(content, identifier, resolve);
+    });
+  } else {
+    var linkStart = "//s3.amazonaws.com/" + envconfig.s3.bucket + "/attachments/tmp/";
+    var markdown = content;
+    var first = markdown.indexOf(linkStart);
+    if (first < 0) {
+      resolver(markdown);
+    } else {
+      var second = markdown.indexOf(")", first);
+      first += linkStart.length - 16;
+      var previousFile = markdown.substring(first, second);
+      // the assumption here is that previous will be
+      // attachments/tmp/<file>
+      var newFile = previousFile.replace("/tmp/", "/" + identifier + "/");
+      s3.moveFile(previousFile, newFile)
+        .then(() => {
+          markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+          moveMarkdownImages(markdown, identifier, resolver);
+        }).catch((err) => {
+          console.log("Error moving image", err);
+          resolver(markdown);
+        });
+    }
+  }
+};
+
 var checkForImage = (special, record, entity) => {
   return new Promise((resolve) => {
     record.image = "/attachments/default/"+entity+".png";
     if(!special.image) {
       resolve()
     } else {
-      //write the image to disk and store the Url
       var imageBuffer = new Buffer(special.image.data, 'base64');
       var imageKey = record._id.toString() + "/image.png";
       s3.uploadFile(imageKey, imageBuffer)

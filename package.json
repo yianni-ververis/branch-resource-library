@@ -48,7 +48,6 @@
     "qsocks": "^2.1.5",
     "request": "^2.55.0",
     "spam-check": "^0.9.9",
-    "summernote-imagehandler": "^1.0.1",
     "underscore": "^1.8.3",
     "uuid": "^2.0.2"
   },
