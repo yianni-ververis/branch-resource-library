@@ -1544,11 +1544,11 @@
                     }
                     $("#"+$attrs.id).find("._count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
                     if($scope.resultsTemplate){
-                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min, bucket: $scope.$root.bucket});
                     }
                     else{
                       $scope.resultsTemplateCallback = function(){
-                        $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                        $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min, bucket: $scope.$root.bucket});
                       }
                     }
                     if($scope.pagingTemplate){
@@ -3911,6 +3911,13 @@
       var defaultSelection;
 
       $scope.blogTypes;
+
+      $rootScope.bucket;
+
+      $resource("api/bucket").get({}, function(result) {
+          $rootScope.bucket = result.bucket;
+      });
+
       $rootScope.headTitle = "Blog: Qlik Branch";
       $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
       $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."

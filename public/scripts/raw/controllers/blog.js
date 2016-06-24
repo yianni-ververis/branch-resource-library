@@ -16,6 +16,13 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     var defaultSelection;
 
     $scope.blogTypes;
+
+    $rootScope.bucket;
+
+    $resource("api/bucket").get({}, function(result) {
+        $rootScope.bucket = result.bucket;
+    });
+
     $rootScope.headTitle = "Blog: Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
     $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."

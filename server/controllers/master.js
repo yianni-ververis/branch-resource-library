@@ -156,11 +156,6 @@ module.exports = {
       }
       else{
         s3.deleteEntityFiles(query._id)
-          .then(() => {
-            if (err) {
-              console.log("Error deleting attachments", err);
-            }
-          })
           .catch((err) => {
             console.log("Error deleting attachments", err);
           })
