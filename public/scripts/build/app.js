@@ -3352,7 +3352,7 @@
 
   }]);
 
-  app.controller("projectController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
+  app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($sce, $rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Views = $resource("api/view/count");
     var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
@@ -3530,7 +3530,8 @@
 
     $scope.getPageText = function(){
       if($scope.projects[0] && $scope.projects[0].content){
-        return marked($scope.projects[0].content);
+        var result = marked($scope.projects[0].content);
+        return $sce.trustAsHtml(result);
         //return $scope.projects[0].content;
       }
     };
@@ -4203,7 +4204,7 @@
 
   }]);
 
-  app.controller("resourceController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+  app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($sce,$rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
     var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
     var Image = $resource("api/resource/image/:url", {url: "@url"});
 
@@ -4325,7 +4326,8 @@
     $scope.getResourceContent = function(text){
       if(text && text.data){
         var buffer = _arrayBufferToBase64(text.data);
-        return marked(buffer);
+        var result = marked(buffer);
+        return $sce.trustAsHtml(result);
       }
       else{
         return "";
@@ -4470,7 +4472,7 @@
 
   }]);
 
-  app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+  app.controller("commentController", ["$sce", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($sce, $scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Comment = $resource("api/comment/:commentId", {commentId: "@commentId"});
     var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
 
@@ -4573,7 +4575,8 @@
     $scope.getCommentText = function(text){
       if(text && text.data){
         var buffer = _arrayBufferToBase64(text.data);
-        return marked(buffer);
+        var result = marked(buffer);
+        return $sce.trustAsHtml(result);
       }
       else{
         return "";
