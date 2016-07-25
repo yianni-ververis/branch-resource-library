@@ -66,6 +66,12 @@ app.use('/resources', express.static(__dirname + '/public/resources'));
 app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
 app.use("/configs", express.static(__dirname + "/public/configs"));
+app.use((req, res, next) => {
+  res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.header("Pragma", "no-cache");
+  res.header("Expires", 0);
+  next();
+});
 
 app.use(expressSession({
   secret: 'mySecretKey',
