@@ -13,3 +13,4 @@ client.pem
 config.js
 public/attachments/*
 !public/attachments/default
+credentials.json
