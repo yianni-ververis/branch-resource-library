@@ -1,5 +1,6 @@
 app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
     var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
+    var User = $resource("api/userprofile/:userId", {userId: "@userId"});
     $scope.pageSize = 20;
     $scope.query = {};
     
@@ -9,6 +10,13 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     $scope.isNew = $stateParams.blogId == "new";
 
     $scope.dirtyThumbnail = false;
+
+    if($stateParams.author != null) {
+        User.get({userId: $stateParams.author}, function(result){
+            $scope.onBehalfOf = result.data[0].username;
+            }
+        );
+    }
 
     var defaultSelection;
 
