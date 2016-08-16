@@ -116,7 +116,7 @@
     })
     //used to navigate to a the blog add/edit page
     .state("blogs.addedit", {
-      url: "/:blogId/edit",
+      url: "/:blogId/edit?author",
       views:{
         "@":{
           templateUrl: "/views/blogs/addedit.html",

@@ -154,6 +154,9 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
                 content: $scope.blogs[0].content
             }
         };
+        if($stateParams.author != null) {
+            data.special.author = $stateParams.author;
+        }
         if ($scope.dirtyThumbnail) {
             data.special.image = $scope.image;
             data.special.thumbnail = $scope.thumbnail;

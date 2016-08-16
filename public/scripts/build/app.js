@@ -116,7 +116,7 @@
     })
     //used to navigate to a the blog add/edit page
     .state("blogs.addedit", {
-      url: "/:blogId/edit",
+      url: "/:blogId/edit?author",
       views:{
         "@":{
           templateUrl: "/views/blogs/addedit.html",
@@ -4063,6 +4063,9 @@
                   content: $scope.blogs[0].content
               }
           };
+          if($stateParams.author != null) {
+              data.special.author = $stateParams.author;
+          }
           if ($scope.dirtyThumbnail) {
               data.special.image = $scope.image;
               data.special.thumbnail = $scope.thumbnail;
@@ -4917,6 +4920,10 @@
     $scope.editEntity = function(){
       window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
     };
+
+    $scope.createBlog = function() {
+      window.location = "#!blog/new/edit?author=" + $scope.entityid
+    }
 
     $scope.updateReadme = function(){
       GitReadme.get({projectId: $scope.entityid}, function(result){
