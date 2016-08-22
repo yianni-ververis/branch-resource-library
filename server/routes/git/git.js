@@ -136,11 +136,15 @@ router.use("/linkauthorized", function(req, res){
 
 router.get("/login", function(req, res){
   console.log('logging in with GitHub');
+  if(req.query.url && req.query.url !== "") {
+    req.session.url = req.query.url;
+  } else if (req.session.url) {
+    delete req.session.url;
+  }
   authorizeGit("http://branch.qlik.com/git/loginsuccessful", req, res);
 });
 
 router.use("/loginsuccessful", function(req, res, next){
-  console.log('are we here');
   if(req.query){
     //the account has been authorized
     //now we authenticate and get a token and the authenticated user
@@ -189,7 +193,20 @@ router.use("/loginsuccessful", function(req, res, next){
                       res.redirect('/#!loginsignup');
                     }
                     else{
-                      res.redirect('/');
+                      if(req.session.url) {
+                        var redirectUrl = req.session.url;
+                        delete req.session.url;
+                        var pattern = /^https?:\/\//i;
+                        if (pattern.test(redirectUrl))
+                        {
+                          res.redirect(redirectUrl);
+                        } else {
+                          res.redirect("/#!" + redirectUrl);
+                        }
+                      }
+                      else {
+                        res.redirect('/');
+                      }
                     }
 
                   })

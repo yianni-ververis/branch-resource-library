@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
+    MongoStore = require('connect-mongo')(expressSession),
     AWS = require("aws-sdk"),
     bodyParser = require('body-parser');
 
@@ -65,8 +66,18 @@ app.use('/resources', express.static(__dirname + '/public/resources'));
 app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
 app.use("/configs", express.static(__dirname + "/public/configs"));
+app.use((req, res, next) => {
+  res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.header("Pragma", "no-cache");
+  res.header("Expires", 0);
+  next();
+});
 
-app.use(expressSession({secret: 'mySecretKey'}));
+app.use(expressSession({
+  secret: 'mySecretKey',
+  store: new MongoStore({ mongooseConnection: mongoose.connection}),
+  cookie: {path:"/", domain:config.cookieDomain, httpOnly: true}
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
