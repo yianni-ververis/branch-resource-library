@@ -3458,6 +3458,8 @@
             $rootScope.metaDesc = $scope.projects[0].short_description;
             if ($scope.projects[0].image != null && $scope.projects[0].image != "") {
               $rootScope.metaImage = $scope.projects[0].image;
+              if($rootScope.substr(0,2) === "//")
+                $rootScope.metaImage = "http:" + $rootScope.metaImage
             }
 
           }
@@ -3975,6 +3977,8 @@
                       $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog";
                       if ($scope.data[0].image != null && $scope.data[0].image != "") {
                           $rootScope.metaImage = $scope.data[0].image;
+                          if($rootScope.metaImage.substr(0,2) === "//")
+                              $rootScope.metaImage = "http:" + $rootScope.metaImage
                       }
                   
                       $scope.blogInfo = result;

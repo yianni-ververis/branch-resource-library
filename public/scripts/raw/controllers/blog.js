@@ -66,6 +66,8 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
                     $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog";
                     if ($scope.data[0].image != null && $scope.data[0].image != "") {
                         $rootScope.metaImage = $scope.data[0].image;
+                        if($rootScope.metaImage.substr(0,2) === "//")
+                            $rootScope.metaImage = "http:" + $rootScope.metaImage
                     }
                 
                     $scope.blogInfo = result;
