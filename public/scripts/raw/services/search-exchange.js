@@ -33,7 +33,7 @@ var SearchExchange = (function(){
             var msg = JSON.parse(ev.data);
             if( msg.suspend ) {
               that.publish('resume');
-            } else {
+            } else if(old != null) {
               old(ev);
             }
           };
