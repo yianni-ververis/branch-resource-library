@@ -3458,7 +3458,7 @@
             $rootScope.metaDesc = $scope.projects[0].short_description;
             if ($scope.projects[0].image != null && $scope.projects[0].image != "") {
               $rootScope.metaImage = $scope.projects[0].image;
-              if($rootScope.substr(0,2) === "//")
+              if($rootScope.metaImage.substr(0,2) === "//")
                 $rootScope.metaImage = "http:" + $rootScope.metaImage
             }
 
