@@ -1,8 +1,10 @@
 var express = require('express'),
     router = express.Router();
 
-var masterRoutes = require('./master');
+var masterRoutes = require('./master'),
+    imageRoutes = require('./images');
 
+router.use('/images/', imageRoutes);
 router.use('/', masterRoutes);
 
 module.exports = router;

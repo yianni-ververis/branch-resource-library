@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
     expressSession = require('express-session'),
     MongoStore = require('connect-mongo')(expressSession),
     AWS = require("aws-sdk"),
+    request = require("request"),
     bodyParser = require('body-parser');
 
 //var mode = "release";
@@ -66,6 +67,10 @@ app.use('/resources', express.static(__dirname + '/public/resources'));
 app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
 app.use("/configs", express.static(__dirname + "/public/configs"));
+app.use("/images", (req, res, next) => {
+  const url = "http://s3.amazonaws.com/" + envconfig.s3.bucket + "/images" + req.url
+  request.get(url).pipe(res)
+})
 app.use((req, res, next) => {
   res.header("Cache-Control", "no-cache, no-store, must-revalidate");
   res.header("Pragma", "no-cache");

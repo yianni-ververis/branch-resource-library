@@ -192,7 +192,7 @@ var checkForImage = (special, record, entity) => {
     } else {
       var imageBuffer = new Buffer(special.image.data, 'base64');
       var imageKey = record._id.toString() + "/image.png";
-      s3.uploadFile(imageKey, imageBuffer)
+      s3.uploadFile("attachments", imageKey, imageBuffer)
         .then((result) => {
           record.image = result.url;
           resolve();
@@ -213,7 +213,7 @@ var checkForThumbnail = (special, record, entity) => {
     } else {
       var imageBuffer = new Buffer(special.thumbnail.data, 'base64');
       var thumbnailKey = record._id.toString() + "/thumbnail.png";
-      s3.uploadFile(thumbnailKey, imageBuffer)
+      s3.uploadFile("attachments", thumbnailKey, imageBuffer)
         .then((result) => {
           record.thumbnail = result.url;
           resolve();

@@ -12,7 +12,7 @@ module.exports = function(req, res){
         fs.readFile(files.file.path,{}, function(err, data) {
             var extension = files.file.name.substring(files.file.name.lastIndexOf("."));
             var key = "tmp/" + uuid.v4() + extension;
-            s3.uploadFile(key, data)
+            s3.uploadFile("attachments", key, data)
               .then((result) => {
                   res.json(result);
               }).catch((err) => {
