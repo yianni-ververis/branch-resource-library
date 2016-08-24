@@ -63,6 +63,7 @@ app.use('/js', express.static(__dirname + '/public/scripts/build'));
 app.use('/debug', express.static(__dirname + '/public/scripts/raw'));
 app.use('/views', express.static(__dirname + '/public/views'));
 app.use('/css', express.static(__dirname + '/public/styles/css'));
+app.use('/maps', express.static(__dirname + '/public/styles/maps'));
 app.use('/resources', express.static(__dirname + '/public/resources'));
 app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
