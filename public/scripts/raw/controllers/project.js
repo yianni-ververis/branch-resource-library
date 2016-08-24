@@ -104,6 +104,8 @@ app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", 
           $rootScope.metaDesc = $scope.projects[0].short_description;
           if ($scope.projects[0].image != null && $scope.projects[0].image != "") {
             $rootScope.metaImage = $scope.projects[0].image;
+            if($rootScope.metaImage.substr(0,2) === "//")
+              $rootScope.metaImage = "http:" + $rootScope.metaImage
           }
 
         }

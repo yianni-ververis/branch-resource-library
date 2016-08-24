@@ -17,6 +17,9 @@
         <li ng-class="{active:activeTab===3}">
           <a ng-click="setTab(3)">Featured Content</a>
         </li>
+        <li ng-class="{active:activeTab===4}">
+          <a ng-click="setTab(4)">Images</a>
+        </li>
       </ul>
     </div>
     <div class="col-md-12">
@@ -31,6 +34,9 @@
       </div>
       <div ng-show="activeTab==3">
         <ng-include src="'/views/admin/features.html'"></ng-include>
+      </div>
+      <div ng-show="activeTab==4">
+        <ng-include src="'/views/admin/images.html'"></ng-include>
       </div>
     </div>
   </div>

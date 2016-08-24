@@ -177,7 +177,7 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
         Image.delete({url: file.url}, function(response) {
           console.log("Removed", file.url);
         });
-      })
+      });
 
       picklistService.getPicklistItems("Resource Type", function(items){
         $scope.resourceTypes = items;
