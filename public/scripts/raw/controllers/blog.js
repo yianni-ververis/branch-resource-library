@@ -1,6 +1,6 @@
 app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
     var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
-    var Image = $resource("api/resource/image/:url", {url: "@url"});
+    var ImageAPI = $resource("api/resource/image/:url", {url: "@url"});
 
     $scope.pageSize = 20;
     $scope.query = {};
@@ -241,7 +241,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
             });
 
             dropzone.on("removedfile", function(file) {
-                Image.delete({url: file.url}, function(response) {
+                ImageAPI.delete({url: file.url}, function(response) {
                     console.log("Removed", file.url);
                 });
             });
