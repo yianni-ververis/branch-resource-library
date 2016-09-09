@@ -190,10 +190,12 @@ var checkForImage = (special, record, entity) => {
     if(!special.image) {
       resolve()
     } else {
+      console.log("Image Found for ", record._id.toString())
       var imageBuffer = new Buffer(special.image.data, 'base64');
       var imageKey = record._id.toString() + "/image.png";
       s3.uploadFile("attachments", imageKey, imageBuffer)
         .then((result) => {
+          console.log("Successfully uploaded image", result.url)
           record.image = result.url;
           resolve();
         })

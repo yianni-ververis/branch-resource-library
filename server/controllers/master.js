@@ -96,11 +96,6 @@ module.exports = {
   },
   save: function(query, data, entity, callbackFn){
     if(query && hasProps(query)){ //update
-      console.log('updating record');
-      console.log('query');
-      console.log(query);
-      console.log('data');
-      console.log(data);
       if(query._id){
         entity.model.findOneAndUpdate(query, data, {new:true}).populate(entity.populates).exec(function(err, result){
           if(err){
@@ -127,9 +122,7 @@ module.exports = {
       }
     }
     else{ //new
-      console.log('creating record');
       entity.model.create(data, function(err, result){
-        console.log(data);
         if(err){
           console.log(err);
           callbackFn.call(null, Error.errorSaving(err.errors.status));
