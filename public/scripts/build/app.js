@@ -3953,7 +3953,7 @@
 
   app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
       var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
-      var Image = $resource("api/resource/image/:url", {url: "@url"});
+      var ImageAPI = $resource("api/resource/image/:url", {url: "@url"});
 
       $scope.pageSize = 20;
       $scope.query = {};
@@ -4017,8 +4017,8 @@
                       $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
                       $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
                       $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog";
-                      if ($scope.data[0].image != null && $scope.data[0].image != "") {
-                          $rootScope.metaImage = $scope.data[0].image;
+                      if ($scope.blogs[0].image != null && $scope.blogs[0].image != "") {
+                          $rootScope.metaImage = $scope.blogs[0].image;
                           if($rootScope.metaImage.substr(0,2) === "//")
                               $rootScope.metaImage = "http:" + $rootScope.metaImage
                       }
@@ -4194,7 +4194,7 @@
               });
 
               dropzone.on("removedfile", function(file) {
-                  Image.delete({url: file.url}, function(response) {
+                  ImageAPI.delete({url: file.url}, function(response) {
                       console.log("Removed", file.url);
                   });
               });
