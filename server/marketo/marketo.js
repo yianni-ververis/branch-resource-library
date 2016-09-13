@@ -19,20 +19,33 @@ const GitHub = new git({
 module.exports = {
   syncUser: (user) => {
     return new Promise((resolve, reject) => {
-      const marketo = new Marketo(config.marketo)
-      let nameInfo = parse(user.fullname)
-      const testLead = {
-        firstName: nameInfo.first,
-        lastName: nameInfo.last,
-        company: user.company,
-        email: user.email,
-        country: user.country,
-        leadSource: 'WEB - Web Activity',
-        Lead_Source_Detail_Mirror__c: 'WEB - Branch',
-        Web_Activity_Source__c: 'WA'
+      try {
+        if(config.marketo == null) {
+          resolve()
+        } else {
+          const marketo = new Marketo(config.marketo)
+          let nameInfo = parse(user.fullname)
+          const testLead = {
+            firstName: nameInfo.first,
+            lastName: nameInfo.last,
+            company: user.company,
+            email: user.email,
+            country: user.country,
+            leadSource: 'WEB - Web Activity',
+            Lead_Source_Detail_Mirror__c: 'WEB - Branch',
+            Web_Activity_Source__c: 'WA'
+          }
+          marketo.lead.createOrUpdate([testLead])
+              .then(() => { resolve() })
+              .catch((err) => {
+                console.log("ISSUE WITH MARKETO", err)
+                resolve()
+              })
+        }
+      } catch(e) {
+        console.log("ISSUE WITH MARKETO", e)
+        resolve()
       }
-      marketo.lead.createOrUpdate([testLead])
-          .then(() => { resolve() })
     })
   }
 }
