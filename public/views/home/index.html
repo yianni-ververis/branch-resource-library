@@ -2,17 +2,31 @@
   <div class="spot-text-background">
     <div class="container">
       <div class="spot-text">
-        <h1 class="sub-heading">Welcome to</h1>
-        <h1 class="main-heading">Qlik<sup>&reg;</sup> Branch</h1>
-        <p>
-          A place to share and collaborate on open source projects and ignite innovation leveraging Qlik products
-        </p>
-        <branchtree width="350" height="350"></branchtree>
+        <img class="center-block" src="/resources/new/QlikBranch_logo_color.png" />
+        <p>A place to share and collaborate on open source<br />
+        projects and ignite innovation leveraging Qlik products</p>
+        <button class="btn btn-default btn-home center-block">Register Now</button>
       </div>
     </div>
   </div>
 </div>
-<div class="featured article">
+<div class="container">
+  <div class="row-fluid follow">
+    <div class="span12 text-center">
+      <div class=" btn btn-follow">Follow Us!</div>
+      <a><img src="/resources/new/twitter-icon.png" /></a>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <h1 class="span12 text-center recent-title">
+      Recent Blog Posts
+    </h1>
+  </div>
+  <ng-include src="'/views/home/latest-blogs.html'"></ng-include>
+</div>
+<ng-include src="'/views/home/featured-content.html'"></ng-include>
+<ng-include src="'/views/home/playground.html'"></ng-include>
+<!--<div class="featured article">
   <ng-include src="'/views/home/articles.html'"></ng-include>
 </div>
 <div class="featured project">
@@ -45,4 +59,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->

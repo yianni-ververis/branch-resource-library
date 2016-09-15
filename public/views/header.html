@@ -3,7 +3,21 @@
     <button data-toggle="collapse" data-target="#navbar" class="navbar-toggle collapsed branch-menu"></button>
     <div class="logo"><a href="#!/">Home</a></div>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-main">
+      <ul class="nav navbar-nav navbar-main navbar-left">
+        <li><a href="#!project"><span>Projects</span></a></li>
+        <li><a href="#!blog"><span>Blog</span></a></li>
+        <li ng-if="userManager.hasUser() && userManager.userInfo.role.name=='admin'"><a href="#!resource"><span>Resource Center</span></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-main navbar-right">
+        <li class="dropdown">
+          <a data-toggle="dropdown" role="button" aria-expanded="false" data-count="" class="dropdown-toggle"><img src="/resources/new/Qlik_logo_white.png" /><!---<span class="caret">---></span></a>
+          <ul role="menu" class="dropdown-menu">
+            <li><a href="http://www.qlik.com" target="_window">Qlik.com</a></li>
+            <li><a href="https://qlikcloud.com" target="_window">Qlik Cloud</a></li>
+            <li><a href="http://market.qlik.com" target="_window">Qlik Market</a></li>
+            <li><a href="http://community.qlik.com" target="_window">Qlik Community</a></li>
+          </ul>
+        </li>
         <li ng-if="!userManager.hasUser()">
           <a class="green" href="{{getLoginUrl()}}">Login</a>
         </li>
@@ -18,18 +32,6 @@
             </li>
           </ul>
         </li>
-        <li class="dropdown">
-          <a data-toggle="dropdown" role="button" aria-expanded="false" data-count="" class="dropdown-toggle">Qlik<span class="caret"></span></a>
-          <ul role="menu" class="dropdown-menu">
-            <li><a href="http://www.qlik.com" target="_window">Qlik.com</a></li>
-            <li><a href="https://qlikcloud.com" target="_window">Qlik Cloud</a></li>
-            <li><a href="http://market.qlik.com" target="_window">Qlik Market</a></li>
-            <li><a href="http://community.qlik.com" target="_window">Qlik Community</a></li>
-          </ul>
-        </li>
-        <li ng-if="userManager.hasUser() && userManager.userInfo.role.name=='admin'"><a href="#!resource"><span>Resource Center</span></a></li>
-        <li><a href="#!blog"><span>Blog</span></a></li>
-        <li><a href="#!project"><span>Projects</span></a></li>
       </ul>
     </div>
   </div>
