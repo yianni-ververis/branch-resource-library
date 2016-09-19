@@ -18,7 +18,7 @@ var express = require("express"),
         protocol: "https",
         host: "api.github.com", // should be api.github.com for GitHub
         pathPrefix: "", // for some GHEs; none for GitHub
-        timeout: 5000,
+        timeout: 30000,
         headers: {
             "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
         }

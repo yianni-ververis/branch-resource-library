@@ -72,7 +72,8 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
             email: $scope.email,
             company: $scope.company,
             country: $scope.country,
-            fullname: $scope.fullname
+            fullname: $scope.fullname,
+            unsubscribed: $scope.unsubscribed
           }, function(result) {
             if(resultHandler.process(result)){
               userManager.refresh();

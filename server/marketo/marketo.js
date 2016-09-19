@@ -33,7 +33,8 @@ module.exports = {
             country: user.country,
             leadSource: 'WEB - Web Activity',
             Lead_Source_Detail_Mirror__c: 'WEB - Branch',
-            Web_Activity_Source__c: 'WA'
+            Web_Activity_Source__c: 'WA',
+            Unsubscribed: user.unsubscribed
           }
           marketo.lead.createOrUpdate([testLead])
               .then(() => { resolve() })
