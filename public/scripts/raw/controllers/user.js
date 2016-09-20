@@ -197,6 +197,9 @@ app.controller("userController", ["$rootScope","$scope", "$resource", "$state", 
     if(!$scope.users[0].fullname || $scope.users[0].fullname==""){
       errors.push("Please tell us your name");
     }
+    if($scope.users[0].unsubscribed == null || $scope.users[0].unsubscribed===""){
+      errors.push("Please check out the Marketing section");
+    }
     //If there are errors we need to notify the user
     if(errors.length > 0){
       //show the errors

@@ -63,7 +63,7 @@
       <span>All projects must be hosted on GitHub. To begin please login to your GitHub Account.</span>
     </div>
     <div class="row">
-      <div class="col-md-4 underline" ng-show="projects[0].git_clone_url || isNew">
+      <div class="col-md-12 underline" ng-show="projects[0].git_clone_url || isNew">
         <div ng-if="isNew">
           <div class="" ng-if="!gitAuthenticated">
             <form ng-submit="getAllGitProjects(gituser, gitpassword, code)" class="loginsignup">
