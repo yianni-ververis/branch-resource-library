@@ -1,9 +1,9 @@
 .spot-image{
   position: relative;
   width: 100%;
-  margin-top: 20px;
-  height: 350px;
-  background-color: @aspot-background;
+  background: url('/resources/new/QlikBranch_headerImage.jpg') left center no-repeat;
+  background-size: cover;
+  padding: 80px 0 50px;
 }
 
 .spot-text-background{
@@ -16,6 +16,9 @@
   font-weight: 600;
   padding: 60px 0 0 0;
 
+  img {
+    width: 50%;
+  }
   .sub-heading {
     font-size: 60px;
     font-family: inherit;
@@ -45,12 +48,11 @@
   }
 
   p{
-    width: ~"calc(100% - 350px)";
     color: white;
     font-size: 26px;
     font-weight: 100;
-    margin-top: 20px;
     line-height: 28px;
+    text-align: center;
   }
 
   branchtree {
@@ -60,70 +62,169 @@
   }
 }
 
-.featured{
+.btn-home {
+  padding: 4px 50px;
+  border-radius: 15px;
+  font-weight: bold;
+  color: #fff;
+  background-color: @orange;
+  border: 0px;
+  margin-top: 50px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.playground {
+  width: 100%;
+  display: inline-block;
   position: relative;
-  border-bottom: 1px solid @content-border;
-  p {
-    padding: 10px 0;
-  }
+  background-size: contain;
+  background-image: url('/resources/new/QlikBranch_PlaygroundImage.jpg');
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0 auto;
 
-  h2 {
-    margin-bottom: 0;
-    line-height: 1em;
-  }
+  .main {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    color: black;
+    text-align: center;
 
-  a {
-    &:hover {
-      text-decoration: none;
-      cursor: pointer;
+    .playground-title {
+      margin: 40px 0 0;
     }
-  }
 
-  .featured-project, .featured-article{
-    height: 300px;
-    background-repeat: no-repeat;
-    background-size: 50% auto;
-  }
-
-  .featured-project{
-    background-position: left;
-    .featured-project-content{
-      height: 300px;
-      float: right;
-      width: 50%;
+    .btn-home {
+      margin-top: 0px;
     }
-  }
-
-  .featured-article{
-    background-position: right;
-    .featured-article-content{
-      height: 300px;
-      float: left;
-      width: 50%;
-    }
-  }
-
-  .latest-project{
-    position: relative;
-    float: left;
-    width: 50%;
-    height: 300px;
-    background-repeat: no-repeat;
-    background-size: cover;
   }
 }
 
-.latest{
-  padding: 20px 0;
-  h2 {
-    margin-bottom: 0.5em;
+.playground:after {
+  padding-top: 37.53%;
+  display: block;
+  content: '';
+}
+
+.featured {
+  position: relative;
+  width: 100%;
+  background: url('/resources/new/QlikBranch_ProjectsImage.jpg') left center no-repeat;
+  background-size: cover;
+  padding: 80px 0 50px;
+
+  .featured-content {
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 50%;
+    padding: 10px;
+    border-radius: 5px;
+
+    h4 {
+      color: @orange;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    .featured-content-item {
+      margin-top: 20px;
+
+      h3 {
+        font-weight: bold;
+        font-size: 18px;
+        color: #ffffff;
+        margin: 0;
+      }
+
+      p {
+        color: #ffffff;
+        margin-bottom: 0;
+      }
+
+      a {
+        color: @orange;
+      }
+    }
   }
-  a{
-    color: @blue;
+}
+
+.recent-title {
+  margin-top: 50px;
+}
+
+.follow {
+  margin-top: 10px;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: inline;
+    cursor: pointer;
   }
-  li{
-    margin-bottom: 20px;
+
+  .btn-follow, .btn-follow:hover {
+    background-color: @heading;
+    color: white;
+    font-weight: bold;
+    padding: 0 2px;
+    font-size: 16px;
+    cursor: default;
   }
-  .footnote{
+}
+
+.latest-blogs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding-bottom: 50px;
+
+  .latest-blog {
+    color: @default-text;
+
+    .latest-blog-content {
+
+      .latest-blog-image {
+        height: 130px;
+        max-height: 130px;
+        background: #ccc;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+
+      }
+
+      .more {
+        padding: 0 5px;
+        color: @orange;
+      }
+
+      .latest-blog-heading {
+        color: @orange;
+        padding: 5px 5px 0;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .latest-blog-description {
+        color: #737373;
+        font-size: 14px;
+        line-height: 20px;
+        padding: 10px 5px 0;
+        margin: 0;
+      }
+      .latest-blog-meta {
+        color: #737373;
+        font-size: 11px;
+        padding: 0px 5px;
+        margin: 0;
+      }
+    }
   }
 }

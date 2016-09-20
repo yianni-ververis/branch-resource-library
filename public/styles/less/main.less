@@ -27,12 +27,11 @@ body{
   font-family: proxima-nova, arial, sans-serif;
   line-height: 1.45;
   font-weight: 400;
-  margin: 0 0 300px;
+  margin: 0 0 144px;
   @media screen and (max-width: @mobile-width) {
     margin: 0 0 50px;
   }
   -webkit-font-smoothing: antialiased;
-  background-color: @bodybackground;
 }
 
 .project-comments .note-editor span{color:@default-text;}
@@ -71,7 +70,7 @@ h1, h2, h3, h4 {
 h1{
   color: @heading;
   font-family: 'proxima-nova';
-  font-size: 3.998em;
+  font-size: 3.2em;
   margin-top: 0;
   font-weight: 400;
 }
@@ -79,15 +78,17 @@ h1{
 h2{
   color: @dark-grey;
   margin-top: 0;
-  font-size: 2.827em;
-  @media screen and (max-width: @mobile-width) {
-    font-size: 2em;
-  }
+  font-size: 2.5em;
 }
 
 h3{
+  font-size: 1.8em;
+  color: @heading;
+  margin: 5px 0;
+}
+
+h4 {
   color: @orange;
-  font-size: 1.999em;
 }
 
 textarea{
@@ -132,7 +133,6 @@ img.avatar {
 }
 
 .main{
-  padding-top: 20px;
   padding-bottom: 20px;
 }
 
@@ -149,7 +149,7 @@ img.avatar {
 
 .page{
   min-height: 700px;
-  margin-top: 60px;
+  padding-top: 80px;
   h2 {
     margin-bottom: 0;
   }
@@ -303,7 +303,7 @@ img.avatar {
 }
 
 .branchTree{
-  background: url("/resources/branch_logo.png") no-repeat top center; //done this way for accessibility
+  background: url("/resources/new/QlikBranch_logo_color.png") no-repeat top center; //done this way for accessibility
   display: block;
   text-indent: -999999px;
 }
@@ -346,6 +346,27 @@ img.avatar {
   margin-top: 71px;
 }
 
+.header-image{
+  position: relative;
+  width: 100%;
+  background-size: cover;
+  padding: 80px 0 50px;
+
+  .header-text-background{
+    height: 100%;
+  }
+
+  .header-text{
+
+    font-family: 'ProximaNova-Light';
+    font-weight: 600;
+    padding: 40px 0 0 0;
+    font-size: 5em;
+    text-align: center;
+    color: white;
+  }
+
+}
 
 @import "./icons.less";
 @import "./buttons.less";
