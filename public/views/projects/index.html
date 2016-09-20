@@ -1,16 +1,31 @@
+<div class="header-image project-header-image">
+  <div class="header-text-background">
+    <div class="container">
+      <div class="header-text">
+        Projects
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <search-input data-view="projects" data-config="projects"></search-input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+            <button class="button-outline qlikview-filter" type="button" name="button" ng-click="filterProduct('QlikView')">QlikView</button>
+            <button class="button-outline qlik-sense-filter" type="button" name="button" ng-click="filterProduct('Qlik Sense')">Qlik Sense</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container page projects">
+  <div class="row-fluid follow">
+    <div class="span12 text-right">
+      <ng-include src="'/views/follow.html'"></ng-include>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
-      <h2>Projects</h2>
-    </div>
-    <div class="col-md-12">
-      <div>
-        <search-input data-view="projects" data-config="projects"></search-input>
-      </div>
-      <div class="">
-        <button class="button-outline qlikview-filter" type="button" name="button" ng-click="filterProduct('QlikView')">QlikView</button>
-        <button class="button-outline qlik-sense-filter" type="button" name="button" ng-click="filterProduct('Qlik Sense')">Qlik Sense</button>
-      </div>
       <search-results id="projectResultList" data-view="projects" ng-class="{'browse-padding':!searching}" data-config="projects"></search-results>
     </div>
   </div>
