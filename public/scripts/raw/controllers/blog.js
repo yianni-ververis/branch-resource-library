@@ -1,4 +1,4 @@
-app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+app.controller("blogController", ["$sce", "$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
     var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
     var ImageAPI = $resource("api/resource/image/:url", {url: "@url"});
 
@@ -188,7 +188,8 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     $scope.getBlogContent = function (text) {
         if (text && text.data) {
             var buffer = _arrayBufferToBase64(text.data);
-            return marked(buffer);
+            var result = marked(buffer);
+            return $sce.trustAsHtml(result);
         }
         else {
             return "";
@@ -221,7 +222,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
         }
         else if ($state.current.name == "blogs.addedit") {
             $scope.simplemde = new SimpleMDE({ element: $("#blogContent")[0],
-                placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+                placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add.", markedRenderer: markedRenderer });
 
             var dropzone = new Dropzone('#blogImages', {
                 previewTemplate: document.querySelector('#preview-template').innerHTML,

@@ -1,4 +1,4 @@
-app.controller("commentController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($scope, $resource, $state, $stateParams, userManager, resultHandler){
+app.controller("commentController", ["$sce", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($sce, $scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Comment = $resource("api/comment/:commentId", {commentId: "@commentId"});
   var Entity = $resource("api/"+$scope.entity+"/"+$scope.entityid+"/:path", {path: "@path"});
 
@@ -101,7 +101,8 @@ app.controller("commentController", ["$scope", "$resource", "$state", "$statePar
   $scope.getCommentText = function(text){
     if(text && text.data){
       var buffer = _arrayBufferToBase64(text.data);
-      return marked(buffer);
+      var result = marked(buffer);
+      return $sce.trustAsHtml(result);
     }
     else{
       return "";

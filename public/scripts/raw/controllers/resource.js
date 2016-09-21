@@ -1,4 +1,4 @@
-app.controller("resourceController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
+app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function($sce,$rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService){
   var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
   var Image = $resource("api/resource/image/:url", {url: "@url"});
 
@@ -120,7 +120,8 @@ app.controller("resourceController", ["$rootScope","$scope", "$resource", "$stat
   $scope.getResourceContent = function(text){
     if(text && text.data){
       var buffer = _arrayBufferToBase64(text.data);
-      return marked(buffer);
+      var result = marked(buffer);
+      return $sce.trustAsHtml(result);
     }
     else{
       return "";

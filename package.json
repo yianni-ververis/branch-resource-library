@@ -39,7 +39,7 @@
     "known-spam-emails": "^0.0.0",
     "less": "^2.4.0",
     "markdown": "^0.5.0",
-    "marked": "^0.3.3",
+    "marked-iframe": "^0.1.0",
     "milli-epoch": "0.0.1",
     "mongoose": "^4.1.0",
     "node-marketo-rest": "^0.2.12",
