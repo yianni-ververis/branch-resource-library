@@ -1,12 +1,21 @@
-<div class="container page blogs">
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Blog posts</h2>
+<div class="header-image blog-header-image">
+  <div class="header-text-background">
+    <div class="container">
+      <div class="header-text">
+        Blog Posts
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <search-input data-view="blogs" data-config="blogs"></search-input>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <search-input data-view="blogs" data-config="blogs"></search-input>
+</div>
+<div class="container page blogs">
+  <div class="row-fluid follow">
+    <div class="span12 text-right">
+      <ng-include src="'/views/follow.html'"></ng-include>
     </div>
   </div>
   <div class="row">

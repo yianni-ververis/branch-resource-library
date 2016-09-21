@@ -1,0 +1,16 @@
+<div class="row latest-blogs">
+    <div id="{{blog.blogId}}" ng-repeat="blog in latestArticles" class="col-xs-4 latest-blog">
+
+        <div class="latest-blog-content">
+
+            <div class="latest-blog-image">
+                <img src="{{blog.image}}">
+            </div>
+            <a href="#!blog/{{blog._id}}"><h4 class="latest-blog-heading">{{blog.title}}</h4></a>
+            <p class="latest-blog-meta">{{blog.createdate_num|date}} | <a href="#!user/{{blog.userid._id}}">{{blog.userid.fullname}}</a></p>
+            <p class="latest-blog-description">{{blog.short_description}}</p>
+            <a class="more" href="#!blog/{{blog._id}}">Read More...</a>
+        </div>
+
+    </div>
+</div>

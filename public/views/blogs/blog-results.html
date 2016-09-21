@@ -10,12 +10,15 @@
           <div class="card-avatar">
               <img src="//s3.amazonaws.com/{{bucket}}/attachments/{{blog.userId}}/thumbnail.png" onError="this.src='/attachments/default/userprofile.png'" alt="">
           </div>
+          <div class="card-meta">{{blog.createdate_num:Date}} | <a href="#!user/{{blog.userId}}">{{blog.username}}</a></div>
           <a href="#!blog/{{blog.blogId}}">
             <h4 class="card-heading">{{blog.title}}</h4>
-            <p class="card-description">{{blog.short_description}}</p>
           </a>
-          <div class="card-meta">
-              <span>Posted {{blog.createdate_num:Date}} - {{blog.views}} reads</span>
+          <p class="card-description">{{blog.short_description}}</p>
+          <div class="card-bottom">
+              <a href="#!blog/{{blog.blogId}}">
+                  Read More
+              </a>
           </div>
       </div>
 
