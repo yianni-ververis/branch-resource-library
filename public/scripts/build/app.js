@@ -1,4 +1,31 @@
 //(function() {
+  var markedRenderer = new marked.Renderer()
+
+  markedRenderer.image = function(src, title, alt) {
+    var renderedImage = "<img src=\"" + src + "\""
+    if (alt != null && alt != "") {
+      renderedImage += " alt=\"" + alt + "\""
+    }
+    if (title != null && title != "") {
+      if (title.indexOf("x") >= 0) {
+        var sizes = title.split("x")
+        if(sizes.length == 2 && !isNaN(sizes[0]) && !isNaN(sizes[1])) {
+          renderedImage += " width=\"" + sizes[0] + "\" height=\"" + sizes[1] + "\""
+        }
+      } else if (!isNaN(title)) {
+        renderedImage += " width=\"" + title + "\""
+      }
+    }
+    renderedImage += " />"
+    return renderedImage
+  }
+
+  markedRenderer.iframe = function(src) {
+    return "<iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe>";
+  }
+
+  marked.setOptions({ renderer: markedRenderer })
+
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "visualCaptcha" ]);
 
   app.config(["$stateProvider","$urlRouterProvider", "confirmConfigProvider", "notificationConfigProvider", "commentsConfigProvider", "moderationConfigProvider", "ratingConfigProvider", "subscribeConfigProvider", "$locationProvider", function($stateProvider, $urlRouterProvider, confirmConfigProvider, notificationConfigProvider, commentsConfigProvider, moderationConfigProvider, ratingConfigProvider, subscribeConfigProvider, $locationProvider) {
@@ -3955,7 +3982,7 @@
 
   }]);
 
-  app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+  app.controller("blogController", ["$sce", "$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
       var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
       var ImageAPI = $resource("api/resource/image/:url", {url: "@url"});
 
@@ -4145,7 +4172,8 @@
       $scope.getBlogContent = function (text) {
           if (text && text.data) {
               var buffer = _arrayBufferToBase64(text.data);
-              return marked(buffer);
+              var result = marked(buffer);
+              return $sce.trustAsHtml(result);
           }
           else {
               return "";
@@ -4178,7 +4206,7 @@
           }
           else if ($state.current.name == "blogs.addedit") {
               $scope.simplemde = new SimpleMDE({ element: $("#blogContent")[0],
-                  placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+                  placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add.", markedRenderer: markedRenderer });
 
               var dropzone = new Dropzone('#blogImages', {
                   previewTemplate: document.querySelector('#preview-template').innerHTML,
