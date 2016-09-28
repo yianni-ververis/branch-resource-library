@@ -14,8 +14,11 @@
   <button class="button-outline" ng-if="userManager.canDelete(entity, owner)" ng-click="deleteEntity()">
     <i class="fa fa-trash-o"></i>Delete
   </button>
-  <button class="button-outline" ng-if="userManager.canUpdate(entity, owner) && editable==true" ng-click="editEntity()">
+  <button class="button-outline" ng-if="userManager.canUpdate(entity, owner) && editable==true && !isEditing" ng-click="editEntity()">
     <i class="fa fa-pencil"></i>Edit
+  </button>
+  <button class="button-outline" ng-if="isEditing" ng-click="saveEntity()">
+    <i class="fa fa-floppy-o"></i>Save
   </button>
   <button class="button-outline" ng-if="userManager.canUpdate(entity, owner) && editable==true && entity=='project'" ng-click="updateReadme()">
     <i class="fa fa-github"></i>Update README from Git

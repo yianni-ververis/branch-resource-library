@@ -38,7 +38,8 @@
 				editable: "=",
 				download: "=",
 				size: "=",
-				orientation: "="
+				orientation: "=",
+				entityObject: "="
 			},
       templateUrl: "/views/moderation.html",
       controller: "moderationController"
