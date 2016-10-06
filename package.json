@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Qlik-PE/branch-resource-library",
   "dependencies": {
     "MD5": "^1.2.1",
+    "angular-recaptcha": "^3.0.4",
     "async": "^1.4.2",
     "atob": "^1.1.2",
     "aws-sdk": "^2.3.19",
@@ -49,6 +50,7 @@
     "passport-local": "^1.0.0",
     "prerender-node": "^2.2.1",
     "qsocks": "^2.1.5",
+    "recaptcha2": "^1.0.8",
     "request": "^2.74.0",
     "spam-check": "^0.9.9",
     "underscore": "^1.8.3",

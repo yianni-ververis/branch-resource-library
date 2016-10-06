@@ -1,9 +1,7 @@
 /config/*.*
 node_modules/*
-!node_modules/visualcaptcha/
 !node_modules/github/
 bower_components/*
-!bower_components/visualcaptcha.angular
 !bower_components/summernote/
 !bower_components/angular-sanitize/
 data.js
