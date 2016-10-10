@@ -3,6 +3,7 @@ var express = require('express'),
     User = require('../models/user'),
     Error = require('../controllers/error'),
     passport = require('passport');
+const UserProfile = require('../models/userprofile')
 
 router.post('/login', function(req, res, next){
   passport.authenticate('local', function(err, user){
@@ -26,6 +27,31 @@ router.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
+
+router.get('/check', (req, res) => {
+  UserProfile.findOne({ $or: [{ username: req.query["username"] }, { email: req.query["email"] }]  }, function(err, user) {
+    if (err) {
+      res.json({ found: false })
+      return
+    }
+
+    if (user) {
+      if(user.username == req.query["username"]){
+        res.json({ found: true, message: 'User already exists with username "' + req.query["username"] + '"' })
+      }
+      else if (user.email == req.body.email) {
+        res.json({ found: true, message: 'User already exists with email "' + req.query["email"] + '"' })
+      }
+      else{
+        //both the username & emails are in use (rare)
+        res.json({ found: true, message: 'User already exists with username "' + req.query["username"] + '" and email "' + req.query["email"] + '"' })
+      }
+      return
+    }
+
+    res.json({ found: false })
+  })
+})
 
 router.post('/signup', function(req, res){
   passport.authenticate('signup', function(err, user){
