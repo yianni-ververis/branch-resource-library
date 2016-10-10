@@ -58,8 +58,13 @@ html(ng-app="branch" ng-strict-di)
       script(src="/js/app.min.js")
       meta(content="text/html charset=utf-8" http-equiv="Content-Type")
       meta(name="viewport" content="width=device-width, initial-scale=1")
-  body      
+  body
+    noscript
+      img(src="https://pubads.g.doubleclick.net/activity;xsp=212190;ord=1?" width="1" height="1" border="0")
     script.
+      var axel = Math.random() + "";
+      var a = axel * 10000000000000;
+      document.write('<img src="https://pubads.g.doubleclick.net/activity;xsp=212190;ord=' + a + '?" width=1 height=1 border=0/>');
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
