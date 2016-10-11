@@ -8,8 +8,8 @@ var mongoose = require('mongoose'),
     request = require("request"),
     bodyParser = require('body-parser');
 
-//var mode = "release";
-var mode = "debug";
+var mode = "release";
+//var mode = "debug";
 
 config = require('config');
 
