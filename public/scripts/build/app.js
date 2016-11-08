@@ -143,7 +143,7 @@
     })
     //used to navigate to a the blog add/edit page
     .state("blogs.addedit", {
-      url: "/:blogId/edit",
+      url: "/:blogId/edit?author",
       views:{
         "@":{
           templateUrl: "/views/blogs/addedit.html",
@@ -5073,6 +5073,10 @@
         $scope.isEditing = false;
       })
     };
+
+    $scope.createBlog = function() {
+      window.location = "#!blog/new/edit?author=" + $scope.entityid
+    }
 
     $scope.updateReadme = function(){
       GitReadme.get({projectId: $scope.entityid}, function(result){
