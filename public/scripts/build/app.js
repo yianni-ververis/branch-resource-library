@@ -4962,6 +4962,13 @@
       }
     };
 
+    $scope.getWebsite = function(website) {
+      if (website.startsWith("http")) {
+        return website
+      }
+      return "http://" + website
+    }
+
     $scope.saveUser = function(){
       $scope.userLoading = true;
       var data = {
