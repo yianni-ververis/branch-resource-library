@@ -41,7 +41,7 @@ module.exports = function(req, res){
       }
       record._id = mongoose.Types.ObjectId();
       record.createuser = user._id;
-      record.userid = user._id;
+      record.userid = data.special != null && data.special.author != null ? data.special.author : user._id;
       record.createdate = Date.now();
       record.createdate_num = new Date(Date.now()).getTime();
       record.last_updated = Date.now();

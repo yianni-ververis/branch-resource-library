@@ -46,6 +46,10 @@ app.controller("moderationController", ["$scope", "$rootScope", "$resource", "$s
     window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
   };
 
+  $scope.createBlog = function() {
+    window.location = "#!blog/new/edit?author=" + $scope.entityid
+  }
+
   $scope.updateReadme = function(){
     GitReadme.get({projectId: $scope.entityid}, function(result){
       if(resultHandler.process(result)){
