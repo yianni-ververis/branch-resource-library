@@ -42,7 +42,7 @@
         <br/>
         <span ng-if="users[0].twitter" class="contact twitter"><a href="http://twitter.com/{{users[0].twitter}}">{{users[0].twitter}}</a></span>
         <span ng-if="users[0].github_user" class="contact github"><a href="https://github.com/{{users[0].github_user}}">{{users[0].github_user}}</a></span>
-        <span ng-if="users[0].website" class="contact website"><a href="{{users[0].website}}">{{users[0].website}}</a></span>
+        <span ng-if="users[0].website" class="contact website"><a href="{{getWebsite(users[0].website)}}">{{getWebsite(users[0].website)}}</a></span>
         <span ng-if="users[0].email" class="contact email"><a href="mailto:{{users[0].email}}">{{users[0].email}}</a></span>
         <br/>
         <span ng-if="users[0].company">COMPANY</span>
