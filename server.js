@@ -8,8 +8,8 @@ var mongoose = require('mongoose'),
     request = require("request"),
     bodyParser = require('body-parser');
 
-//var mode = "release";
-var mode = "debug";
+var mode = "release";
+//var mode = "debug";
 
 config = require('config');
 
@@ -55,7 +55,7 @@ var apiRoutes = require(__dirname+'/server/routes/api/api');
 var gitRoutes = require(__dirname+'/server/routes/git/git');
 var authRoutes = require(__dirname+'/server/routes/auth');
 var systemRoutes = require(__dirname+'/server/routes/system/system');
-var vcRoutes = require(__dirname+'/server/routes/visualCaptcha');
+const recaptchaRoutes = require(__dirname+'/server/routes/recaptcha')
 
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
@@ -127,7 +127,7 @@ app.use('/api', apiRoutes);
 app.use('/git', gitRoutes);
 app.use('/auth', authRoutes);
 app.use('/system', systemRoutes);
-app.use('/visualcaptcha', vcRoutes);
+app.use('/recaptcha', recaptchaRoutes)
 
 app.use('/404', function(req, res){
   res.render(__dirname+'/server/views/404.jade');
