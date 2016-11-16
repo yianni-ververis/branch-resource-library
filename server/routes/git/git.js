@@ -162,13 +162,13 @@ router.use("/loginsuccessful", function(req, res, next){
         }
         else{
           if(results.data.length == 0){
-            req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered on Branch and would like to link your user to GitHub you can do so in your 'My Profile' section.");
+            req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered and would like to link your user to GitHub you can do so in your 'My Profile' section.");
             console.log(req.session.lastError);
             res.redirect('/#!loginsignup');
           }
           else{
             if(results.data[0].linked_to_github==false){
-              req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered on Branch and would like to link your user to GitHub you can do so in your 'My Profile' section.");
+              req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered and would like to link your user to GitHub you can do so in your 'My Profile' section.");
               res.redirect('/#!loginsignup');
             }
             else{
