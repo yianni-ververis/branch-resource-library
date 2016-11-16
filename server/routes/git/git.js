@@ -20,7 +20,7 @@ var express = require("express"),
         pathPrefix: "", // for some GHEs; none for GitHub
         timeout: 30000,
         headers: {
-            "user-agent": "qlik-branch" // GitHub is happy with a unique user agent
+            "user-agent": Config.git.userAgent // GitHub is happy with a unique user agent
         }
     });
 
@@ -86,7 +86,7 @@ router.get("/updatereadme/:id", function(req, res){
 });
 
 router.get("/link", function(req, res){
-  authorizeGit("http://branch.qlik.com/git/linkauthorized", req, res);
+  authorizeGit(`${Config.git.redirectHost}/git/linkauthorized`, req, res);
 });
 
 router.get("/unlink", function(req, res){
@@ -141,7 +141,7 @@ router.get("/login", function(req, res){
   } else if (req.session.url) {
     delete req.session.url;
   }
-  authorizeGit("http://branch.qlik.com/git/loginsuccessful", req, res);
+  authorizeGit(`${Config.git.redirectHost}/git/loginsuccessful`, req, res);
 });
 
 router.use("/loginsuccessful", function(req, res, next){
