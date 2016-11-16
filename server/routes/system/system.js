@@ -145,7 +145,7 @@ function buildMenu(user){
     }
     topMenu = {
       items:[{
-        label: user.username,
+        label: user.username.length > 15 ? `${user.username.substring(0,12)}...` : user.username,
         items: []
       }]
     };
