@@ -233,7 +233,6 @@
     $locationProvider.hashPrefix('!');
   }]);
 
-
   //GA modification zhu
   app.run(['$rootScope','$location', '$window',
     function($rootScope,$location,$window) {
