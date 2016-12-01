@@ -1,6 +1,7 @@
 var User = require('../../models/user');
 var UserProfile = require('../../models/userprofile');
 var LoginHistory = require('../../models/loginhistory');
+var marketo = require('../../marketo/marketo')
 
 module.exports = function(passport){
 
@@ -10,7 +11,24 @@ module.exports = function(passport){
 
   passport.deserializeUser(function(id, done) {
     UserProfile.findOne({"_id": id}).populate('role').exec(function(err, user) {
-      done(err, user);
+      if(!user.branch_firstaccess) {
+        marketo.updateIncentive(user)
+            .then((updated) => {
+              if(updated) {
+                user.branch_firstaccess = true
+                user.save(function(err, result) {
+                  if(err) {
+                    console.log("Error Saving Branch FirstAccess")
+                  }
+                  done(err, user);
+                })
+              } else {
+                done(err, user);
+              }
+            })
+      } else {
+        done(err, user);
+      }
     });
   });
 
