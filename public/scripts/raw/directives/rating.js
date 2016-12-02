@@ -33,7 +33,7 @@
         entityid: "=",
 				user: "=",
         mode: "=",
-        displaystar: "="
+        displaystar: "=?"
 			},
       templateUrl: "/views/rating.html",
       controller: ['$scope', function($scope){
