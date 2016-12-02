@@ -42,14 +42,8 @@ router.get('/lasterror', function(req, res){
 
 router.post('/git/projects', function(req, res){
   try{
-    var code = req.body.code;
-    var authType = code?"2fa":"basic";
     var gitUser;
-    if(req.body.user){
-      GitHub.authenticate({type: authType, username: req.body.user, password: req.body.password, code: code});
-      gitUser = req.body.user;
-    }
-    else if (req.session.gitToken) {
+    if (req.session.gitToken) {
       GitHub.authenticate({type: "oauth", token: req.session.gitToken});
       gitUser = req.user.github_user;
     }
@@ -60,12 +54,7 @@ router.post('/git/projects', function(req, res){
       var query = req.body.search + "+user:" + gitUser;
       GitHub.search.repos({q: query}, function(err, repos) {
         if(err){
-          if(err.code == 9999){
-            //then the user has 2 factor authentication enabled
-            console.log('needs 2fa');
-            res.json({status: "2fa"});
-          }
-          else if(err.code == 401){
+          if(err.code == 401){
             console.log(err);
             res.json(Error.custom(err.message));
           }
@@ -82,12 +71,7 @@ router.post('/git/projects', function(req, res){
 
     GitHub.repos.getAll({user:gitUser}, function(err, repos){
       if(err){
-        if(err.code == 9999){
-          //then the user has 2 factor authentication enabled
-          console.log('needs 2fa');
-          res.json({status: "2fa"});
-        }
-        else if(err.code == 401){
+        if(err.code == 401){
           console.log(err);
           res.json(Error.custom(err.message));
         }

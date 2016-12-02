@@ -66,22 +66,13 @@
       <div class="col-md-12 underline" ng-show="projects[0].git_clone_url || isNew">
         <div ng-if="isNew">
           <div class="" ng-if="!gitAuthenticated">
-            <form ng-submit="getAllGitProjects(gituser, gitpassword, code)" class="loginsignup">
-              <h3>Log in to GitHub</h3>
-              <input type="text" ng-model="gituser" class="form-control" placeholder="GitHub Username"/>
-              <input type="password" ng-model="gitpassword" class="form-control" placeholder="GitHub Password"/>
-              <span ng-show="is2fa">Please enter your Two-factor authentication code</span>
-              <input ng-show="is2fa" type="text" ng-model="code" class="form-control" placeholder="Two-factor Code"/>
-              <span class="red" ng-show="gitError">{{gitError}}</span>
-              <button class="branch-button orange" type="submit" name="button">Login</button>
-            </form>
-            <div class="loading-cover git" ng-show="gitLoading">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
+            <p>In order to create a Project you need to link your Qlik Branch account to GitHub. To do so, please do the following:</p>
+            <ol>
+              <li>Click your username at the top right and select "My Profile"</li>
+              <li>Click the "Edit" button on the right</li>
+              <li>At the bottom of the page click the "Link to GitHub" button</li>
+              <li>On GitHub's authorization page click the "Authorize application" button</li>
+            </ol>
           </div>
           <div class="" ng-if="gitAuthenticated">
             <h3>Select a Project</h3>
