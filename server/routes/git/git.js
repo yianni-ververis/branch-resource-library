@@ -52,17 +52,18 @@ router.get("/updatereadme/:id", function(req, res){
               }
             }
             GitHub.authenticate({type: "token", token: Config.git.token });
-            GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
+            GitHub.repos.getReadme({owner:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
               if(err){
                 console.log(err);
               }
               GitHub.authenticate({type: "token", token: Config.git.token });
-              GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
+              GitHub.misc.renderMarkdownRaw(readmeresult, function(err, htmlresult){
                 if(err){
                   console.log(err);
                   res.json(Error.custom(err));
                 }
                 else{
+                  htmlresult = htmlresult.data
                   htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                   htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                   result.content = htmlresult;
@@ -250,7 +251,7 @@ function getAccessTokenAndUser(data, callbackFn){
         responseData[parts[0]] = parts[1];
       }
       GitHub.authenticate({type: "oauth", token: responseData.access_token});
-      GitHub.user.get({}, function(err, user){
+      GitHub.users.get({}, function(err, user){
         if(err){
           console.log('error getting user');
           console.log(err);
