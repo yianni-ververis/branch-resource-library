@@ -194,7 +194,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         var repo = results.data[0].git_repo;
         var gituser = results.data[0].git_user;
         GitHub.authenticate({type: "token", token: Config.git.token });
-        GitHub.repos.get({user:gituser, repo:repo}, function(err, gitresult){
+        GitHub.repos.get({owner:gituser, repo:repo}, function(err, gitresult){
           if(err){
             res.json(Error.custom(err.message));
           }
@@ -208,16 +208,17 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               results.data[0].last_updated_num = (new Date(gitresult.pushed_at)).getTime();
               results.data[0].last_git_check = Date.now();
               GitHub.authenticate({type: "token", token: Config.git.token });
-              GitHub.repos.getReadme({user:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
+              GitHub.repos.getReadme({owner:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
                 if(err){
                   console.log(err);
                 }
                 GitHub.authenticate({type: "token", token: Config.git.token });
-                GitHub.markdown.renderRaw({data: readmeresult, mode: 'markdown'}, function(err, htmlresult){
+                GitHub.misc.renderMarkdownRaw(readmeresult, function(err, htmlresult){
                   if(err){
                     console.log(err);
                   }
                   else{
+                    htmlresult = htmlresult.data
                     htmlresult = htmlresult.replace(/href="((?!http)[^>]*)"/gim, "href=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                     htmlresult = htmlresult.replace(/src="((?!http)[^>]*)"/gim, "src=\"https://github.com/"+gituser+"/"+repo+"/raw/master/$1\"")
                     results.data[0].content = htmlresult;
