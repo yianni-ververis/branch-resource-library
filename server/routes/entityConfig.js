@@ -28,7 +28,6 @@ module.exports = {
     blog:{
       collection: "blogs",
       model: require("../models/blog"),
-      populates: "userid blogType",
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,

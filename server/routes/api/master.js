@@ -332,7 +332,7 @@ function parseQuery(query, body, method, originalEntity){
     delete query["sort"];
     delete query["sortOrder"];
   }
-  entity.skip = query.skip || entity.skip || 0;
+  entity.skip = Number(query.skip || entity.skip || 0);
   entity.limit = Number(query.limit || entity.limit || 0);
   delete query["skip"];
   delete query["limit"];

@@ -2465,17 +2465,22 @@
                         if(df){
                           //currently only supports date or time
                           try{
-                            var date = new Date(parseInt(item));
-                            if(df=="Date"){
-                              var day = date.getDate();
-                              var monthIndex = date.getMonth();
-                              var year = date.getFullYear();
-                              var output = day + ' ' + monthNames[monthIndex] + ' ' + year
+                            if(df=="NoHighlight") {
+                              // do nothing here
+                              htmlString = htmlString.replace(what, item);
+                            } else {
+                              var date = new Date(parseInt(item));
+                              if(df=="Date"){
+                                var day = date.getDate();
+                                var monthIndex = date.getMonth();
+                                var year = date.getFullYear();
+                                var output = day + ' ' + monthNames[monthIndex] + ' ' + year
+                              }
+                              if(df=="Time"){
+                                var output = date.getHours() + ':' + (date.getMinutes()<10?'0':'')+date.getMinutes();
+                              }
+                              htmlString = htmlString.replace(what, output);
                             }
-                            if(df=="Time"){
-                              var output = date.getHours() + ':' + (date.getMinutes()<10?'0':'')+date.getMinutes();
-                            }
-                            htmlString = htmlString.replace(what, output);
                           }
                           catch(err){
 
