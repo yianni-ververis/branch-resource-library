@@ -52,11 +52,6 @@
       url: "/tnc",
       templateUrl: "/views/tnc/index.html"
     })
-    //About Branch
-    .state("aboutBranch", {
-      url: "/aboutBranch",
-      templateUrl: "/views/aboutBranch.html"
-    })
     //no item page
     .state("noitem", {
       url: "/noitem",
@@ -131,23 +126,12 @@
       templateUrl: "/views/blogs/index.html",
       controller: "blogController"
     })
-    //used to navigate to a given blog detail page
-    .state("blogs.detail", {
+    .state("blogs.redirect", {
       url: "/:blogId?status",
       views:{
         "@":{
-          templateUrl: "/views/blogs/detail.html",
-          controller: "blogController",
-        }
-      }
-    })
-    //used to navigate to a the blog add/edit page
-    .state("blogs.addedit", {
-      url: "/:blogId/edit?author",
-      views:{
-        "@":{
-          templateUrl: "/views/blogs/addedit.html",
-          controller: "blogController",
+          templateUrl: "/views/blogs/index.html",
+          controller: "blogController"
         }
       }
     })
@@ -157,7 +141,7 @@
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
-    //used to navigate to a given blog detail page
+    //used to navigate to a given resource center detail page
     .state("rc.detail", {
       url: "/:resourceId?status",
       views:{
@@ -167,7 +151,7 @@
         }
       }
     })
-    //used to navigate to a the blog add/edit page
+    //used to navigate to the resource center add/edit page
     .state("rc.addedit", {
       url: "/:resourceId/edit",
       views:{

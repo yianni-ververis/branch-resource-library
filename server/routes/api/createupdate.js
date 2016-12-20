@@ -24,7 +24,6 @@ module.exports = function(req, res){
   var isNew = false;
   var imageEntities = [
     "project",
-    "blog",
     "user"
   ];
   if(req.params.id){

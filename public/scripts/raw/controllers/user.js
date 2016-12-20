@@ -2,7 +2,6 @@ app.controller("userController", ["$rootScope","$scope", "$resource", "$state", 
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-  var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
   var ChangePassword = $resource("auth/change");
 
   $scope.query = {};
@@ -26,11 +25,6 @@ app.controller("userController", ["$rootScope","$scope", "$resource", "$state", 
     Project.get({projectId:'count', userid: $stateParams.userId}, function(result){
       if(resultHandler.process(result)){
         $scope.projectCount = result.count;
-      }
-    });
-    Blog.get({blogId:'count', userid: $stateParams.userId}, function(result){
-      if(resultHandler.process(result)){
-        $scope.blogCount = result.count;
       }
     });
   }

@@ -67,15 +67,15 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
     //We're validating client side so that we don't keep passing image data back and forth
     //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
     var errors = [];
-    //Verify the blog has a name
+    //Verify the resource has a name
     if(!$scope.resources[0].title || $scope.resources[0].title==""){
       errors.push("Please specify a title");
     }
-    //Verify the blog has a type
+    //Verify the resource has a type
     if(!$scope.resources[0].resourceType){
       errors.push("Please select a Type");
     }
-    //Verify the blog has content
+    //Verify the resource has content
     if($scope.simplemde.value().length==0 || $scope.simplemde.value().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
       errors.push("Please add some content");
     }

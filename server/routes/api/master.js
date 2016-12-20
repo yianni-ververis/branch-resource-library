@@ -117,6 +117,22 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
 router.get("/:entity/hidden", Auth.isLoggedIn, read.getHidden);
 router.get("/:entity/flagged", Auth.isLoggedIn, read.getFlagged);
 
+router.get("/blog/:id", (req, res) => {
+  req.params.entity = "blog"
+  let queryObj = parseQuery(req.query || {}, req.body || {}, "GET", entities[req.params.entity]);
+  let entity = queryObj.entity;
+  let query = {
+    originalId: req.params.id
+  }
+  MasterController.get(req.query, query, entity, (results) => {
+    if(results.data.length > 0) {
+      res.json({ link: results.data[0].link })
+    } else {
+      res.json({})
+    }
+  });
+})
+
 //This route is for getting a specific result from the specified entity
 //url parameters can be used to add filtering
 //Requires "read" permission on the specified entity

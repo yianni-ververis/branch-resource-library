@@ -28,9 +28,10 @@ module.exports = {
     blog:{
       collection: "blogs",
       model: require("../models/blog"),
-      exemptFromOwnership: false,
-      exemptFromApproval: false,
-      logViews: true,
+      populates: "",
+      exemptFromOwnership: true,
+      exemptFromApproval: true,
+      logViews: false,
       sort: {
         dateline: -1
       },

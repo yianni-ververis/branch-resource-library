@@ -38,7 +38,7 @@ app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", 
     }
   });
 
-  Article.get({sort: 'createdate_num', sortOrder:'-1', limit:'3'}, function(result){
+  Article.get({sort: 'published_num', sortOrder:'-1', limit:'3'}, function(result){
     if(resultHandler.process(result)){
       $scope.latestArticles = result.data;
     }

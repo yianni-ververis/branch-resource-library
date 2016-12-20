@@ -1,7 +1,6 @@
 app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function ($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm) {
   var User = $resource("api/userprofile/:userId", {userId: "@userId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-  var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
   var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
   var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
   var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
@@ -33,7 +32,6 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
     "feature",
     "project",
     "comment",
-    "blog",
     "resource",
     "picklist",
     "picklistitem",
@@ -269,21 +267,6 @@ app.controller("adminController", ["$scope", "$resource", "$state", "$stateParam
   $scope.getItem = function (entity, id, callbackFn) {
     if (entity == "project") {
       Project.get({projectId: id}, function (result) {
-        if (resultHandler.process(result)) {
-          if (result.data && result.data[0]) {
-            callbackFn.call(null, result.data[0]);
-          }
-          else {
-            callbackFn.call(null, null);
-          }
-        }
-        else {
-          callbackFn.call(null, null);
-        }
-      });
-    }
-    else if (entity == "blog") {
-      Blog.get({blogId: id}, function (result) {
         if (resultHandler.process(result)) {
           if (result.data && result.data[0]) {
             callbackFn.call(null, result.data[0]);
