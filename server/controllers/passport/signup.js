@@ -75,6 +75,8 @@ module.exports = function(passport, User, UserProfile){
 						newUserProfileData.image = "/attachments/default/userprofile.png";
             newUserProfileData.thumbnail = "/attachments/default/userprofile.png";
 						var newUserProfile = new UserProfile(newUserProfileData)
+            newUserProfile.lastvisit = newUserProfile.createdate;
+            newUserProfile.lastvisit_num = newUserProfile.createdate.getTime();
 						newUserProfile.save(function(err){
 							if (err) return next(err)
 							console.log('User Registration succesful')
