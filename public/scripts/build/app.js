@@ -767,7 +767,7 @@
             }
             Rating.save(query, $scope.myRating, function(result){
               if(resultHandler.process(result)){
-
+                $scope.myRating = result
               }
             })
           };
