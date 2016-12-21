@@ -44,6 +44,7 @@
     "marked-iframe": "^0.1.0",
     "milli-epoch": "0.0.1",
     "mongoose": "^4.1.0",
+    "node-cron": "^1.1.2",
     "node-marketo-rest": "^0.2.12",
     "nodemailer": "^1.4.0",
     "object-hash": "^1.1.5",

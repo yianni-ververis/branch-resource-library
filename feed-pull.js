@@ -4,97 +4,26 @@ const mongoose = require('mongoose')
 const Publication = require('./server/models/publication')
 const config = require('./config')
 const hash = require('object-hash')
+const cron = require('node-cron')
 
 mongoose.Promise = global.Promise
-mongoose.connect(config.mongoconnectionstring)
+let lastCheck // holds previous RSS feed, used to only run if different
 
-https.get(`https://medium.com/feed/${config.mediumId}`, res => {
-  const statusCode = res.statusCode;
-  const contentType = res.headers['content-type'];
+// removes html tags from text
+const cleanUpContent = text => {
+  let plaintext = text.replace(/<\/?[^>]+(>|$)/g, " ")
+  plaintext = plaintext.replace(/\s\s+/g, ' ')
+  return plaintext
+}
 
-  let error;
-  if (statusCode !== 200) {
-    error = new Error(`Request Failed.\n` +
-        `Status Code: ${statusCode}`);
-  } else if (!/^text\/xml/.test(contentType)) {
-    error = new Error(`Invalid content-type.\n` +
-        `Expected application/json but received ${contentType}`);
-  }
-  if (error) {
-    console.log(error.message);
-    // consume response data to free up memory
-    res.resume();
-    return;
-  }
-
-  res.setEncoding('utf8');
-  let rawData = '';
-  let foundPublications = []
-  res.on('data', chunk => rawData += chunk);
-  res.on('end', () => {
-    try {
-      parseString(rawData, (err, result) => {
-        console.log(`${result.rss.channel[0].item.length} publications`)
-        Promise.all(result.rss.channel[0].item.map(item => {
-          return new Promise((resolve, reject) => {
-            foundPublications.push(getUrlId(item))
-            Publication.findOne({mediumId: getUrlId(item)})
-                .then(publication => {
-                  if (publication) {
-                    const itemHash = hash(item)
-                    if (itemHash !== publication.checksum) {
-                      console.log(`Publication Updated: ${item.title[0]}`)
-                      // item has changed
-                      return createUpdatePublication(publication, item)
-                    } else {
-                      console.log(`No Change: ${item.title[0]}`)
-                      resolve()
-                    }
-                  } else {
-                    console.log(`New Publication: ${item.title[0]}`)
-                    // item doesn't exist yet
-                    const newPublication = new Publication({mediumId: getUrlId(item)})
-                    return createUpdatePublication(newPublication, item)
-                  }
-                })
-                .then(created => resolve())
-          })
-        }))
-            .then(result => {
-              Publication.find({mediumId: {$nin: foundPublications}})
-                  .then((removedPublications) => {
-                    Promise.all(removedPublications.map(publication => {
-                      return new Promise((pubResolve, pubReject) => {
-                        console.log(`Deleting ${publication.title}`)
-                        Publication.remove({_id: publication._id})
-                            .then(result => {
-                              console.log(`Publication Removed: ${publication.title}`)
-                              pubResolve()
-                            })
-                      })
-                    }))
-                        .then(result => {
-                          console.log('done')
-                          mongoose.connection.close()
-                        })
-
-                  })
-            })
-      })
-    } catch (e) {
-      console.log(e.message);
-    }
-  });
-}).on('error', e => {
-  console.log(`Got error: ${e.message}`);
-});
-
+// pulls the unique ID for the publication from the medium url
 const getUrlId = item => {
   let id = item.guid[0]["_"]
   id = id.substring(id.lastIndexOf('/') + 1)
   return id
 }
 
+// handles all the data setting of the publication
 const createUpdatePublication = (publication, rssItem) => {
   return new Promise((resolve, reject) => {
     publication.title = rssItem.title[0]
@@ -117,6 +46,7 @@ const createUpdatePublication = (publication, rssItem) => {
   })
 }
 
+// retrieves the first image in the content, or null if none exists
 const getFirstImage = content => {
   let index = content.indexOf("<img")
   if (index >= 0) {
@@ -138,8 +68,101 @@ const getFirstImage = content => {
   }
 }
 
-const cleanUpContent = text => {
-  let plaintext = text.replace(/<\/?[^>]+(>|$)/g, " ")
-  plaintext = plaintext.replace(/\s\s+/g, ' ')
-  return plaintext
-}
+cron.schedule('*/3 * * * *', () => {
+  console.log('Checking for new publications')
+
+  https.get(`https://medium.com/feed/${config.mediumId}`, res => {
+    const statusCode = res.statusCode
+    const contentType = res.headers['content-type']
+
+    let error
+    if (statusCode !== 200) {
+      error = new Error(`Request Failed.\n` +
+          `Status Code: ${statusCode}`)
+    } else if (!/^text\/xml/.test(contentType)) {
+      error = new Error(`Invalid content-type.\n` +
+          `Expected application/json but received ${contentType}`)
+    }
+    if (error) {
+      console.error(error.message)
+      // consume response data to free up memory
+      res.resume()
+      return
+    }
+
+    res.setEncoding('utf8')
+    let rawData = ''
+    let foundPublications = []
+    res.on('data', chunk => rawData += chunk)
+    res.on('end', () => {
+      try {
+        let rdHash = hash(rawData)
+        if (lastCheck === rdHash) {
+          console.log("No change, No worries")
+        } else {
+          console.log("There's a change")
+          lastCheck = rdHash
+          parseString(rawData, (err, result) => {
+            if (err) {
+              console.error("Issue parsing xml", err)
+            } else {
+              mongoose.connect(config.mongoconnectionstring)
+                  .then(connection => {
+                    console.log(`${result.rss.channel[0].item.length} publications`)
+                    Promise.all(result.rss.channel[0].item.map(item => {
+                      return new Promise((resolve, reject) => {
+                        foundPublications.push(getUrlId(item))
+                        Publication.findOne({mediumId: getUrlId(item)})
+                            .then(publication => {
+                              if (publication) {
+                                const itemHash = hash(item)
+                                if (itemHash !== publication.checksum) {
+                                  console.log(`Publication Updated: ${item.title[0]}`)
+                                  // item has changed
+                                  return createUpdatePublication(publication, item)
+                                } else {
+                                  resolve()
+                                }
+                              } else {
+                                console.log(`New Publication: ${item.title[0]}`)
+                                // item doesn't exist yet
+                                const newPublication = new Publication({mediumId: getUrlId(item)})
+                                return createUpdatePublication(newPublication, item)
+                              }
+                            })
+                            .then(created => resolve())
+                      })
+                    }))
+                        .then(result => {
+                          Publication.find({mediumId: {$nin: foundPublications}})
+                              .then((removedPublications) => {
+                                Promise.all(removedPublications.map(publication => {
+                                  return new Promise((pubResolve, pubReject) => {
+                                    Publication.remove({_id: publication._id})
+                                        .then(result => {
+                                          console.log(`Publication Removed: ${publication.title}`)
+                                          pubResolve()
+                                        })
+                                  })
+                                }))
+                                    .then(result => {
+                                      console.log('done')
+                                      mongoose.connection.close()
+                                    }) // Promise.all.then
+                              }) // Publication.find.then
+                        }) // Promise.all.then
+                  }) // mongoose.connect
+            } // if (err)
+          }) // parseString
+        } // if (lastCheck === rawData)
+      } catch (e) {
+        console.error(`Generic Catch: ${e.message}`)
+      }
+    })
+  }).on('error', e => {
+    console.error(`Got error: ${e.message}`)
+  })
+
+})
+
+console.log("cron scheduled")
