@@ -1,0 +1,16 @@
+<ul class="publication-list plainlist">
+  <li id="{{publication.publicationId}}" qs-repeat="publication in items">
+    <div class="col-md-8">
+      <div class="thumb-container">
+        <img src="{{publication.image}}" style="width: inherit;">
+      </div>
+      <div class="publication-summary">
+        <a class="list-title" href="{{publication.link}}">{{publication.title}}</a>
+        {{publication.author}}
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button class="button-outline-fill" type="button" name="button" onclick="searchExchange.publish('setFeature', 'publication', ['{{publication.title}}','{{publication.short_description}}','{{publication.image}}','{{publication.link}}'])">Use</button>
+    </div>
+  </li>
+</ul>

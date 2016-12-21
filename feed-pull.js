@@ -1,7 +1,7 @@
 const https = require('https')
 const parseString = require('xml2js').parseString
 const mongoose = require('mongoose')
-const Blog = require('./server/models/blog')
+const Publication = require('./server/models/publication')
 const config = require('./config')
 const hash = require('object-hash')
 
@@ -38,14 +38,14 @@ https.get(`https://medium.com/feed/${config.mediumId}`, res => {
         Promise.all(result.rss.channel[0].item.map(item => {
           return new Promise((resolve, reject) => {
             foundPublications.push(getUrlId(item))
-            Blog.findOne({mediumId: getUrlId(item)})
-                .then(blog => {
-                  if (blog) {
+            Publication.findOne({mediumId: getUrlId(item)})
+                .then(publication => {
+                  if (publication) {
                     const itemHash = hash(item)
-                    if (itemHash !== blog.checksum) {
+                    if (itemHash !== publication.checksum) {
                       console.log(`Publication Updated: ${item.title[0]}`)
                       // item has changed
-                      return createUpdateBlog(blog, item)
+                      return createUpdatePublication(publication, item)
                     } else {
                       console.log(`No Change: ${item.title[0]}`)
                       resolve()
@@ -53,20 +53,20 @@ https.get(`https://medium.com/feed/${config.mediumId}`, res => {
                   } else {
                     console.log(`New Publication: ${item.title[0]}`)
                     // item doesn't exist yet
-                    const newBlog = new Blog({mediumId: getUrlId(item)})
-                    return createUpdateBlog(newBlog, item)
+                    const newPublication = new Publication({mediumId: getUrlId(item)})
+                    return createUpdatePublication(newPublication, item)
                   }
                 })
                 .then(created => resolve())
           })
         }))
             .then(result => {
-              Blog.find({mediumId: {$nin: foundPublications}})
+              Publication.find({mediumId: {$nin: foundPublications}})
                   .then((removedPublications) => {
                     Promise.all(removedPublications.map(publication => {
                       return new Promise((pubResolve, pubReject) => {
                         console.log(`Deleting ${publication.title}`)
-                        Blog.remove({_id: publication._id})
+                        Publication.remove({_id: publication._id})
                             .then(result => {
                               console.log(`Publication Removed: ${publication.title}`)
                               pubResolve()
@@ -95,22 +95,22 @@ const getUrlId = item => {
   return id
 }
 
-const createUpdateBlog = (blog, rssItem) => {
+const createUpdatePublication = (publication, rssItem) => {
   return new Promise((resolve, reject) => {
-    blog.title = rssItem.title[0]
-    blog.author = rssItem["dc:creator"][0]
-    blog.link = rssItem["link"][0]
-    blog.tags = rssItem.category.join(', ')
-    blog.checksum = hash(rssItem)
-    blog.published = new Date(rssItem.pubDate[0])
-    blog.published_num = blog.published.getTime()
-    blog.content = rssItem["content:encoded"][0]
-    blog.mediumId = getUrlId(rssItem)
-    blog.plaintext = cleanUpContent(blog.content)
-    blog.short_description = blog.plaintext.length > 200 ? `${blog.plaintext.substring(0, 197)}...` : blog.plaintext
-    blog.image = getFirstImage(blog.content) || "/attachments/default/blog.png"
-    blog.approved = true
-    blog.save()
+    publication.title = rssItem.title[0]
+    publication.author = rssItem["dc:creator"][0]
+    publication.link = rssItem["link"][0]
+    publication.tags = rssItem.category.join(', ')
+    publication.checksum = hash(rssItem)
+    publication.published = new Date(rssItem.pubDate[0])
+    publication.published_num = publication.published.getTime()
+    publication.content = rssItem["content:encoded"][0]
+    publication.mediumId = getUrlId(rssItem)
+    publication.plaintext = cleanUpContent(publication.content)
+    publication.short_description = publication.plaintext.length > 200 ? `${publication.plaintext.substring(0, 197)}...` : publication.plaintext
+    publication.image = getFirstImage(publication.content) || "/attachments/default/publication.png"
+    publication.approved = true
+    publication.save()
         .then(result => {
           resolve()
         })

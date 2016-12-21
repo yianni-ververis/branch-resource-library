@@ -1,7 +1,7 @@
 {
   "fields":[
     {
-      "dimension": "blogId",
+      "dimension": "publicationId",
       "suppressNull": true
     },
     {
@@ -41,7 +41,7 @@
       "suppressNull": false
     }
   ],
-  "template": "/views/blogs/blog-results.html",
+  "template": "/views/publications/publication-results.html",
   "sorting":{
     "published_num": {
       "id": "published_num",
@@ -59,10 +59,10 @@
     }
   },
   "defaultSort": "published_num",
-  "primaryKey" : "blogId",
+  "primaryKey" : "publicationId",
   "searchFields": ["SearchField"],
   "suggestFields": ["title","author","tags"],
   "nullSuppressor": 0,
-  "entity": "blog",
+  "entity": "publication",
   "pagesize" : 20
 }

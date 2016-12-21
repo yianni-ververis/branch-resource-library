@@ -120,18 +120,18 @@
         }
       }
     })
-    //used to navigate to the blog list page
-    .state("blogs", {
+    //used to navigate to the publication list page
+    .state("publications", {
       url: "/blog",
-      templateUrl: "/views/blogs/index.html",
-      controller: "blogController"
+      templateUrl: "/views/publications/index.html",
+      controller: "publicationController"
     })
-    .state("blogs.redirect", {
-      url: "/:blogId?status",
+    .state("publications.redirect", {
+      url: "/:publicationId?status",
       views:{
         "@":{
-          templateUrl: "/views/blogs/index.html",
-          controller: "blogController"
+          templateUrl: "/views/publications/index.html",
+          controller: "publicationController"
         }
       }
     })
@@ -264,7 +264,7 @@
   include "./controllers/auth.js"
   include "./controllers/home.js"
   include "./controllers/project.js"
-  include "./controllers/blog.js"
+  include "./controllers/publication.js"
   include "./controllers/resource.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"

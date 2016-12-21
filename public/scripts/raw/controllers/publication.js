@@ -1,5 +1,5 @@
-app.controller("blogController", ["$sce", "$rootScope", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
-  var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
+app.controller("publicationController", ["$sce", "$rootScope", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+  var Publication = $resource("api/publication/:publicationId", { publicationId: "@publicationId" });
   $scope.pageSize = 20;
   $scope.query = {};
 
@@ -10,13 +10,13 @@ app.controller("blogController", ["$sce", "$rootScope", "$scope", "$resource", "
   $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
   $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
-  if ($stateParams.blogId) {
-    $scope.query.blogId = $stateParams.blogId;
+  if ($stateParams.publicationId) {
+    $scope.query.publicationId = $stateParams.publicationId;
   }
 
-  $scope.getBlogData = function (query, append) {
-    Blog.get(query, function (result) {
-      $scope.blogLoading = false;
+  $scope.getPublicationData = function (query, append) {
+    Publication.get(query, function (result) {
+      $scope.publicationLoading = false;
       if (resultHandler.process(result)) {
         if (result.link) {
           window.location = result.link
@@ -29,8 +29,8 @@ app.controller("blogController", ["$sce", "$rootScope", "$scope", "$resource", "
   };
 
   $scope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
-    if ($state.current.name == "blogs.redirect") {
-      $scope.getBlogData($scope.query); //get initial data set
+    if ($state.current.name == "publications.redirect") {
+      $scope.getPublicationData($scope.query); //get initial data set
     } else {
       if (fromState.name.split(".")[0] == toState.name.split(".")[0]) { //then we should clear the search state
         if (toState.name.split(".").length == 1) { //we only need to do this if we're on a listing page
@@ -44,9 +44,9 @@ app.controller("blogController", ["$sce", "$rootScope", "$scope", "$resource", "
         searchExchange.clear(true);
       }
       defaultSelection = [];
-      searchExchange.subscribe('reset', "blogs", function () {
+      searchExchange.subscribe('reset', "publications", function () {
         searchExchange.init(defaultSelection);
-        searchExchange.unsubscribe('reset', "blogs");
+        searchExchange.unsubscribe('reset', "publications");
       });
       if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
         searchExchange.clear(true);

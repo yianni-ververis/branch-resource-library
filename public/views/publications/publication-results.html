@@ -1,0 +1,23 @@
+<section class="card-grid">
+  <article id="{{publication.publicationId}}" qs-repeat="publication in items" qs-hide="publication.hidden==true" class="card-item">
+      
+      <div class="card-content">
+          <a href="{{publication.link:NoHighlight}}">
+            <div class="card-hero" qs-hide="publication.image=='-'">
+                <img src="{{publication.image}}">
+            </div>
+          </a>
+          <div class="card-meta">{{publication.published_num:Date}} | {{publication.author}}</div>
+          <a href="{{publication.link:NoHighlight}}">
+            <h4 class="card-heading">{{publication.title}}</h4>
+          </a>
+          <p class="card-description">{{publication.short_description}}</p>
+          <div class="card-bottom">
+              <a href="{{publication.link:NoHighlight}}">
+                  Read More
+              </a>
+          </div>
+      </div>
+
+  </article>
+</section>

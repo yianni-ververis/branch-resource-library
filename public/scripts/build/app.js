@@ -120,18 +120,18 @@
         }
       }
     })
-    //used to navigate to the blog list page
-    .state("blogs", {
+    //used to navigate to the publication list page
+    .state("publications", {
       url: "/blog",
-      templateUrl: "/views/blogs/index.html",
-      controller: "blogController"
+      templateUrl: "/views/publications/index.html",
+      controller: "publicationController"
     })
-    .state("blogs.redirect", {
-      url: "/:blogId?status",
+    .state("publications.redirect", {
+      url: "/:publicationId?status",
       views:{
         "@":{
-          templateUrl: "/views/blogs/index.html",
-          controller: "blogController"
+          templateUrl: "/views/publications/index.html",
+          controller: "publicationController"
         }
       }
     })
@@ -3374,7 +3374,7 @@
   app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-    var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
+    var Article = $resource("api/publication/:publicationId", {publicationId: "@publicationId"});
 
     $scope.featuredProject = {};
     $scope.featuredArticle = {};
@@ -3977,8 +3977,8 @@
 
   }]);
 
-  app.controller("blogController", ["$sce", "$rootScope", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
-    var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
+  app.controller("publicationController", ["$sce", "$rootScope", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+    var Publication = $resource("api/publication/:publicationId", { publicationId: "@publicationId" });
     $scope.pageSize = 20;
     $scope.query = {};
 
@@ -3989,13 +3989,13 @@
     $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
     $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
-    if ($stateParams.blogId) {
-      $scope.query.blogId = $stateParams.blogId;
+    if ($stateParams.publicationId) {
+      $scope.query.publicationId = $stateParams.publicationId;
     }
 
-    $scope.getBlogData = function (query, append) {
-      Blog.get(query, function (result) {
-        $scope.blogLoading = false;
+    $scope.getPublicationData = function (query, append) {
+      Publication.get(query, function (result) {
+        $scope.publicationLoading = false;
         if (resultHandler.process(result)) {
           if (result.link) {
             window.location = result.link
@@ -4008,8 +4008,8 @@
     };
 
     $scope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
-      if ($state.current.name == "blogs.redirect") {
-        $scope.getBlogData($scope.query); //get initial data set
+      if ($state.current.name == "publications.redirect") {
+        $scope.getPublicationData($scope.query); //get initial data set
       } else {
         if (fromState.name.split(".")[0] == toState.name.split(".")[0]) { //then we should clear the search state
           if (toState.name.split(".").length == 1) { //we only need to do this if we're on a listing page
@@ -4023,9 +4023,9 @@
           searchExchange.clear(true);
         }
         defaultSelection = [];
-        searchExchange.subscribe('reset', "blogs", function () {
+        searchExchange.subscribe('reset', "publications", function () {
           searchExchange.init(defaultSelection);
-          searchExchange.unsubscribe('reset', "blogs");
+          searchExchange.unsubscribe('reset', "publications");
         });
         if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
           searchExchange.clear(true);

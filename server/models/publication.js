@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var blogSchema = new Schema({
+var publicationSchema = new Schema({
   title: String,
   short_description: String,
   mediumId: String,
@@ -17,4 +17,4 @@ var blogSchema = new Schema({
   approved: Boolean
 });
 
-module.exports = mongoose.model('blog', blogSchema)
+module.exports = mongoose.model('publication', publicationSchema)

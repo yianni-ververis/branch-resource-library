@@ -117,8 +117,8 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
 router.get("/:entity/hidden", Auth.isLoggedIn, read.getHidden);
 router.get("/:entity/flagged", Auth.isLoggedIn, read.getFlagged);
 
-router.get("/blog/:id", (req, res) => {
-  req.params.entity = "blog"
+router.get("/publication/:id", (req, res) => {
+  req.params.entity = "publication"
   let queryObj = parseQuery(req.query || {}, req.body || {}, "GET", entities[req.params.entity]);
   let entity = queryObj.entity;
   let query = {

@@ -25,9 +25,9 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    blog:{
-      collection: "blogs",
-      model: require("../models/blog"),
+  publication:{
+      collection: "publications",
+      model: require("../models/publication"),
       populates: "",
       exemptFromOwnership: true,
       exemptFromApproval: true,
