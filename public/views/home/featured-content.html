@@ -5,13 +5,13 @@
         <div class="featured-content-item">
             <h4>{{featuredArticle.title}}</h4>
             <p>{{featuredArticle.comment}}</p>
-            <a href="#!blog/{{featuredArticle._id}}">View Blog</a>
+            <a href="{{featuredArticle.link}}">View Blog</a>
         </div>
 
         <div class="featured-content-item">
             <h4>{{featuredProject.title}}</h4>
             <p>{{featuredProject.comment}}</p>
-            <a href="#!project/{{featuredProject._id}}">View Project</a>
+            <a href="#!project/{{featuredProject.entityId}}">View Project</a>
         </div>
     </div>
 </div>

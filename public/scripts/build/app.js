@@ -2992,23 +2992,36 @@
       });
     };
 
-    $scope.setFeature = function (entity, id) {
-      $scope.getItem(entity, id, function (result) {
-        $scope.currentFeature.entityId = result._id;
-        $scope.currentFeature.title = result.title;
-        $scope.currentFeature.comment = result.short_description;
-        $scope.currentFeature.image = result.image == null ? result.thumbnail : result.image;
-        $scope.currentFeature.userid = result.userid._id;
+    $scope.setFeature = function (entity, data) {
+      if(entity === "project") {
+        $scope.getProject(data, function (result) {
+          $scope.currentFeature.entityId = result._id;
+          $scope.currentFeature.title = result.title;
+          $scope.currentFeature.comment = result.short_description;
+          $scope.currentFeature.image = result.image == null ? result.thumbnail : result.image;
+          $scope.currentFeature.userid = result.userid._id;
+          Feature.save({featureId: $scope.currentFeature._id}, $scope.currentFeature, function (result) {
+            if (resultHandler.process(result)) {
+              $scope.setActiveFeature($scope.activeFeature);
+            }
+          });
+        });
+      } else {
+        $scope.currentFeature.entityId = null
+        $scope.currentFeature.title = data[0]
+        $scope.currentFeature.comment = data[1]
+        $scope.currentFeature.image = data[2]
+        $scope.currentFeature.link = data[3]
+        $scope.currentFeature.userid = null
         Feature.save({featureId: $scope.currentFeature._id}, $scope.currentFeature, function (result) {
           if (resultHandler.process(result)) {
             $scope.setActiveFeature($scope.activeFeature);
           }
         });
-      });
+      }
     };
 
-    $scope.getItem = function (entity, id, callbackFn) {
-      if (entity == "project") {
+    $scope.getProject = function (id, callbackFn) {
         Project.get({projectId: id}, function (result) {
           if (resultHandler.process(result)) {
             if (result.data && result.data[0]) {
@@ -3022,7 +3035,6 @@
             callbackFn.call(null, null);
           }
         });
-      }
     };
 
     $scope.saveFeature = function () {

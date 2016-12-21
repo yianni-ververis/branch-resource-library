@@ -13,15 +13,19 @@
       "suppressNull": false
     },
     {
-      "dimension": "userId",
+      "dimension": "tags",
+      "suppressNull": false
+    },
+    {
+      "dimension": "author",
       "suppressNull": true
     },
     {
-      "dimension": "username",
+      "dimension": "published",
       "suppressNull": true
     },
     {
-      "dimension": "createdate_num",
+      "dimension": "published_num",
       "suppressNull": false
     },
     {
@@ -29,17 +33,21 @@
       "suppressNull": false
     },
     {
-      "dimension": "thumbnail",
+      "dimension": "image",
+      "suppressNull": false
+    },
+    {
+      "dimension": "link",
       "suppressNull": false
     }
   ],
   "template": "/views/admin/blog-results.html",
   "sorting":{
-    "createdate_num": {
-      "id": "createdate_num",
+    "published_num": {
+      "id": "published_num",
       "name": "Newest",
       "order": -1,
-      "field": "createdate_num",
+      "field": "published_num",
       "sortType": "qSortByNumeric"
     },
     "title": {
@@ -48,19 +56,12 @@
       "order": 1,
       "field": "blogTitle",
       "sortType": "qSortByAscii"
-    },
-    "username": {
-      "id": "username",
-      "name": "User",
-      "order": 1,
-      "field": "username",
-      "sortType": "qSortByAscii"
     }
   },
   "primaryKey" : "blogId",
-  "defaultSort": "createdate_num",
+  "defaultSort": "published_num",
   "searchFields": ["SearchField"],
-  "suggestFields": ["title","username","tags"],
+  "suggestFields": ["title","author","tags"],
   "nullSuppressor": 0,
   "entity": "blog",
   "pagesize" : 20
