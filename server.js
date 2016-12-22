@@ -18,6 +18,9 @@ AWS.config.loadFromPath("./credentials.json");
 var envconfig = require('./config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
+if(mode === "debug") {
+  mongoose.set("debug", true)
+}
 
 if (envconfig.prerenderServiceUrl != null && envconfig.prerenderServiceUrl !== "")
   app.use(require('prerender-node').set("prerenderServiceUrl",envconfig.prerenderServiceUrl));
@@ -29,7 +32,7 @@ else
 
 //load the models
 require('./server/models/project.js');
-require('./server/models/blog.js');
+require('./server/models/publication.js');
 require('./server/models/resource.js');
 require('./server/models/projectcategory.js');
 require('./server/models/user.js');

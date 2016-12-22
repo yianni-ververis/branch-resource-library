@@ -117,6 +117,22 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
 router.get("/:entity/hidden", Auth.isLoggedIn, read.getHidden);
 router.get("/:entity/flagged", Auth.isLoggedIn, read.getFlagged);
 
+router.get("/publication/:id", (req, res) => {
+  req.params.entity = "publication"
+  let queryObj = parseQuery(req.query || {}, req.body || {}, "GET", entities[req.params.entity]);
+  let entity = queryObj.entity;
+  let query = {
+    originalId: req.params.id
+  }
+  MasterController.get(req.query, query, entity, (results) => {
+    if(results.data.length > 0) {
+      res.json({ link: results.data[0].link })
+    } else {
+      res.json({})
+    }
+  });
+})
+
 //This route is for getting a specific result from the specified entity
 //url parameters can be used to add filtering
 //Requires "read" permission on the specified entity
@@ -332,7 +348,7 @@ function parseQuery(query, body, method, originalEntity){
     delete query["sort"];
     delete query["sortOrder"];
   }
-  entity.skip = query.skip || entity.skip || 0;
+  entity.skip = Number(query.skip || entity.skip || 0);
   entity.limit = Number(query.limit || entity.limit || 0);
   delete query["skip"];
   delete query["limit"];

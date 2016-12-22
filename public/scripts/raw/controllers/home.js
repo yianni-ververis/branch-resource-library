@@ -1,7 +1,7 @@
 app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){
   var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
   var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-  var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
+  var Article = $resource("api/publication/:publicationId", {publicationId: "@publicationId"});
 
   $scope.featuredProject = {};
   $scope.featuredArticle = {};
@@ -38,7 +38,7 @@ app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", 
     }
   });
 
-  Article.get({sort: 'createdate_num', sortOrder:'-1', limit:'3'}, function(result){
+  Article.get({sort: 'published_num', sortOrder:'-1', limit:'3'}, function(result){
     if(resultHandler.process(result)){
       $scope.latestArticles = result.data;
     }

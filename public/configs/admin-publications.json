@@ -1,7 +1,7 @@
 {
   "fields":[
     {
-      "dimension": "blogId",
+      "dimension": "publicationId",
       "suppressNull": true
     },
     {
@@ -17,15 +17,15 @@
       "suppressNull": false
     },
     {
-      "dimension": "userId",
+      "dimension": "author",
       "suppressNull": true
     },
     {
-      "dimension": "username",
+      "dimension": "published",
       "suppressNull": true
     },
     {
-      "dimension": "createdate_num",
+      "dimension": "published_num",
       "suppressNull": false
     },
     {
@@ -37,49 +37,32 @@
       "suppressNull": false
     },
     {
-      "measure": "avg(rating)",
-      "label": "rating",
-      "sortType" : "qSortByNumeric",
-      "order" : -1
-    },
-    {
-      "measure": "sum(viewNum)",
-      "label": "views"
-    },
-    {
-      "measure" : "count(DISTINCT commentId)",
-      "label" : "commentcount"
+      "dimension": "link",
+      "suppressNull": false
     }
   ],
-  "template": "/views/blogs/blog-results.html",
+  "template": "/views/admin/publication-results.html",
   "sorting":{
-    "createdate_num": {
-      "id": "createdate_num",
+    "published_num": {
+      "id": "published_num",
       "name": "Newest",
       "order": -1,
-      "field": "createdate_num",
+      "field": "published_num",
       "sortType": "qSortByNumeric"
     },
     "title": {
       "id": "title",
       "name": "A-Z",
       "order": 1,
-      "field": "title",
-      "sortType": "qSortByAscii"
-    },
-    "username": {
-      "id": "username",
-      "name": "User",
-      "order": 1,
-      "field": "username",
+      "field": "publicationTitle",
       "sortType": "qSortByAscii"
     }
   },
-  "defaultSort": "createdate_num",
-  "primaryKey" : "blogId",
+  "primaryKey" : "publicationId",
+  "defaultSort": "published_num",
   "searchFields": ["SearchField"],
-  "suggestFields": ["title","username","tags"],
+  "suggestFields": ["title","author","tags"],
   "nullSuppressor": 0,
-  "entity": "blog",
+  "entity": "publication",
   "pagesize" : 20
 }

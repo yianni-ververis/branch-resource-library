@@ -44,8 +44,10 @@
     "marked-iframe": "^0.1.0",
     "milli-epoch": "0.0.1",
     "mongoose": "^4.1.0",
+    "node-cron": "^1.1.2",
     "node-marketo-rest": "^0.2.12",
     "nodemailer": "^1.4.0",
+    "object-hash": "^1.1.5",
     "parse-name": "^0.2.4",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
@@ -55,7 +57,8 @@
     "request": "^2.74.0",
     "spam-check": "^0.9.9",
     "underscore": "^1.8.3",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "autoprefixer": "^6.1.0",

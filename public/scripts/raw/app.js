@@ -52,11 +52,6 @@
       url: "/tnc",
       templateUrl: "/views/tnc/index.html"
     })
-    //About Branch
-    .state("aboutBranch", {
-      url: "/aboutBranch",
-      templateUrl: "/views/aboutBranch.html"
-    })
     //no item page
     .state("noitem", {
       url: "/noitem",
@@ -125,29 +120,18 @@
         }
       }
     })
-    //used to navigate to the blog list page
-    .state("blogs", {
+    //used to navigate to the publication list page
+    .state("publications", {
       url: "/blog",
-      templateUrl: "/views/blogs/index.html",
-      controller: "blogController"
+      templateUrl: "/views/publications/index.html",
+      controller: "publicationController"
     })
-    //used to navigate to a given blog detail page
-    .state("blogs.detail", {
-      url: "/:blogId?status",
+    .state("publications.redirect", {
+      url: "/:publicationId?status",
       views:{
         "@":{
-          templateUrl: "/views/blogs/detail.html",
-          controller: "blogController",
-        }
-      }
-    })
-    //used to navigate to a the blog add/edit page
-    .state("blogs.addedit", {
-      url: "/:blogId/edit?author",
-      views:{
-        "@":{
-          templateUrl: "/views/blogs/addedit.html",
-          controller: "blogController",
+          templateUrl: "/views/publications/index.html",
+          controller: "publicationController"
         }
       }
     })
@@ -157,7 +141,7 @@
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
-    //used to navigate to a given blog detail page
+    //used to navigate to a given resource center detail page
     .state("rc.detail", {
       url: "/:resourceId?status",
       views:{
@@ -167,7 +151,7 @@
         }
       }
     })
-    //used to navigate to a the blog add/edit page
+    //used to navigate to the resource center add/edit page
     .state("rc.addedit", {
       url: "/:resourceId/edit",
       views:{
@@ -280,7 +264,7 @@
   include "./controllers/auth.js"
   include "./controllers/home.js"
   include "./controllers/project.js"
-  include "./controllers/blog.js"
+  include "./controllers/publication.js"
   include "./controllers/resource.js"
   include "./controllers/comment.js"
   include "./controllers/user.js"

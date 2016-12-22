@@ -25,13 +25,13 @@ module.exports = {
       limit: 20,
       requiresAuthentication: false    //only applies to GET requests. All other requests MUST be authenticated
     },
-    blog:{
-      collection: "blogs",
-      model: require("../models/blog"),
-      populates: "userid blogType",
-      exemptFromOwnership: false,
-      exemptFromApproval: false,
-      logViews: true,
+  publication:{
+      collection: "publications",
+      model: require("../models/publication"),
+      populates: "",
+      exemptFromOwnership: true,
+      exemptFromApproval: true,
+      logViews: false,
       sort: {
         dateline: -1
       },

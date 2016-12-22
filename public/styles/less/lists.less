@@ -68,13 +68,13 @@
   }
 }
 
-.project-list, .blog-list{
+.project-list, .publication-list{
   > li{
     position: relative;
     padding: 5px 5px;
     vertical-align: top;
     margin: 5px 0;
-    .project-summary{
+    .project-summary, .publication-summary {
       position: absolute;
       left: 170px;
       top: 0;
@@ -105,7 +105,7 @@
   }
 }
 
-.project-list{
+.project-list, .publication-list {
 
   background: #fff;
   border-left: 1px solid @content-border;
@@ -126,19 +126,6 @@
     max-height: 75px;
     display: inline-block;
     vertical-align: top;
-  }
-}
-
-.blog-list{
-  @media screen and (min-width: @tablet-width) {
-     > li{
-       min-height: 100px;
-     }
-  }
-  @media screen and (max-width: @tablet-width) {
-    > li{
-      height: 150px;
-    }
   }
 }
 
@@ -332,7 +319,7 @@
   }
 }
 
-.project-list, .user-projects{
+.project-list, .publication-list, .user-projects{
   >li{
     border-bottom: 1px solid @content-border;
     &:first-of-type{

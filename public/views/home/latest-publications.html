@@ -1,0 +1,16 @@
+<div class="row latest-publications">
+    <div id="{{publication.publicationId}}" ng-repeat="publication in latestArticles" class="col-xs-4 latest-publication">
+
+        <div class="latest-publication-content">
+
+            <div class="latest-publication-image">
+                <img src="{{publication.image}}">
+            </div>
+            <a href="{{publication.link}}"><h4 class="latest-publication-heading">{{publication.title}}</h4></a>
+            <p class="latest-publication-meta">{{publication.published_num|date}} | {{publication.author}}</p>
+            <p class="latest-publication-description">{{publication.short_description}}</p>
+            <a class="more" href="{{publication.link}}">Read More...</a>
+        </div>
+
+    </div>
+</div>

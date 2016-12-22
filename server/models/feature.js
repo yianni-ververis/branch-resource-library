@@ -13,6 +13,7 @@ var FeatureSchema = new Schema({
   },
   title: String,
   comment: String,
+  link: String,
   image: String,
   userid: {
     type: Schema.ObjectId,

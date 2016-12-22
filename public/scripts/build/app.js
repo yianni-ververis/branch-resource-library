@@ -52,11 +52,6 @@
       url: "/tnc",
       templateUrl: "/views/tnc/index.html"
     })
-    //About Branch
-    .state("aboutBranch", {
-      url: "/aboutBranch",
-      templateUrl: "/views/aboutBranch.html"
-    })
     //no item page
     .state("noitem", {
       url: "/noitem",
@@ -125,29 +120,18 @@
         }
       }
     })
-    //used to navigate to the blog list page
-    .state("blogs", {
+    //used to navigate to the publication list page
+    .state("publications", {
       url: "/blog",
-      templateUrl: "/views/blogs/index.html",
-      controller: "blogController"
+      templateUrl: "/views/publications/index.html",
+      controller: "publicationController"
     })
-    //used to navigate to a given blog detail page
-    .state("blogs.detail", {
-      url: "/:blogId?status",
+    .state("publications.redirect", {
+      url: "/:publicationId?status",
       views:{
         "@":{
-          templateUrl: "/views/blogs/detail.html",
-          controller: "blogController",
-        }
-      }
-    })
-    //used to navigate to a the blog add/edit page
-    .state("blogs.addedit", {
-      url: "/:blogId/edit?author",
-      views:{
-        "@":{
-          templateUrl: "/views/blogs/addedit.html",
-          controller: "blogController",
+          templateUrl: "/views/publications/index.html",
+          controller: "publicationController"
         }
       }
     })
@@ -157,7 +141,7 @@
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
-    //used to navigate to a given blog detail page
+    //used to navigate to a given resource center detail page
     .state("rc.detail", {
       url: "/:resourceId?status",
       views:{
@@ -167,7 +151,7 @@
         }
       }
     })
-    //used to navigate to a the blog add/edit page
+    //used to navigate to the resource center add/edit page
     .state("rc.addedit", {
       url: "/:resourceId/edit",
       views:{
@@ -2465,17 +2449,22 @@
                         if(df){
                           //currently only supports date or time
                           try{
-                            var date = new Date(parseInt(item));
-                            if(df=="Date"){
-                              var day = date.getDate();
-                              var monthIndex = date.getMonth();
-                              var year = date.getFullYear();
-                              var output = day + ' ' + monthNames[monthIndex] + ' ' + year
+                            if(df=="NoHighlight") {
+                              // do nothing here
+                              htmlString = htmlString.replace(what, item);
+                            } else {
+                              var date = new Date(parseInt(item));
+                              if(df=="Date"){
+                                var day = date.getDate();
+                                var monthIndex = date.getMonth();
+                                var year = date.getFullYear();
+                                var output = day + ' ' + monthNames[monthIndex] + ' ' + year
+                              }
+                              if(df=="Time"){
+                                var output = date.getHours() + ':' + (date.getMinutes()<10?'0':'')+date.getMinutes();
+                              }
+                              htmlString = htmlString.replace(what, output);
                             }
-                            if(df=="Time"){
-                              var output = date.getHours() + ':' + (date.getMinutes()<10?'0':'')+date.getMinutes();
-                            }
-                            htmlString = htmlString.replace(what, output);
                           }
                           catch(err){
 
@@ -2755,7 +2744,6 @@
   app.controller("adminController", ["$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "confirm", function ($scope, $resource, $state, $stateParams, userManager, resultHandler, confirm) {
     var User = $resource("api/userprofile/:userId", {userId: "@userId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-    var Blog = $resource("api/blog/:blogId", {blogId: "@blogId"});
     var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
     var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
     var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
@@ -2787,7 +2775,6 @@
       "feature",
       "project",
       "comment",
-      "blog",
       "resource",
       "picklist",
       "picklistitem",
@@ -3005,23 +2992,36 @@
       });
     };
 
-    $scope.setFeature = function (entity, id) {
-      $scope.getItem(entity, id, function (result) {
-        $scope.currentFeature.entityId = result._id;
-        $scope.currentFeature.title = result.title;
-        $scope.currentFeature.comment = result.short_description;
-        $scope.currentFeature.image = result.image == null ? result.thumbnail : result.image;
-        $scope.currentFeature.userid = result.userid._id;
+    $scope.setFeature = function (entity, data) {
+      if(entity === "project") {
+        $scope.getProject(data, function (result) {
+          $scope.currentFeature.entityId = result._id;
+          $scope.currentFeature.title = result.title;
+          $scope.currentFeature.comment = result.short_description;
+          $scope.currentFeature.image = result.image == null ? result.thumbnail : result.image;
+          $scope.currentFeature.userid = result.userid._id;
+          Feature.save({featureId: $scope.currentFeature._id}, $scope.currentFeature, function (result) {
+            if (resultHandler.process(result)) {
+              $scope.setActiveFeature($scope.activeFeature);
+            }
+          });
+        });
+      } else {
+        $scope.currentFeature.entityId = null
+        $scope.currentFeature.title = data[0]
+        $scope.currentFeature.comment = data[1]
+        $scope.currentFeature.image = data[2]
+        $scope.currentFeature.link = data[3]
+        $scope.currentFeature.userid = null
         Feature.save({featureId: $scope.currentFeature._id}, $scope.currentFeature, function (result) {
           if (resultHandler.process(result)) {
             $scope.setActiveFeature($scope.activeFeature);
           }
         });
-      });
+      }
     };
 
-    $scope.getItem = function (entity, id, callbackFn) {
-      if (entity == "project") {
+    $scope.getProject = function (id, callbackFn) {
         Project.get({projectId: id}, function (result) {
           if (resultHandler.process(result)) {
             if (result.data && result.data[0]) {
@@ -3035,22 +3035,6 @@
             callbackFn.call(null, null);
           }
         });
-      }
-      else if (entity == "blog") {
-        Blog.get({blogId: id}, function (result) {
-          if (resultHandler.process(result)) {
-            if (result.data && result.data[0]) {
-              callbackFn.call(null, result.data[0]);
-            }
-            else {
-              callbackFn.call(null, null);
-            }
-          }
-          else {
-            callbackFn.call(null, null);
-          }
-        });
-      }
     };
 
     $scope.saveFeature = function () {
@@ -3128,7 +3112,6 @@
     //check to see that a user is logged in and that they have the correct permissions
     var entities = [
       "project",
-      "blog",
       "comment",
       "user"
     ]
@@ -3391,7 +3374,7 @@
   app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){
     var Feature = $resource("api/feature/:featureId", {featureId: "@featureId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-    var Article = $resource("api/blog/:blogId", {blogId: "@blogId"});
+    var Article = $resource("api/publication/:publicationId", {publicationId: "@publicationId"});
 
     $scope.featuredProject = {};
     $scope.featuredArticle = {};
@@ -3428,7 +3411,7 @@
       }
     });
 
-    Article.get({sort: 'createdate_num', sortOrder:'-1', limit:'3'}, function(result){
+    Article.get({sort: 'published_num', sortOrder:'-1', limit:'3'}, function(result){
       if(resultHandler.process(result)){
         $scope.latestArticles = result.data;
       }
@@ -3994,339 +3977,61 @@
 
   }]);
 
-  app.controller("blogController", ["$sce", "$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
-      var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
-      var ImageAPI = $resource("api/resource/image/:url", {url: "@url"});
+  app.controller("publicationController", ["$sce", "$rootScope", "$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($sce, $rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
+    var Publication = $resource("api/publication/:publicationId", { publicationId: "@publicationId" });
+    $scope.pageSize = 20;
+    $scope.query = {};
 
-      $scope.pageSize = 20;
-      $scope.query = {};
-      $scope.simplemde;
-      
-      
-      $scope.blogLoading = $stateParams.blogId != "new";
+    var defaultSelection;
 
-      $scope.isNew = $stateParams.blogId == "new";
+    $rootScope.headTitle = "Blog: Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
+    $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
+    $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
-      $scope.dirtyThumbnail = false;
+    if ($stateParams.publicationId) {
+      $scope.query.publicationId = $stateParams.publicationId;
+    }
 
-      var defaultSelection;
-
-      $scope.blogTypes;
-
-      $rootScope.bucket;
-
-      $resource("api/bucket").get({}, function(result) {
-          $rootScope.bucket = result.bucket;
-      });
-
-      $rootScope.headTitle = "Blog: Qlik Branch";
-      $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
-      $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
-      $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
-    
-
-      if ($stateParams.blogId) {
-          $scope.query.blogId = $stateParams.blogId;
-          $scope.blogId = $stateParams.blogId;
-      }
-
-      picklistService.getPicklistItems("Blog Type", function (items) {
-          $scope.blogTypes = items;
-          $scope.newBlogType = items[0];
-      });
-
-      $scope.getBlogData = function (query, append) {
-          Blog.get(query, function (result) {
-              $scope.blogLoading = false;
-              if (resultHandler.process(result)) {
-                  if (result.data && result.data.length > 0) {
-                      if ($stateParams.status) {
-                          if ($stateParams.status == 'created') {
-                              notifications.notify("Your blog post has been successfully submitted for approval.", null, { sentiment: "positive" });
-                          }
-                          else if ($stateParams.status == 'updated') {
-                              notifications.notify("Your blog post has been successfully updated. It may take up to 5 minutes for the listing page to reflect these changes.", null, { sentiment: "positive" });
-                          }
-                      }
-                      if (append && append == true) {
-                          $scope.blogs = $scope.blogs.concat(result.data);
-                      }
-                      else {
-                          $scope.blogs = result.data;
-                      }
-                      if ($state.current.name == "blogs.addedit") {
-                          $scope.simplemde.value(_arrayBufferToBase64(result.data[0].content.data));
-                      }
-                      $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
-                      $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
-                      $rootScope.metaDesc = result.data[0].short_description + " : Qlik Branch Blog";
-                      if ($scope.blogs[0].image != null && $scope.blogs[0].image != "") {
-                          $rootScope.metaImage = $scope.blogs[0].image;
-                          if($rootScope.metaImage.substr(0,2) === "//")
-                              $rootScope.metaImage = "http:" + $rootScope.metaImage
-                      }
-                  
-                      $scope.blogInfo = result;
-                      delete $scope.blogInfo["data"];
-                  }
-                  else {
-                      window.location = "#!noitem";
-                  }
-              }
-          });
-      };
-
-      $scope.previewThumbnail = function () {
-          $scope.dirtyThumbnail = true;
-          var file = $("#blogImage")[0].files[0];
-          var imageName = file.name;
-          var imageType = file.type;
-          var r = new FileReader();
-          r.onloadend = function (event) {
-              var imageCanvas = document.createElement('canvas');
-              var imageContext = imageCanvas.getContext('2d');
-              var thumbnailCanvas = document.createElement('canvas');
-              var thumbnailContext = thumbnailCanvas.getContext('2d');
-              var thumbnail = new Image();
-              thumbnail.onload = function () {
-                  var width = thumbnail.width;
-                  var height = thumbnail.height;
-                  imageCanvas.width = width;
-                  imageCanvas.height = height;
-                  thumbnailCanvas.width = (width * (77 / height));
-                  thumbnailCanvas.height = 77;
-
-                  //draw the image and save the blob
-                  imageContext.drawImage(thumbnail, 0, 0, imageCanvas.width, imageCanvas.height);
-                  $scope.image = {
-                      type: imageType,
-                      name: imageName,
-                      data: imageCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
-                  }
-
-                  //draw the thumbnail and save the blob
-                  thumbnailContext.drawImage(thumbnail, 0, 0, thumbnailCanvas.width, thumbnailCanvas.height);
-                  $scope.thumbnail = {
-                      type: imageType,
-                      name: imageName,
-                      data: thumbnailCanvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "")
-                  }
-                  $scope.$apply(function () {
-                      $scope.blogs[0].thumbnail = thumbnailCanvas.toDataURL();
-                  });
-              };
-              thumbnail.src = r.result;
-          }
-          r.readAsDataURL(file);
-      };
-
-      $scope.validateNewBlogData = function () {
-          //We're validating client side so that we don't keep passing image data back and forth
-          //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
-          var errors = [];
-          //Verify the blog has a name
-          if (!$scope.blogs[0].title || $scope.blogs[0].title == "") {
-              errors.push("Please specify a title");
-          }
-          if (!$scope.blogs[0].short_description || $scope.blogs[0].short_description == "") {
-              errors.push("Please specify a short description");
-          }
-          //Verify the blog has a type
-          if (!$scope.blogs[0].blogType) {
-              errors.push("Please select a Type");
-          }
-          //Verify the blog has content
-          if ($scope.simplemde.value().length == 0 || $scope.simplemde.value().length == 12) {  //this is not necessarily robust. a length of 12 appears to be an empty input
-              errors.push("Please add some content");
-          }
-          //If there are errors we need to notify the user
-          if (errors.length > 0) {
-              //show the errors
-              notifications.notify("The blog post could not be saved. Please review the following...", errors, { sentiment: "warning" });
-              window.scrollTo(100, 0);
+    $scope.getPublicationData = function (query, append) {
+      Publication.get(query, function (result) {
+        $scope.publicationLoading = false;
+        if (resultHandler.process(result)) {
+          if (result.link) {
+            window.location = result.link
           }
           else {
-              //Save the record
-              $scope.saveBlog();
+            window.location = "#!noitem";
           }
-      };
-
-      $scope.saveBlog = function () {
-          $scope.blogLoading = true;
-          $scope.blogs[0].content = $scope.simplemde.value();
-          $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
-          var data = {
-              standard: $scope.blogs[0],
-              special: {
-                markdown: true
-              }
-          };
-          if ($scope.dirtyThumbnail) {
-              data.special.image = $scope.image;
-              data.special.thumbnail = $scope.thumbnail;
-          }
-          var query = {};
-          if ($scope.blogs[0]._id) {
-              query.blogId = $scope.blogs[0]._id;
-          }
-          Blog.save(query, data, function (result) {
-              $scope.blogLoading = false;
-              if (resultHandler.process(result)) {
-                  var status = $scope.isNew ? "created" : "updated";
-                  window.location = "#!blog/" + result._id + "?status=" + status;
-              }
-              else {
-                  notifications.notify(result.errText, null, { sentiment: "negative" });
-              }
-          });
-      };
-
-      $scope.getBlogContent = function (text) {
-          if (text && text.data) {
-              var buffer = _arrayBufferToBase64(text.data);
-              var result = marked(buffer);
-              return $sce.trustAsHtml(result);
-          }
-          else {
-              return "";
-          }
-      };
-
-      $scope.addImageToMarkdown = function(url) {
-          var imageContent = "![](" + url + ")";
-          $scope.simplemde.codemirror.replaceSelection(imageContent);
-      };
-
-      $scope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
-          if (fromState.name.split(".")[0] == toState.name.split(".")[0]) { //then we should clear the search state
-              if (toState.name.split(".").length == 1) { //we only need to do this if we're on a listing page
-                  searchExchange.publish("executeSearch");
-              }
-          }
-          if (toState.name != "loginsignup") {
-              searchExchange.view = toState.name.split(".")[0];
-          }
-          if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
-              searchExchange.clear(true);
-          }
-          defaultSelection = [];
-          if ($state.current.name == "blogs.detail") {
-              $scope.getBlogData($scope.query); //get initial data set
-              userManager.refresh(function (hasUser) {
-                  $scope.currentuserid = userManager.userInfo._id;
-              });
-          }
-          else if ($state.current.name == "blogs.addedit") {
-              $scope.simplemde = new SimpleMDE({ element: $("#blogContent")[0],
-                  placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add.", markedRenderer: markedRenderer });
-
-              var dropzone = new Dropzone('#blogImages', {
-                  previewTemplate: document.querySelector('#preview-template').innerHTML,
-                  addRemoveLinks: true,
-                  parallelUploads: 2,
-                  thumbnailHeight: 120,
-                  thumbnailWidth: 120,
-                  maxFilesize: 3,
-                  filesizeBase: 1000
-              });
-
-              dropzone.on("success", function(file, response) {
-                  file.url = response.url;
-                  file.previewElement.addEventListener("click", function() {
-                      $scope.addImageToMarkdown(response.url);
-                  })
-              });
-
-              dropzone.on("removedfile", function(file) {
-                  ImageAPI.delete({url: file.url}, function(response) {
-                      console.log("Removed", file.url);
-                  });
-              });
-
-              picklistService.getPicklistItems("Blog Type", function (items) {
-                  $scope.blogTypes = items;
-              });
-              if ($stateParams.blogId == "new") {
-                  $scope.blogs = [{}];
-              }
-              var hasUser = userManager.hasUser();
-              if (!hasUser) {
-                  userManager.refresh(function (hasUser) {
-                      if (!hasUser) {
-                          window.location = "#!login?url=blog/" + $stateParams.blogId + "/edit"
-                      }
-                      else {
-                          if ($stateParams.blogId != "new") {
-                              $scope.getBlogData($scope.query); //get initial data set
-                          }
-                      }
-                  });
-              }
-              else {
-                  if ($stateParams.blogId != "new") {
-                      $scope.getBlogData($scope.query); //get initial data set
-                  }
-              }
-          }
-          else { //this should be the list page
-              if (!userManager.hasUser()) {
-                  userManager.refresh(function (hasUser) {
-                      if (!hasUser) {
-                          defaultSelection = [{
-                              field: "approved",
-                              values: [{ qText: "True" }]
-                          }]
-                      }
-                      else {
-                          if (!userManager.canApprove('blog')) {
-                              defaultSelection = [{
-                                  field: "approved",
-                                  values: [{ qText: "True" }]
-                              }]
-                          }
-                      }
-                      searchExchange.subscribe('reset', "blogs", function () {
-                          searchExchange.init(defaultSelection);
-                          searchExchange.unsubscribe('reset', "blogs");
-                      });
-                      if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
-                          searchExchange.clear(true);
-                      }
-                  });
-              }
-              else {
-                  if (!userManager.canApprove('blog')) {
-                      defaultSelection = [{
-                          field: "approved",
-                          values: [{ qText: "True" }]
-                      }]
-                  }
-                  searchExchange.subscribe('reset', "blogs", function () {
-                      searchExchange.init(defaultSelection);
-                      searchExchange.unsubscribe('reset', "blogs");
-                  });
-                  if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
-                      searchExchange.clear(true);
-                  }
-              }
-          }
+        }
       });
+    };
 
-      function _arrayBufferToBase64(buffer) {
-          var binary = '';
-          var bytes = new Uint8Array(buffer);
-          var len = bytes.byteLength;
-          for (var i = 0; i < len; i++) {
-              binary += String.fromCharCode(bytes[i]);
+    $scope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
+      if ($state.current.name == "publications.redirect") {
+        $scope.getPublicationData($scope.query); //get initial data set
+      } else {
+        if (fromState.name.split(".")[0] == toState.name.split(".")[0]) { //then we should clear the search state
+          if (toState.name.split(".").length == 1) { //we only need to do this if we're on a listing page
+            searchExchange.publish("executeSearch");
           }
-          return binary;
+        }
+        if (toState.name != "loginsignup") {
+          searchExchange.view = toState.name.split(".")[0];
+        }
+        if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
+          searchExchange.clear(true);
+        }
+        defaultSelection = [];
+        searchExchange.subscribe('reset', "publications", function () {
+          searchExchange.init(defaultSelection);
+          searchExchange.unsubscribe('reset', "publications");
+        });
+        if ((fromState.name.split(".")[0] != toState.name.split(".")[0]) || fromState.name == "loginsignup") {
+          searchExchange.clear(true);
+        }
       }
-
-      function cleanUpContent(text) {
-          var noImg = text.replace(/<img[^>]*>/g, "[image]");
-          noHTML = noImg.replace(/<\/?[^>]+(>|$)/g, "");
-          return noHTML;
-      }
+    });
 
   }]);
 
@@ -4399,15 +4104,15 @@
       //We're validating client side so that we don't keep passing image data back and forth
       //Some of these errors shouldnt occur becuase of the html5 'required' attribute but just in case...
       var errors = [];
-      //Verify the blog has a name
+      //Verify the resource has a name
       if(!$scope.resources[0].title || $scope.resources[0].title==""){
         errors.push("Please specify a title");
       }
-      //Verify the blog has a type
+      //Verify the resource has a type
       if(!$scope.resources[0].resourceType){
         errors.push("Please select a Type");
       }
-      //Verify the blog has content
+      //Verify the resource has content
       if($scope.simplemde.value().length==0 || $scope.simplemde.value().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
         errors.push("Please add some content");
       }
@@ -4763,7 +4468,6 @@
     var User = $resource("api/userprofile/:userId", {userId: "@userId"});
     var UserRoles = $resource("api/userrole/:roleId", {roleId: "@roleId"});
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
-    var Blog = $resource("api/blog/:blogId", {projectId: "@blogId"});
     var ChangePassword = $resource("auth/change");
 
     $scope.query = {};
@@ -4787,11 +4491,6 @@
       Project.get({projectId:'count', userid: $stateParams.userId}, function(result){
         if(resultHandler.process(result)){
           $scope.projectCount = result.count;
-        }
-      });
-      Blog.get({blogId:'count', userid: $stateParams.userId}, function(result){
-        if(resultHandler.process(result)){
-          $scope.blogCount = result.count;
         }
       });
     }
@@ -5083,10 +4782,6 @@
         $scope.isEditing = false;
       })
     };
-
-    $scope.createBlog = function() {
-      window.location = "#!blog/new/edit?author=" + $scope.entityid
-    }
 
     $scope.updateReadme = function(){
       GitReadme.get({projectId: $scope.entityid}, function(result){

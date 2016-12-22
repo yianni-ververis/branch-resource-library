@@ -115,12 +115,6 @@ function buildMenu(user){
         href: "#!resource/new/edit"
       });
     }
-    if(user.role.permissions && user.role.permissions.blog && user.role.permissions.blog.create==true){
-      basicMenu.splice(0,0,{
-        label: "Create Blog",
-        href: "#!blog/new/edit"
-      });
-    }
     if(user.role.permissions && user.role.permissions.project && user.role.permissions.project.create==true){
       basicMenu.splice(0,0,{
         label: "Create Project",

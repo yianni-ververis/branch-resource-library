@@ -4,7 +4,6 @@ app.controller("moderatorController", ["$scope", "$resource", "$state", "$stateP
   //check to see that a user is logged in and that they have the correct permissions
   var entities = [
     "project",
-    "blog",
     "comment",
     "user"
   ]
