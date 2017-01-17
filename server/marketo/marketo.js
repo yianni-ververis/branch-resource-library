@@ -1,4 +1,4 @@
-const config = require('../../config')
+const config = require('config')
 const Marketo = require('node-marketo-rest')
 const git = require('github')
 const parse = require("parse-name").parse

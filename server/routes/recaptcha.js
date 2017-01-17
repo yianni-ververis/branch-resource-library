@@ -1,5 +1,5 @@
 var express = require('express'),
-    config = require('../../config'),
+    config = require('config'),
     router = express.Router(),
     User = require('../models/user'),
     Error = require('../controllers/error'),
