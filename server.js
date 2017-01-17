@@ -6,14 +6,12 @@ var mongoose = require('mongoose'),
     MongoStore = require('connect-mongo')(expressSession),
     AWS = require("aws-sdk"),
     request = require("request"),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    envconfig = require('config');
 
-var mode = "release";
-//var mode = "debug";
+var mode = envconfig.mode; // should be "debug" or "release"
 
 AWS.config.loadFromPath("./credentials.json");
-
-var envconfig = require('config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
 if(mode === "debug") {
