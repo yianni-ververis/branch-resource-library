@@ -13,6 +13,8 @@ var mode = envconfig.mode; // should be "debug" or "release"
 
 AWS.config.loadFromPath("./credentials.json");
 
+mongoose.Promise = global.Promise
+
 mongoose.connect(envconfig.mongoconnectionstring);
 if(mode === "debug") {
   mongoose.set("debug", true)
