@@ -11,11 +11,9 @@ var mongoose = require('mongoose'),
 var mode = "release";
 //var mode = "debug";
 
-config = require('config');
-
 AWS.config.loadFromPath("./credentials.json");
 
-var envconfig = require('./config')
+var envconfig = require('config')
 
 mongoose.connect(envconfig.mongoconnectionstring);
 if(mode === "debug") {

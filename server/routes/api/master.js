@@ -10,7 +10,7 @@ var async = require('async'),
     Notifier = require("../../controllers/notifier"),
     git = require("github"),
     atob = require("atob"),
-    Config = require("../../../config"),
+    Config = require("config"),
     GitHub = new git({
         // required
         version: "3.0.0",

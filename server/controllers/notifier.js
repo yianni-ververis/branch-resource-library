@@ -2,7 +2,7 @@ var mailer = require('./emailer'),
     MasterController = require("./master"),
     entities = require("../routes/entityConfig"),
     Subscriptions = entities["subscription"],
-    GlobalConfig = require("../../config.js");
+    GlobalConfig = require("config");
 
 module.exports = {
   sendUpdateNotification: function(entityId, record, entity){

@@ -1,5 +1,5 @@
 var AWS = require("aws-sdk"),
-    envconfig = require("../../config");
+    envconfig = require("config");
 
 module.exports = {
     listImages: () => {
