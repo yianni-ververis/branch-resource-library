@@ -2,7 +2,7 @@ const https = require('https')
 const parseString = require('xml2js').parseString
 const mongoose = require('mongoose')
 const Publication = require('./server/models/publication')
-const config = require('./config')
+const config = require('config')
 const hash = require('object-hash')
 const cron = require('node-cron')
 

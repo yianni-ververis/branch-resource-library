@@ -1,5 +1,5 @@
 var s3 = require("../../s3/s3")
-    envconfig = require("../../../config");
+    envconfig = require("config");
 
 module.exports = function(req, res){
     var key = req.params.url;

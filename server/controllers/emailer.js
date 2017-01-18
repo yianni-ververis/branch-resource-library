@@ -1,4 +1,4 @@
-config = require('../../config.js');
+config = require('config');
 nodemailer = require('nodemailer').createTransport(config.mailTransport);
 Templater = require('./templater');
 MailText = require('./mailText');
