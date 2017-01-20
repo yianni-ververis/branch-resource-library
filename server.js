@@ -81,6 +81,8 @@ app.use((req, res, next) => {
 });
 
 app.use(expressSession({
+  resave: true,
+  saveUninitialized: true,
   secret: 'mySecretKey',
   store: new MongoStore({ mongooseConnection: mongoose.connection}),
   cookie: {path:"/", domain:config.cookieDomain, httpOnly: true}
@@ -89,7 +91,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 app.get('/', function(req, res){
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user, mode: mode});
