@@ -1,4 +1,4 @@
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
     express = require('express'),
     app = express(),
     passport = require('passport'),
@@ -7,24 +7,24 @@ var mongoose = require('mongoose'),
     AWS = require("aws-sdk"),
     request = require("request"),
     bodyParser = require('body-parser'),
-    envconfig = require('config');
+    config = require('config');
 
-var mode = envconfig.mode; // should be "debug" or "release"
+var mode = config.mode; // should be "debug" or "release"
 
 AWS.config.loadFromPath("./credentials.json");
 
 mongoose.Promise = global.Promise
 
-mongoose.connect(envconfig.mongoconnectionstring);
+mongoose.connect(config.mongoconnectionstring);
 if(mode === "debug") {
   mongoose.set("debug", true)
 }
 
-if (envconfig.prerenderServiceUrl != null && envconfig.prerenderServiceUrl !== "")
-  app.use(require('prerender-node').set("prerenderServiceUrl",envconfig.prerenderServiceUrl));
+if (config.prerenderServiceUrl != null && config.prerenderServiceUrl !== "")
+  app.use(require('prerender-node').set("prerenderServiceUrl",config.prerenderServiceUrl));
 
-if (envconfig.twitterHandle != null && envconfig.twitterHandle !== "")
-  twitterHandle = envconfig.twitterHandle;
+if (config.twitterHandle != null && config.twitterHandle !== "")
+  twitterHandle = config.twitterHandle;
 else
   twitterHandle = "";
 
@@ -70,7 +70,7 @@ app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
 app.use("/configs", express.static(__dirname + "/public/configs"));
 app.use("/images", (req, res, next) => {
-  const url = "http://s3.amazonaws.com/" + envconfig.s3.bucket + "/images" + req.url
+  const url = "http://s3.amazonaws.com/" + config.s3.bucket + "/images" + req.url
   request.get(url).pipe(res)
 })
 app.use((req, res, next) => {
