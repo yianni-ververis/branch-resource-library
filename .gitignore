@@ -8,3 +8,4 @@ client.pem
 /public/configs/sense.json
 config.js
 credentials.json
+.idea
