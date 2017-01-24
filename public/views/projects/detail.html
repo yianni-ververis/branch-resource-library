@@ -10,7 +10,7 @@
       <p>created by <a class="user-link" href="#!user/{{projects[0].userid._id}}">{{projects[0].userid.username}}</a></p>
       <p>{{projects[0].short_description}}</p>
       <p><a class="blue" href="{{projects[0].project_site}}" target="_blank" 
-        ng-click="GithubClickTracking();">{{projects[0].project_site}}</a></p>
+        ng-click="GithubGATracking();">{{projects[0].project_site}}</a></p>
       <subscribe entity="'project'" entityid="projects[0]._id" user="currentuserid"></subscribe>
       <a href="{{projects[0].project_site}}/issues" target="_blank"><button class="button-outline"><i class="fa fa-exclamation-circle"></i>Raise Issue</button></a>
     </div>

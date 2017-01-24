@@ -244,13 +244,18 @@ app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", 
     $scope.projects[0].download_link = "https://github.com/"+project.owner.login+"/"+project.name+"/zipball/master";
   };
 
-  $scope.GithubClickTracking = function(){
-    $window.ga('send', 'event',  {
-                        'eventCategory': 'GitHubLink',
+    //GA event firing on Github Link
+    $scope.GithubGATracking = function(){
+      var url=$scope.projects[0].project_site;
+      console.log(url);
+      $window.ga('send', 'event',  {
+                        'eventCategory': 'GithubLink',
                         'eventAction': 'click',
-                        'eventLabel': $scope.projects[0].project_site,
-                        'transport': 'beacon'});
-  };
+                        'eventLabel': url,
+                        'transport': 'beacon'
+                    });
+    };
+
 
   $scope.checkIfVersionChecked = function(version){
     if($scope.projects[0] && $scope.projects[0].productversions){
