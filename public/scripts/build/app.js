@@ -3419,7 +3419,7 @@
 
   }]);
 
-  app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", function($sce, $rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService){
+  app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", "$state", "$stateParams", "$anchorScroll", "userManager", "resultHandler", "confirm", "notifications", "picklistService", "$window",function($sce, $rootScope, $scope, $resource, $state, $stateParams, $anchorScroll, userManager, resultHandler, confirm, notifications, picklistService,$window){
     var Project = $resource("api/project/:projectId", {projectId: "@projectId"});
     var Views = $resource("api/view/count");
     var Picklist = $resource("api/picklist/:picklistId", {picklistId: "@picklistId"});
@@ -3664,6 +3664,19 @@
       $scope.projects[0].git_user = project.owner.login;
       $scope.projects[0].download_link = "https://github.com/"+project.owner.login+"/"+project.name+"/zipball/master";
     };
+
+      //GA event firing on Github Link
+      $scope.GithubGATracking = function(){
+        var url=$scope.projects[0].project_site;
+        console.log(url);
+        $window.ga('send', 'event',  {
+                          'eventCategory': 'GithubLink',
+                          'eventAction': 'click',
+                          'eventLabel': url,
+                          'transport': 'beacon'
+                      });
+      };
+
 
     $scope.checkIfVersionChecked = function(version){
       if($scope.projects[0] && $scope.projects[0].productversions){
