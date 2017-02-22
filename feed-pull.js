@@ -92,7 +92,6 @@ cron.schedule('*/3 * * * *', () => {
 
     res.setEncoding('utf8')
     let rawData = ''
-    let foundPublications = []
     res.on('data', chunk => rawData += chunk)
     res.on('end', () => {
       try {
@@ -111,7 +110,6 @@ cron.schedule('*/3 * * * *', () => {
                   console.log(`${result.rss.channel[0].item.length} publications`)
                   Promise.all(result.rss.channel[0].item.map(item => {
                     return new Promise((resolve, reject) => {
-                      foundPublications.push(getUrlId(item))
                       Publication.findOne({ mediumId: getUrlId(item) })
                         .then(publication => {
                           if (publication) {
