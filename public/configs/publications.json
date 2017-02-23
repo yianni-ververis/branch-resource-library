@@ -48,7 +48,7 @@
       "name": "Newest",
       "order": -1,
       "field": "published_num",
-      "sortType": "qSortByNumeric"
+      "sortType": "qSortByAscii"
     },
     "title": {
       "id": "title",
